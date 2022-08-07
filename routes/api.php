@@ -42,15 +42,17 @@ Route::prefix('/v0.1')->group(function(){
         // AUTH
         Route::prefix('/auth')->middleware(['auth:sanctum'])->group(function(){
             Route::prefix('users')->group(function(){
-                Route::get('{search?}/{countryId?}/{categorieId?}/{dateBegin?}/{dateEnd?}',[UserController::class,'index'])->name('index-users');
                 Route::get('{id}',[UserController::class,'show'])->name('show-users');
                 Route::get('current-users/{id}',[UserController::class,'currentUser'])->name('show-current-users');
                 Route::put('{id}',[UserController::class,'update'])->name('update-users');
-                Route::put('current-users/{id}',[UserController::class,'updateCurrentUser'])->name('update-current-users');
+                Route::post('current-users/{id}',[UserController::class,'updateCurrentUser'])->name('update-current-users');
                 Route::delete('{id}',[UserController::class,'destroy'])->name('destroy-users');
                 Route::delete('current-users',[UserController::class,'deleteCurrentUser'])->name('delete-current-users');       
                 Route::get('logout/{id}',[UserController::class,'logout'])->name('logout-users');
                 Route::get('/status/teacher',[UserController::class,'userByStatus'])->name('userByStatus-users');
+                Route::get('all/{search?}/{countryId?}/{dateBegin?}/{dateEnd?}',[UserController::class,'allUsers'])->name('allUsers-users');
+                Route::get('{search?}/{countryId?}/{categorieId?}/{moduleId?}/{is_valide?}/{dateBegin?}/{dateEnd?}',[UserController::class,'index'])->name('index-users');
+               
             });
             Route::prefix('categories')->group(function(){
                 Route::get('lists',[CategorieController::class,'lists'])->name('lists-categorie');
@@ -64,7 +66,7 @@ Route::prefix('/v0.1')->group(function(){
                 Route::get('/{search?}',[ModuleUserController::class,'index'])->name('index-module-user');
                 Route::get('{id}',[ModuleUserController::class,'show'])->name('show-module-user');
                 Route::post('',[ModuleUserController::class,'create'])->name('create-module-user');
-                Route::put('{id}',[ModuleUserController::class,'update'])->name('update-module-user');
+                Route::post('{id}',[ModuleUserController::class,'update'])->name('update-module-user');
                 Route::delete('{id}',[ModuleUserController::class,'destroy'])->name('destroy-module-user');
             });
             Route::prefix('modules')->group(function(){
@@ -74,12 +76,14 @@ Route::prefix('/v0.1')->group(function(){
                 Route::put('{id}',[ModuleController::class,'update'])->name('update-modules');
                 Route::delete('{id}',[ModuleController::class,'destroy'])->name('destroy-modules');
             });
+
+            Route::get('ressources/studiant/{search?}',[RessourcesModuleController::class,'searchResourceModuleStudiant'])->name('searchResourceModuleStudiant-ressources');
             Route::get('ressources/{id?}/module/{search?}',[RessourcesModuleController::class,'ressourceFormModule'])->name('ressourceFormModule-ressources');
             Route::prefix('ressources')->group(function(){
                 Route::get('{search?}',[RessourcesModuleController::class,'index'])->name('index-ressources');
                 Route::get('{id}',[RessourcesModuleController::class,'show'])->name('show-module-ressources');
                 Route::post('',[RessourcesModuleController::class,'create'])->name('create-module-ressources');
-                Route::put('{id}',[RessourcesModuleController::class,'update'])->name('update-module-ressources');
+                Route::post('{id}',[RessourcesModuleController::class,'update'])->name('update-module-ressources');
                 Route::delete('{id}',[RessourcesModuleController::class,'destroy'])->name('destroy-module-ressources');
             });
             Route::prefix('abonnees')->group(function(){

@@ -15,6 +15,10 @@ class RessourcesModuleController extends Controller
     public function ressourceFormModule($id='',$search=''){
         return $this->service->repos->searchResourceModule($id,$search);
     }
+    public function  searchResourceModuleStudiant($search=''){
+        
+        return $this->service->repos->searchResourceModuleStudiant($search,auth()->user()->id);
+    }
     public function create(Request $request){
         $data=$request->validate([
             'title'=>'required|string|max:255',
@@ -38,7 +42,7 @@ class RessourcesModuleController extends Controller
             'default_resource'=>'required|boolean',
             'is_public'=>'required|boolean'
          ]);
-        return $this->service->update($id,$data);
+         return $this->service->update($id,$data);
     }
     public function destroy($id){
         return $this->service->delete($id);

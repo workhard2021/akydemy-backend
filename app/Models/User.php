@@ -46,13 +46,14 @@ class User extends Authenticatable
     public function modules(){
         return $this->belongsToMany(Module::class,'module_users')
         ->as('subscriptions')
-        ->withPivot(['id','title','somme','type','status_attestation','is_valide','file_attestaion_url'])
+        ->withPivot(['id','title','country_id','somme','type','status_attestation','is_valide','file_attestaion_url'])
         ->withTimestamps();
     }
-    // public function subscriptions() {
-    //     return $this->hasMany(ModuleUser::class);
-    // }
-
+  
+    public function subscriptions() {
+        return $this->hasMany(ModuleUser::class);
+    }
+    
     public function country(){
         return $this->belongsTo(Country::class);
     }

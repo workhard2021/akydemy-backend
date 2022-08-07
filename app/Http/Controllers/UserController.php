@@ -14,8 +14,11 @@ class UserController extends Controller
 {
     public function __construct(private UserService $service){}
 
-    public function index($search='',$countryId='',$categorieId='',$dateBegin='',$dateEnd=''){
-        return $this->service->repos->searchUserText($search,$countryId,$categorieId,$dateBegin,$dateEnd);
+    public function index($search='',$countryId='',$categorieId='',$moduleId='',$is_valide='',$dateBegin='',$dateEnd=''){
+        return $this->service->repos->searchUserText($search,$countryId,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd);
+    }
+    public function allUsers($search='',$countryId='',$dateBegin='',$dateEnd=''){
+        return $this->service->repos->searchAllUser($search,$countryId,$dateBegin,$dateEnd);
     }
     public function userByStatus(){
       
@@ -61,7 +64,8 @@ class UserController extends Controller
                "first_name"=>"required|string|max:30",
                "last_name"=> "required|string|max:30",
                "password"=> "nullable|string|min:3",
-               "country_id"=> "nullable|numeric"
+               "country_id"=> "nullable|numeric",
+               "file_image"=>"nullable"
            ]);
            $id=$request->user()->id;
            if($this->service->repos->exists("email",$data['email'],'id',$id)){
@@ -74,7 +78,7 @@ class UserController extends Controller
     }
     
     public function currentUser(Request $request,$id)
-    {
+    {  
         return response($this->service->repos->currentUser($request->user()->id),200);
     }
 

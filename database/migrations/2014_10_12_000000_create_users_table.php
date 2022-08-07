@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('last_name',100);
             $table->string('tel',15)->nullable();
             $table->string('image_url',150)->nullable();
-            $table->enum('status',eStatus::getValues())->default(eStatus::STUDIENT->value);
+            $table->enum('status',eStatus::getValues())->default(eStatus::STUDENT->value);
             $table->boolean('active')->default(false);
             $table->foreignId('country_id')->nullable()->constrained('countries')->onDelete('SET NULL');
             $table->timestamp('email_verified_at')->nullable();
