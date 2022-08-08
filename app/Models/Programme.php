@@ -9,7 +9,7 @@ use Laravel\Scout\Searchable;
 
 class Programme extends Model
 {   protected $model='programmes';
-    protected $fillable=['title','sub_title','description','is_active','module_id','file_url','module_id'];
+    protected $fillable=['title','sub_title','description','is_active','module_id','module_id'];
     use HasFactory,Searchable;
     public function getUpdatedAtAttribute($value)
     {

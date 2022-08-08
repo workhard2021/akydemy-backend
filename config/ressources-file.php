@@ -1,13 +1,12 @@
 <?php
 return [
    'disk'=> env('DISK','local'),
-   'presentation-log' => 'presentation-log.png',
-   'icon'=>'image/icon.png',
-   'user'=>env('PREFIX_COMP','tech-log').'/users/image',
-   'attestation' => env('PREFIX_COMP', 'tech-log') .'/users/attestation',
-   'movie_module' => env('PREFIX_COMP','tech-log').'/movie-module',
-   'file_module' => env('PREFIX_COMP','tech-log').'/file-module',
-   'country' => env('PREFIX_COMP','tech-log').'/country',
-   'categorie_module' => env('PREFIX_COMP','tech-log').'/categorie-module',
-   'file_message' => env('PREFIX_COMP','tech-log').'/file-message',
+   'log' => 'public/logo.png',
+   'icon'=>'public/icon.png',
+   'users'=>env('APP_NAME','tech').'/users',
+   'ressources-modules' => env('APP_NAME','tech').'/ressources/modules',
+   'ressources-programmes' => env('APP_NAME','tech').'/ressources/programmes',
+   'countries' => env('APP_NAME','tech').'/countries',
+   'categories' => env('APP_NAME','tech').'/categories',
+   'forum' => env('APP_NAME','tech').'/forum',
 ];

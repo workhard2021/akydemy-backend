@@ -9,7 +9,7 @@ use Laravel\Scout\Searchable;
 
 class RessourcesModule extends Model
 {   protected $table='ressources_modules';
-    protected $fillable=['title','movie_module_url','file_module_url','pdf_resource','is_public','default_resource','module_id'];
+    protected $fillable=['title','is_public','is_default','module_id'];
     use HasFactory,Searchable;
     public function module(){
          return $this->hasOne(Module::class,'id','module_id');

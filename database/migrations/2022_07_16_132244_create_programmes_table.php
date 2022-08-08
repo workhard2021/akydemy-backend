@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('sub_title')->nullable();
             $table->longText('description')->nullable()->comment('la description est dispensable');
             $table->boolean('is_active')->default(false);
-            $table->string('file_url',100);
+            $table->string('url_file',50);
+            $table->string('name_file',50);
             $table->foreignId('module_id')->nullable()->constrained('modules')->onDelete('CASCADE');
             $table->timestamps();
         });

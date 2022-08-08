@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Libs\ManagerFile;
 use App\Services\ProgrammeService;
 use Illuminate\Http\Request;
 
@@ -19,15 +20,21 @@ class ProgrammeController extends Controller
         $data=$request->validate([
             'title'=>'required|string',
             'sub_title'=>'nullable|string|max:250',
-            'description'=>'nullable|string',
-            'file_url'=>'required|string|max:100',
             'is_active'=>'nullable|boolean',
-            'module_id'=>'nullable|numeric',
+            'module_id'=>'required|numeric|unique:programmes',
+            'description'=>'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
-        if($this->service->repos->findOneByColumn('module_id',$data['module_id'])){
-            return  response("Le module a déja un programme",403);
+        $item=$this->service->create($data);
+        if($request->hasFile('image')){
+            $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
+            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-programmes'),$file_name);
+            ManagerFile::delete($item->name_file,config('ressources-file.ressources-programmes'));
+            $item->url_file=$file_name['url'];
+            $item->name_file=$file_name['name'];
+            $item->save();
         }
-        return response($this->service->create($data),201);
+        return response($item,201);
     }
     public function show($id){
          $item=$this->service->repos->find($id,['*']);
@@ -37,15 +44,27 @@ class ProgrammeController extends Controller
         return response($item,200);
     }
     public function update(Request $request,$id){
-         $data=$request->validate([
+        $data=$request->validate([
             'title'=>'required|string',
             'sub_title'=>'nullable|string|max:250',
-            'description'=>'nullable|string',
             'is_active'=>'nullable|boolean',
-            'file_url'=>'required|string|max:100',
-            'module_id'=>'nullable|numeric',
-         ]);
-        return $this->service->update($id,$data);
+            'module_id'=>'required',
+            'description'=>'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+        if($this->service->repos->exists('id',$id,'module_id',$data['module_id'])){
+            return response(["errors"=>["module_id"=>"Le module a déja un programme"]],403);
+        }
+        $item=$this->service->update($id,$data);
+        if($request->hasFile('image')){
+            $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
+            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-programmes'),$file_name);
+            ManagerFile::delete($item->name_file,config('ressources-file.ressources-programmes'));
+            $item->url_file=$file_name['url'];
+            $item->name_file=$file_name['name'];
+            $item->save();
+        }
+        return response($item,201);
     }
     public function destroy($id){
         return $this->service->delete($id);

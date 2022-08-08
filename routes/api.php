@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\ManagerFileController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleUserController;
@@ -29,6 +30,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('/v0.1')->group(function(){
          //NOT AUTH
+         Route::prefix(config('app.name'))->group(function(){
+               Route::get('/categories/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('/ressources/modules/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('/ressources/programmes/{url_file}',[ManagerFileController::class,'download']);
+         });
          Route::prefix('users')->group(function(){
             Route::post('',[UserController::class,'create'])->name('create-users');
             Route::post('login',[UserController::class,'login'])->name('login-users');
@@ -59,7 +65,7 @@ Route::prefix('/v0.1')->group(function(){
                 Route::get('/{search?}',[CategorieController::class,'index'])->name('index-categorie');
                 Route::get('{id}',[CategorieController::class,'show'])->name('show-categorie');
                 Route::post('',[CategorieController::class,'create'])->name('create-categorie');
-                Route::put('{id}',[CategorieController::class,'update'])->name('update-categorie');
+                Route::post('{id}',[CategorieController::class,'update'])->name('update-categorie');
                 Route::delete('{id}',[CategorieController::class,'destroy'])->name('destroy-categorie');
             });
             Route::prefix('subscriptions')->group(function(){
@@ -97,7 +103,7 @@ Route::prefix('/v0.1')->group(function(){
                 Route::get('{search?}',[ProgrammeController::class,'index'])->name('index-programmes');
                 Route::get('{id}',[ProgrammeController::class,'show'])->name('show-programmes');
                 Route::post('',[ProgrammeController::class,'create'])->name('create-programmes');
-                Route::put('{id}',[ProgrammeController::class,'update'])->name('update-programmes');
+                Route::post('{id}',[ProgrammeController::class,'update'])->name('update-programmes');
                 Route::delete('{id}',[ProgrammeController::class,'destroy'])->name('destroy-programmes');
             });
             Route::prefix('abonnees')->group(function(){
