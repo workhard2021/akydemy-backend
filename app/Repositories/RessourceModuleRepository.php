@@ -18,20 +18,16 @@ class RessourceModuleRepository extends RepositoryBase{
             return $query->where('is_public', $published);
         })->paginate($this->nbr);
      }
-     
-     public function searchResourceModuleStudiant($search='',$userID){
+     public function searchResourceModuleStudiant($search){
         return $this->model
         ->when($search,function($query)use($search){
             return $query->where('modules.title','like','%'.$search.'%')
              ->orWhere('ressources_modules.title','like','%'.$search.'%');
-        })->where(function($query){
-             $query->where('ressources_modules.is_public',0)
-             ->orWhere('ressources_modules.is_public',1); 
         })->where('modules.is_active',1)
-        ->where('users.id',$userID)
         ->join('modules','modules.id','=','ressources_modules.module_id')
          ->join('module_users','module_users.module_id','=','modules.id')
         ->join('users','users.id','=','module_users.user_id')
-        ->select('ressources_modules.*','modules.title as module_title','users.id as user_id')->paginate($this->nbr);
+        ->select('ressources_modules.*','modules.title as module_title','users.id as user_id')
+         ->latest('ressources_modules.updated_at','ressources_modules.created_at')->paginate($this->nbr);
      }
 }

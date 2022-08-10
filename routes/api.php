@@ -32,15 +32,19 @@ Route::prefix('/v0.1')->group(function(){
          //NOT AUTH
          Route::prefix(config('app.name'))->group(function(){
                Route::get('/categories/{url_file}',[ManagerFileController::class,'download']);
-               Route::get('/ressources/modules/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('/ressources/modules/{Id}/pdf/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('/ressources/modules/{Id}/video/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/ressources/programmes/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('/users/{Id}/profile/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('/users/{Id}/attestations/{url_file}',[ManagerFileController::class,'download']);
+               
          });
          Route::prefix('users')->group(function(){
             Route::post('',[UserController::class,'create'])->name('create-users');
             Route::post('login',[UserController::class,'login'])->name('login-users');
             Route::post('callback',[UserController::class,'callback'])->name('callback-users');
             Route::get('redirect',[UserController::class,'redirect'])->name('redirect-users');
-         });
+        });
         Route::get('modules',[ModuleController::class,'indexPublic'])->name('indexPublic-modules');
         Route::get('programmes',[ProgrammeController::class,'indexPublic'])->name('indexPublic-programmes');
         Route::get('pays',[CountryController::class,'indexPublic'])->name('indexPublic-pays');

@@ -31,7 +31,6 @@ class CategorieController extends Controller
             $item->save();
         }
         return response($item,201);
-        
     }
     public function show($id){
         $item=$this->service->repos->find($id,['*']);
@@ -58,7 +57,7 @@ class CategorieController extends Controller
             $item->name_file=$file_name['name'];
             $item->save();
         }
-        return $this->service->update($id,$data);
+        return response($item,200);
     }
     public function destroy($id){
         return response($this->service->delete($id),204);

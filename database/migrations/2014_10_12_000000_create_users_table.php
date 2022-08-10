@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('first_name',100);
             $table->string('last_name',100);
             $table->string('tel',15)->nullable();
-            $table->string('image_url',150)->nullable();
+            $table->string('url_file',50)->nullable();
+            $table->string('name_file',50)->nullable();
             $table->enum('status',eStatus::getValues())->default(eStatus::STUDENT->value);
             $table->boolean('active')->default(false);
             $table->foreignId('country_id')->nullable()->constrained('countries')->onDelete('SET NULL');

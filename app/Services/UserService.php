@@ -16,17 +16,18 @@ class UserService extends ServiceBase
             'email'=>$data['email'],
             'first_name' => $data['first_name'],
             'last_name' => '',
-            'image' => '',
+            'image' => $data['image']?$data['image']:'',
             'password' => Hash::make('password')
         ];
         if(!$user){
            $user= parent::create($input);
         }
-        return $user->createToken($this->tokenName)?->plainTextToken;
+        return ["token"=>$user->createToken($this->tokenName)?->plainTextToken,"user"=>$user];
     }
     public function create($data)
     {
-        return parent::create($data)->createToken($this->tokenName)?->plainTextToken;
+        $user=parent::create($data);
+        return ["token"=>$user->createToken($this->tokenName)?->plainTextToken,"user"=>$user];
     }
     
 }

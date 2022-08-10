@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\eStatus;
 use App\Enums\eStatusAttestation;
+use App\Libs\ManagerFile;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -13,7 +14,6 @@ use Laravel\Socialite\Facades\Socialite;
 class UserController extends Controller
 {
     public function __construct(private UserService $service){}
-
     public function index($search='',$countryId='',$categorieId='',$moduleId='',$is_valide='',$dateBegin='',$dateEnd=''){
         return $this->service->repos->searchUserText($search,$countryId,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd);
     }
@@ -40,10 +40,25 @@ class UserController extends Controller
                 "first_name" =>"required|string|max:30",
                 "last_name" => "required|string|max:30",
                 "password" => "required|string|min:3",
-                "country_id"=> "nullable|numeric"
+                "country_id"=> "nullable|numeric",
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'actions'=>'nullable|string'
             ]);
             $data['password']=Hash::make($data['password']);
-            return response($this->service->create($data),201);
+            $user=$this->service->create($data);
+            $item=$user['user'];
+            $token=$user['token'];
+            if($request->hasFile('image')){
+                $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
+                $file_name=ManagerFile::upload($data['image'],config('ressources-file.users').'/'.$item->id.'/profile',$file_name);
+                $item->url_file=$file_name['url'];
+                $item->name_file=$file_name['name'];
+                $item->save();
+            }
+            if($request->has('action') && $request->action==eStatus::ADMIN->value){
+                return response($item,201);
+            }
+            return response($token,201);
     }
 
     public function update(Request $request,$id)
@@ -65,23 +80,30 @@ class UserController extends Controller
                "last_name"=> "required|string|max:30",
                "password"=> "nullable|string|min:3",
                "country_id"=> "nullable|numeric",
-               "file_image"=>"nullable"
+               'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
            ]);
            $id=$request->user()->id;
            if($this->service->repos->exists("email",$data['email'],'id',$id)){
-               return response(['errors'=>['email'=>['Email existe déja'] ]],422);
+              return response(['errors'=>['email'=>['Email existe déja'] ]],422);
            } 
            if(!empty($data['password'])){
-               $data['password']=Hash::make($data['password']);
+             $data['password']=Hash::make($data['password']);
            }
-           return response($this->service->update($id,$data),200);
+           $item= $this->service->update($id,$data);
+           if($request->hasFile('image')){
+             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
+             $file_name=ManagerFile::upload($data['image'],config('ressources-file.users').'/'.$item->id.'/profile',$file_name);
+             ManagerFile::delete($item->name_file,config('ressources-file.users').'/'.$item->id.'/profile');
+             $item->url_file=$file_name['url'];
+             $item->name_file=$file_name['name'];
+             $item->save();
+           }
+           return response($item,200);
     }
-    
     public function currentUser(Request $request,$id)
     {  
         return response($this->service->repos->currentUser($request->user()->id),200);
     }
-
     public function deleteCurrentUser(Request $request)
     {
         return response($this->service->delete($request->user()->id),204);

@@ -23,7 +23,8 @@ return new class extends Migration
             $table->enum('status_attestation',eStatusAttestation::getValues())->default(eStatusAttestation::NONE->value);
             $table->boolean('is_valide')->default(false);
             $table->text('description')->nullable();
-            $table->string('file_attestaion_url')->nullable();
+            $table->string('url_attestation',200)->nullable();
+            $table->string('name_attestation',200)->nullable();
             $table->foreignId('module_id')->constrained('modules')->onDelete('CASCADE');
             $table->foreignId('user_id')->constrained('users')->onDelete('CASCADE');
             $table->timestamps();
