@@ -31,7 +31,6 @@ class ReplyController extends Controller
     public function update(Request $request,$id){
         $data=$request->validate([
             'description'=>'required|string',
-            'message_id'=>'required|numeric',
             'is_active'=>'required|boolean',
         ]);
         $data['user_id']=auth()->user()->id;

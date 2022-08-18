@@ -2,12 +2,11 @@
 
 namespace App\Enums;
 
-enum eModuleValidate: string
+enum eTypeEvaluation: string
 {
-   case ATTENTE = 'ATTENTE';
-   case VALIDE = 'VALIDE';
-   case INVALIDE = 'INVALIDE';
-   case AUCUNE = 'AUCUNE';
+   case EXAMEN = 'EXAMEN';
+   case EVALUATION = 'EVALUATION';
+   case AUTRE = 'AUTRE';
    public static function getValues(): array
    {
       return array_map(function ($val) {

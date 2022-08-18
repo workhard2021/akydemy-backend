@@ -7,25 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 
-class Topic extends Model
-{
+class Publicite extends Model
+{   protected $table='publicites';
+    protected $fillable=['name','title','is_active'];
     use HasFactory,Searchable;
-    protected $table='topics';
-    protected $fillable=['title','description','user_id','is_active','module_id'];
-    
-    public function messages() {
-        return $this->hasMany(Message::class);
-    }
-    public function user(){
-        return $this->belongsTo(User::class);
-    }
-    public function toSearchableArray()
-    {
-        return [
-        'title' => $this->title,
-        'description' => $this->description,
-       ];
-    }
+
     public function getUpdatedAtAttribute($value)
     {
         return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
@@ -34,5 +20,12 @@ class Topic extends Model
     {
         return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
         //  return ucfirst(Carbon::parse($value,'UTC')->locale(config('app.locale'))->isoFormat('llll'));
+    }
+    public function toSearchableArray()
+    {
+        return [
+        'name' => $this->name,
+        'title' => $this->title,
+       ];
     }
 }

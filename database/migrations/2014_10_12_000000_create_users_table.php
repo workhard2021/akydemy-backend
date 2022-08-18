@@ -22,9 +22,11 @@ return new class extends Migration
             $table->string('tel',15)->nullable();
             $table->string('url_file',50)->nullable();
             $table->string('name_file',50)->nullable();
-            $table->enum('status',eStatus::getValues())->default(eStatus::STUDENT->value);
+            $table->enum('status',eStatus::getValues())->default(eStatus::AUTRE->value);
             $table->boolean('active')->default(false);
-            $table->foreignId('country_id')->nullable()->constrained('countries')->onDelete('SET NULL');
+            $table->string('country',50)->nullable();
+            $table->string('profession',250)->nullable();
+            $table->string('description',255)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

@@ -10,18 +10,19 @@ class UserRepository extends RepositoryBase{
     public function  currentUser($id){
         return $this->model->where('users.id',$id)->first();
     }
-    public function  userByStatus($status){
-        return $this->model->where('status',$status)->get(); 
+    public function userByStatusForProf($status){
+        return $this->model->where('status',$status)->select('id','first_name','last_name','profession','description','url_file')
+         ->oldest('first_name','last_name')->get(); 
     }
-    public function searchUserText($search,$countryId,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd){
+    public function searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd){
         return $this->model->when($search!='default',function($query)use($search){
                  $query->where(function($q)use($search){
                     $q->where('email','like','%'.$search.'%')
                     ->orWhere('first_name','like','%'.$search.'%')
                     ->orWhere('last_name','like','%'.$search.'%');
                  });
-        })->when($countryId!='default',function($query)use($countryId){
-            $query->where('users.country_id',$countryId);
+        })->when($country!='default',function($query)use($country){
+            $query->where('users.country',$country);
         })->join('module_users','module_users.user_id','=','users.id')
         ->join('modules','module_users.module_id','=','modules.id')
         ->join('categories','categories.id','=','modules.categorie_id')
@@ -39,19 +40,36 @@ class UserRepository extends RepositoryBase{
             ->whereDate('module_users.created_at','>=',$dateBegin);
         })->oldest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
     }
-
-    public function searchAllUser($search,$countryId,$dateBegin,$dateEnd){
+    public function searchAllUser($search,$country,$dateBegin,$dateEnd){
         return $this->model->when($search!='default',function($query)use($search){
                  $query->where(function($q)use($search){
                     $q->where('email','like','%'.$search.'%')
                     ->orWhere('first_name','like','%'.$search.'%')
                     ->orWhere('last_name','like','%'.$search.'%');
                  });
-        })->when($countryId!='default',function($query)use($countryId){
-            $query->where('country_id',$countryId);
+        })->when($country!='default',function($query)use($country){
+            $query->where('country',$country);
         })->when(($dateEnd!='default' || $dateBegin!='default'),function($query)use($dateEnd,$dateBegin){
             $query->whereDate('created_at','<=',$dateEnd)
             ->whereDate('created_at','>=',$dateBegin);
         }) ->latest('created_at','fist_name','last_name','updated_at')->paginate($this->nbr); 
+    }
+    public function currentUserModules(){
+        return $this->model->where('id',auth()->user()->id)
+         ->with(['subscriptions'=>function($query){
+            $query->where('is_valide',1)
+            ->with(['modules'=>function($query){
+                $query->where('is_active',1)->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
+                ->with(['ressourceModdules']);
+            }]);
+         }])?->first();
+    }
+    public  function currentUserEvaluationModule(){
+        return $this->model->where('id',auth()->user()->id)->with(['cours'=>function($query){
+             return $query->select('modules.id','modules.title','url_file')
+              ->with(['evaluations'=>function($query){
+                 return $query->where('published',true)->with('noteStudiants');
+              }]);
+        }])->first();
     }
 }

@@ -4,7 +4,7 @@ enum eTypeCertificate: string
 {
    case DIPLOME ='DIPLÔME'; 
    case CERTIFICAT ='CERTIFICAT';
-   case NONE ='NONE';
+   case AUCUNE ='AUCUNE';
    public static function getValues(): array
    {
       return array_map(function ($val) {

@@ -6,4 +6,8 @@ use App\Models\UserNotification;
 class UserNotificationRepository extends RepositoryBase{
     public function __construct(public UserNotification $model)
     {}
+    public function currentUserNotif(){
+        return $this->model->where('user_id',auth()->user()->id)->get();
+    }
+   
 }

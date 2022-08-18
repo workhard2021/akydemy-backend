@@ -13,18 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('programmes', function (Blueprint $table) {
+        Schema::create('publicites', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('sub_title')->nullable();
-            $table->longText('description')->nullable()->comment('la description est dispensable');
+            $table->string('name',);
+            $table->string('title')->nullable();
             $table->boolean('is_active')->default(false);
-            $table->string('url_file',50)->nullable();
-            $table->string('name_file',50)->nullable();
-            $table->foreignId('module_id')->nullable()->constrained('modules')->onDelete('CASCADE');
+            $table->string('url_file',100)->nullable();
+            $table->string('name_file',100)->nullable();
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      *
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('programmes');
+        Schema::dropIfExists('publicites');
     }
 };

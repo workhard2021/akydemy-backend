@@ -10,19 +10,26 @@ use Laravel\Scout\Searchable;
 class Module extends Model
 {   protected $table='modules';
     protected $fillable=['title','sub_title','is_active','promo_price',
-            'price','default_movie_url','description','owner_id','categorie_id'
-     ];
+            'price','nbr_month','description','owner_id','categorie_id'
+    ];
     use HasFactory,Searchable;
-
     public function users(){
         return $this->belongsToMany(User::class,'module_users');
     }
     public function subscriptions() {
         return $this->hasMany(ModuleUser::class);
     }
+    public function topics() {
+        return $this->hsMany(Topic::class);
+    }
     public function ressourceModdules(){
         return $this->hasMany(RessourcesModule::class);
     }
+    
+    public function evaluations(){
+        return $this->hasMany(Evaluation::class);
+    }
+    
     public function getUpdatedAtAttribute($value)
     {
         return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();

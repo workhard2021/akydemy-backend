@@ -12,6 +12,9 @@ class TopicController extends Controller
     public function index(){
         return $this->service->repos->all();
     }
+    public function topicsModule($moduleId='',$search=''){
+        return $this->service->repos->topicsModule($moduleId,$search);
+    }
     public function create(Request $request){
         $data=$request->validate([
             'title'=>'required|string|max:255',
@@ -23,7 +26,7 @@ class TopicController extends Controller
         return $this->service->create($data);
     }
     public function show($id){
-        $item=$this->service->repos->find($id,['*']);
+        $item=$this->service->repos->findTipic($id);
         if(!$item){
             return response('NOT FOUND',404);
         }

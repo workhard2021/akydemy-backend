@@ -18,20 +18,33 @@ class ModuleUserController extends Controller
         return $this->service->repos->searchText();
     }
     public function create(Request $request){
-        
         $data=$request->validate([
-            'title'=>'required|string',
-            'somme'=>'nullable|numeric',
             'module_id'=>'required|numeric',
-            'user_id'=>'nullable|numeric',
+            'tel'=>'required|string'
         ]);
+        $data['user_id']=auth()->user()->id;
+        $module=$this->service->repos->findModule($data["module_id"]);
         if($this->service->repos->moduelExistForUser($data['user_id'],$data['module_id'])){
-             return response(['error'=>'Vous êtes déja souscrit à ce module'],403);
+            return response(['errors'=>['error'=>'Vous êtes déja souscrit à ce module']],422);
         }
-        return response($this->service->create($data),201);
+        if(!$module){
+            return response(['errors'=>['error'=>'Ressource existe pas']],404);
+        }
+        $module=$this->service->repos->findModule($data["module_id"]);
+        $data["module_id"]=$module->id;
+        $data["somme"]=$module->promo_price?$module->promo_price:$module->price;
+        $data["title"]=$module->title;
+        // NOTIFICATION
+        $item=$this->service->create($data);
+        $this->service->createNotication($item);
+        return response($item,201);
     }
     public function show($id){
         return response($this->service->repos->find($id,['*']),200);
+    }
+    public function attestationsUser(){
+         $id=auth()->user()->id;
+        return response($this->service->repos->attestationUser($id),200);
     }
     public function update(Request $request,$id){
         $data=$request->validate([
@@ -39,15 +52,22 @@ class ModuleUserController extends Controller
             'somme'=>'nullable|numeric',
             'type'=>'required|string|'.Rule::in(eTypeCertificate::getValues()),
             'status_attestation'=>'required|string|'.Rule::in(eStatusAttestation::getValues()),
-            'is_valide'=>'boolean',
+            'is_valide'=>'nullable|boolean',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description'=>'nullable|string',
             'module_id'=>'required|numeric',
             'user_id'=>'required|numeric',
         ]);
+
         if(!$this->service->repos->moduelExistForUser($data['user_id'],$data['module_id'])){
             return response(['errors'=>["error"=>"Utilisateur et module non trouvés"]],422);
         }
+
+        $module=$this->service->repos->findModule($data["module_id"]);
+        if(!$module){
+            return response(['errors'=>['error'=>'Ressource existe pas']],404);
+        }
+
         $item= $this->service->update($id,$data);
         if($request->hasFile('image')){
             $file_name=ManagerFile::genererChaineAleatoire(2).Carbon::now()->format('Y-m-d').'-'.str_replace(['ô','Ô','é'],['o','o','e','É'],strtolower($item->type));
@@ -57,6 +77,8 @@ class ModuleUserController extends Controller
             $item->name_attestation=$file_name['name'];
             $item->save();
         }
+        $item->owner_id=$module->owner_id;
+        $this->service->createNoticationForTeacherAndStudiant($item);
         return response($item,200);
     }
     public function destroy($id){

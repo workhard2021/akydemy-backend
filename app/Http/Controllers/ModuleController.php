@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Libs\ManagerFile;
 use App\Services\ModuleService;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,10 @@ class ModuleController extends Controller
 {
     public function __construct(private ModuleService $service)
     {}
-   
+    
+    public function moduleforExams($search=''){
+        return $this->service->repos->moduleforExams($search);
+    }
     public function index($search=''){
         return $this->service->repos->searchText($search);
     }
@@ -27,11 +31,29 @@ class ModuleController extends Controller
             'description' => 'nullable|string',
             'owner_id' => 'required|numeric',
             'categorie_id' => 'required|numeric',
+            'nbr_month' => 'nullable|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        return response($this->service->create($data),201);
+        $item=$this->service->create($data);
+        if($request->hasFile('image')){
+            $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
+            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-modules')."/".$item->id."/image",$file_name);
+            ManagerFile::delete($item->name_image,config('ressources-file.ressources-modules')."/".$item->id."/image");
+            $item->url_file=$file_name['url'];
+            $item->name_file=$file_name['name'];
+            $item->save();
+        }
+        return response($item,201);
     }
     public function show($id){
         $item=$this->service->repos->find($id,['*']);
+        if(!$item){
+             return response('NOT FOUND',404);
+        }
+        return response($item,200);
+    }
+    public function showModuleRessource($id){
+        $item=$this->service->repos->showModuleRessource($id);
         if(!$item){
              return response('NOT FOUND',404);
         }
@@ -48,12 +70,24 @@ class ModuleController extends Controller
             'description' => 'nullable|string',
             'owner_id' => 'required|numeric',
             'categorie_id' => 'required|numeric',
+            'nbr_month' => 'nullable|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
          ]);
          if($this->service->repos->exists('title',$data['title'],'id',$id)){
-            return  response("Ce pays existe déja",403);
+            return  response(["errors"=>["title"=>"le titre existe déja"]],422);
          }
-         return $this->service->update($id,$data);
+         $item=$this->service->update($id,$data);
+         if($request->hasFile('image')){
+            $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
+            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-modules')."/".$item->id."/image",$file_name);
+            ManagerFile::delete($item->name_file,config('ressources-file.ressources-modules')."/".$item->id."/image");
+            $item->url_file=$file_name['url'];
+            $item->name_file=$file_name['name'];
+            $item->save();
+        }
+        return response($item,200);
     }
+
     public function destroy($id){
         return $this->service->delete($id);
     }

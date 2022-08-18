@@ -12,9 +12,11 @@ class MessagesController extends Controller
     public function index(){
         return response($this->service->repos->all(),200);
     }
+
     public function messagesTopic($id){
        return response($this->service->repos->messagesTopic($id),200);
     }
+
     public function create(Request $request){
         $data=$request->validate([
             'description'=>'required',
@@ -34,7 +36,6 @@ class MessagesController extends Controller
     public function update(Request $request,$id){
         $data=$request->validate([
             'description'=>'required',
-            'topic_id'=>'required|numeric',
             'is_active'=>'required|boolean'
         ]);
         $data['user_id']=auth()->user()->id;

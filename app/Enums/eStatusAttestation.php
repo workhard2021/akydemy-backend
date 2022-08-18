@@ -5,8 +5,9 @@ namespace App\Enums;
 enum eStatusAttestation: string
 {
    case ATTENTE = 'ATTENTE';
-   case ACCEPTÉ = 'ACCEPTÉ';
-   case NONE = 'NONE';
+   case VALIDE = 'VALIDE';
+   case INVALIDE = 'INVALIDE';
+   case AUCUNE = 'AUCUNE';
    public static function getValues(): array
    {
       return array_map(function ($val) {

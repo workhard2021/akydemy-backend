@@ -3,10 +3,11 @@ namespace App\Enums;
 
 enum eStatus: string
 {
-   case TEACHER = 'TEACHER';
+   case SUPER_ADMIN = 'SUPER ADMIN';
    case ADMIN = 'ADMIN';
-   case STUDENT = 'STUDENT';
-   case OTHER = 'OTHER';
+   case PROFESSEUR = 'PROFESSEUR';
+   case ETUDIANT = 'ETUDIANT';
+   case AUTRE = 'AUTRE';
    public static function getValues(): array
    {
       return array_map(function ($val) {

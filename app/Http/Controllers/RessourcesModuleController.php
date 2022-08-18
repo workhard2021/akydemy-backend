@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Enums\eStatus;
 use App\Libs\ManagerFile;
 use App\Services\RessourceModuleService;
 use Illuminate\Http\Request;
@@ -14,7 +13,11 @@ class RessourcesModuleController extends Controller
         return $this->service->repos->searchResourceModule(null,$search,$published=1);
     }
     public function ressourceFormModule($id='',$search=''){
+        // resource with module id and text searchable et text or id are not required
         return $this->service->repos->searchResourceModule($id,$search);
+    }
+    public function  searchResourceModuleAdmin($search=''){
+        return $this->service->repos->searchResourceModuleAdmin($search);
     }
     public function  searchResourceModuleStudiant($search=''){
         return $this->service->repos->searchResourceModuleStudiant($search);
@@ -40,7 +43,7 @@ class RessourcesModuleController extends Controller
         }
         if($request->hasFile('image')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-modules').'/'.$item->module_id.'pdf',$file_name);
+            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf',$file_name);
             ManagerFile::delete($item->name_pdf,config('ressources-file.ressources-modules').'/'.$item->module_id.'pdf');
             $item->url_pdf=$file_name['url'];
             $item->name_pdf=$file_name['name'];

@@ -19,10 +19,11 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->double('somme',8,2);
-            $table->enum('type',[eTypeCertificate::getValues()])->default(eTypeCertificate::NONE->value);
-            $table->enum('status_attestation',eStatusAttestation::getValues())->default(eStatusAttestation::NONE->value);
-            $table->boolean('is_valide')->default(false);
+            $table->enum('type',[eTypeCertificate::getValues()])->default(eTypeCertificate::AUCUNE->value);
+            $table->enum('status_attestation',eStatusAttestation::getValues())->default(eStatusAttestation::AUCUNE->value);
+            $table->boolean('is_valide')->nullable();
             $table->text('description')->nullable();
+            $table->string('tel',15)->nullable();
             $table->string('url_attestation',200)->nullable();
             $table->string('name_attestation',200)->nullable();
             $table->foreignId('module_id')->constrained('modules')->onDelete('CASCADE');

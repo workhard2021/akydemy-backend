@@ -22,7 +22,7 @@ class User extends Authenticatable
      */
     protected $fillable =[
         'email','first_name','last_name','tel',
-        'image_url','status','active','country_id','password',
+        'image_url','status','active','country','profession','description','password',
     ];
 
     /**
@@ -46,18 +46,23 @@ class User extends Authenticatable
     public function modules(){
         return $this->belongsToMany(Module::class,'module_users')
         ->as('subscriptions')
-        ->withPivot(['id','title','country_id','somme','type','status_attestation','is_valide','url_attestation','name_attestation'])
+        ->withPivot(['id','title','country','somme','type','status_attestation','is_valide','url_attestation','name_attestation'])
         ->withTimestamps();
     }
-  
+    
     public function subscriptions() {
         return $this->hasMany(ModuleUser::class);
     }
-    
-    public function country(){
-        return $this->belongsTo(Country::class);
+
+    public function cours(){
+        return $this->belongsToMany(Module::class,'module_users');
+        // ->as('subscriptions');
+        // ->withPivot(['id','title','country','somme','type','status_attestation','is_valide','url_attestation','name_attestation'])
     }
 
+    public function topics(){
+        return $this->hasMany(Topic::class);
+    }
     public function getUpdatedAtAttribute($value)
     {
         return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();

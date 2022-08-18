@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\eStatus;
-use App\Enums\eStatusAttestation;
 use App\Libs\ManagerFile;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -14,17 +13,19 @@ use Laravel\Socialite\Facades\Socialite;
 class UserController extends Controller
 {
     public function __construct(private UserService $service){}
-    public function index($search='',$countryId='',$categorieId='',$moduleId='',$is_valide='',$dateBegin='',$dateEnd=''){
-        return $this->service->repos->searchUserText($search,$countryId,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd);
+    
+    public function index($search='',$country='',$categorieId='',$moduleId='',$is_valide='',$dateBegin='',$dateEnd=''){
+        return $this->service->repos->searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd);
     }
-    public function allUsers($search='',$countryId='',$dateBegin='',$dateEnd=''){
-        return $this->service->repos->searchAllUser($search,$countryId,$dateBegin,$dateEnd);
+    public function currentUserEvaluationModule(){
+        return $this->service->repos->currentUserEvaluationModule();
     }
-    public function userByStatus(){
-      
-        return $this->service->repos->userByStatus(eStatus::TEACHER->value);
+    public function allUsers($search='',$country='',$dateBegin='',$dateEnd=''){
+        return $this->service->repos->searchAllUser($search,$country,$dateBegin,$dateEnd);
     }
-
+    public function userByStatusProf(){
+        return $this->service->repos->userByStatusForProf(eStatus::PROFESSEUR->value);
+    }
     public function show($id)
     {   $user=$this->service->repos->find($id);
         if(!$user){
@@ -40,7 +41,6 @@ class UserController extends Controller
                 "first_name" =>"required|string|max:30",
                 "last_name" => "required|string|max:30",
                 "password" => "required|string|min:3",
-                "country_id"=> "nullable|numeric",
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'actions'=>'nullable|string'
             ]);
@@ -55,7 +55,7 @@ class UserController extends Controller
                 $item->name_file=$file_name['name'];
                 $item->save();
             }
-            if($request->has('action') && $request->action==eStatus::ADMIN->value){
+            if($request->has('action') && $request->action==eStatus::SUPER_ADMIN->value){
                 return response($item,201);
             }
             return response($token,201);
@@ -63,10 +63,12 @@ class UserController extends Controller
 
     public function update(Request $request,$id)
     {     
-           $data = $request->validate([
-                'active' => 'boolean',
-                'status' => 'string|'.Rule::in(eStatus::getValues())
-           ]);
+            $data = $request->validate([
+               'active' => 'boolean',
+               'status' => 'string|'.Rule::in(eStatus::getValues()),
+               'profession' => 'nullable|string|max:250',
+               'description'=>'nullable|string|max:250'
+            ]);
            // other change
            return response($this->service->update($id,$data),200);
     }
@@ -79,7 +81,7 @@ class UserController extends Controller
                "first_name"=>"required|string|max:30",
                "last_name"=> "required|string|max:30",
                "password"=> "nullable|string|min:3",
-               "country_id"=> "nullable|numeric",
+               "country"=> "nullable|string|max:50",
                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
            ]);
            $id=$request->user()->id;
@@ -156,8 +158,11 @@ class UserController extends Controller
                   'last_name'=>'','image'=>$user->avatar
             ];
             $token=$this->service->createOrUpdateProvider($data);
-            return redirect(config('app.frontend_url'). '/connexion?&status=1&v='.$token);
+            return redirect(config('app.frontend_url').'/connexion?&status=1&v='.$token);
         }
-        return redirect(config('app.frontend_url') . '/connexion?status=error&message='.$message);
+        return redirect(config('app.frontend_url').'/connexion?status=error&message='.$message);
+    }
+    public function currentUserModule(){
+         return response($this->service->repos->currentUserModules(),200);
     }
 }
