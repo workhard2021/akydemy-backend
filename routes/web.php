@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/', function () {
     //  return phpinfo() ;
-     return  ini_get('post_max_size');
+    return 'test';
+    //  return  ini_get('post_max_size');
     //  return redirect(config('app.frontend_url'));
     // return ['Laravel' => app()->version()];
 });
