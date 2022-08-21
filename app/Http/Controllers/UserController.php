@@ -134,6 +134,26 @@ class UserController extends Controller
         return  response(['errors'=>['message'=>['Mot de passe ou email est invalide']]],422);
     }
 
+    public function resetPassword(Request $request)
+    {   
+        $data = $request->validate([
+            "email"=> "required|email|max:100",
+            "password"=> "required"
+        ]);
+        $user = $this->service->repos->findOneByColumn('email',$data['email']);
+        if($user && $user->active){
+            return  response(['errors' => ['message' => ['Votre compte est bloqué, veuillez contacter l\'admin de site']]], 422);
+        }
+        if(!$user){
+            return  response(['error'=>'Adresse email existe pas'],200);
+        }
+        $data['password']=Hash::make($data['password']);
+        $user->password=$data['password'];
+        $user->save();
+        return  response(['success'=>'Mot de passe a été initialisé'],200);
+    }
+    
+
     public function logout(Request $request,$id)
     {
         return response($request->user()->tokens()->delete(),204);
@@ -145,6 +165,7 @@ class UserController extends Controller
         }
         return Socialite::driver($provider)->stateless()->redirect();
     }
+
 
     public function callback($provider)
     {   

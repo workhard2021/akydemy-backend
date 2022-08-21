@@ -50,10 +50,12 @@ Route::prefix('/v0.1')->group(function(){
                Route::get('/publicites/{Id}/image/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/users/{Id}/{moduleId}/{type}/{date}/{url_file}',[ManagerFileController::class,'download']);
         });
+        
         Route::prefix('users')->group(function(){
             Route::get('/status/professeur',[UserController::class,'userByStatusProf'])->name('userByStatusProf-users');
             Route::post('',[UserController::class,'create'])->name('create-users');
             Route::post('login',[UserController::class,'login'])->name('login-users');
+            Route::post('reset-password',[UserController::class,'resetPassword'])->name('reset-password-users');
             Route::post('callback',[UserController::class,'callback'])->name('callback-users');
             Route::get('redirect',[UserController::class,'redirect'])->name('redirect-users');
         });
