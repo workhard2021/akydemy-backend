@@ -34,7 +34,6 @@ class UserController extends Controller
         }
         return response($user,200);
     }
-
     public function create(Request $request)
     {     
             $data = $request->validate([
@@ -66,6 +65,7 @@ class UserController extends Controller
             // event(new Registered($item));
             return response($user,201);
     }
+
     public function update(Request $request,$id)
     {     
             $data = $request->validate([
