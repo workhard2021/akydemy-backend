@@ -116,9 +116,9 @@ class UserController extends Controller
         return response($this->service->delete($request->user()->id),204);
     }
  
-    public function destroy(Request $request,$id)
+    public function destroy($id)
     {   
-        return response($this->service->delete($request->user()->id),204);
+        return response($this->service->delete($id),204);
     }
     
     public function login(Request $request)
