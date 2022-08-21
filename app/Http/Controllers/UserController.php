@@ -47,7 +47,7 @@ class UserController extends Controller
             $data['password']=Hash::make($data['password']);
             $user=$this->service->create($data);
             $item=$user['user'];
-            $token=$user['token'];
+            // $token=$user['token'];
             if($request->hasFile('image')){
                 $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
                 $file_name=ManagerFile::upload($data['image'],config('ressources-file.users').'/'.$item->id.'/profile',$file_name);
@@ -59,9 +59,9 @@ class UserController extends Controller
                   $item->status=eStatus::SUPER_ADMIN->value;
                   $item->save();
             }
-            if($request->has('action') && $request->action==eStatus::SUPER_ADMIN->value){
-                return response($item,201);
-            }
+            // if($request->has('action') && $request->action==eStatus::SUPER_ADMIN->value){
+            //     return response($item,201);
+            // }
             // event(new Registered($item));
             return response($user,201);
     }
