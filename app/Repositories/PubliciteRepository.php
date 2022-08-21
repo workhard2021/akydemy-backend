@@ -7,6 +7,8 @@ class PubliciteRepository extends RepositoryBase{
     public function __construct(public Publicite $model)
     {}
     public function listNotPaginate(){
-        return $this->model->where('is_active',1)->orderBy('updated_at','desc')->get();
-     }
+        return $this->model->where('is_active',1)
+          ->inRandomOrder()->limit(4)
+          ->orderBy('updated_at','desc')->get();
+    }
 }

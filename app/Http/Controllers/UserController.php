@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\eStatus;
 use App\Libs\ManagerFile;
 use App\Services\UserService;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -58,6 +59,7 @@ class UserController extends Controller
             if($request->has('action') && $request->action==eStatus::SUPER_ADMIN->value){
                 return response($item,201);
             }
+            // event(new Registered($item));
             return response($token,201);
     }
 

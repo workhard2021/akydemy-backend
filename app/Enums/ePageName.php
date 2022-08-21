@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum ePageName: string
 {
-   case METHODOLOGY = 'METHODOLOGY';
-   case FORMATION = 'FORMATION';
+   case CONDITIONS_GENERALES = 'CONDITIONS GENERALES';
+   case CONDITIONS_PAYMENTS = 'CONDITIONS PAYMENTS';
    case APROPOS = 'A PROPOS';
    public static function getValues(): array
    {

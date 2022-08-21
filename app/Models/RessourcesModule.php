@@ -9,7 +9,7 @@ use Laravel\Scout\Searchable;
 
 class RessourcesModule extends Model
 {   protected $table='ressources_modules';
-    protected $fillable=['title','is_public','is_default','module_id'];
+    protected $fillable=['title','is_public','is_default','module_id','description'];
     use HasFactory,Searchable;
     public function module(){
          return $this->hasOne(Module::class,'id','module_id');
@@ -28,6 +28,7 @@ class RessourcesModule extends Model
         return[
         'title' => $this->title,
         'module_id' => $this->module_id,
+         'description'=>$this->description
        ];
     }
 }

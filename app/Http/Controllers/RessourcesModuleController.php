@@ -30,6 +30,7 @@ class RessourcesModuleController extends Controller
             'module_id'=>'required|numeric',
             'is_default'=>'required|boolean',
             'is_public'=>'required|boolean',
+            'description'=>'nullable|string'
         ]);
         // return $request->video->getClientOriginalName();
         $item=$this->service->create($data);
@@ -61,9 +62,9 @@ class RessourcesModuleController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'module_id'=>'required|numeric',
             'is_default'=>'required|boolean',
-            'is_public'=>'required|boolean'
+            'is_public'=>'required|boolean',
+            'description'=>'nullable|string'
         ]);
-        // return $request->video->getClientOriginalName();
         $item=$this->service->update($id,$data);
         if($request->hasFile('video')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);

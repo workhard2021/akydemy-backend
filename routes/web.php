@@ -13,8 +13,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::get('/test', function () {
+//     return view('email.message');
+// });
 Route::get('/', function () {
-    return ['Laravel' => app()->version()];
+    //  return phpinfo() ;
+     return  ini_get('post_max_size');
+    //  return redirect(config('app.frontend_url'));
+    // return ['Laravel' => app()->version()];
 });
 
 require __DIR__.'/auth.php';

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('name_pdf',50)->nullable();
             $table->boolean('is_public')->default(false);
             $table->boolean('is_default')->default(false);
+            $table->text('description')->nullable();
             $table->foreignId('module_id')->constrained('modules')->onDelete('CASCADE');
             $table->timestamps();
         });

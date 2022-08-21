@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 use App\Contracts\RepositoryBase;
+use App\Enums\eStatusAttestation;
 use App\Models\Module;
 use App\Models\ModuleUser;
 use App\Services\UserNotificationService;
@@ -22,7 +23,9 @@ class ModuleUserRepository extends RepositoryBase{
         return Module::find($moduleId,['id','title','price','promo_price','owner_id']);
     }
     public function attestationUser($userId){
-        return $this->model->where([ ['user_id',$userId],['is_valide',1]])->select('id','title','is_valide','type','name_attestation','url_attestation','updated_at','description')
-        ->get();
+        return $this->model->where([ ['user_id',$userId],['is_valide',1]])
+        ->where('status_attestation','!=',eStatusAttestation::AUCUNE->value)
+        ->select('id','title','is_valide','type','status_attestation','name_attestation','url_attestation','updated_at','description')
+        ->latest('created_at')->get();
     }
 }

@@ -60,6 +60,10 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'linkedin' => env('LINKEDIN'),
+    'youtube' => env('YOUTUBE'),
+    'facebook' => env('FACEBOOK'),
+    'twitter' => env('TWITTER'),
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

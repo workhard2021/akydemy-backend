@@ -17,10 +17,10 @@ class TopicRepository extends RepositoryBase{
                     $query->where('title','like','%'.$search.'%')
                     ->orWhere('description','like','%'.$search.'%');
                 });
-            })->withCount('messages')->paginate($this->nbr);
+            })->withCount('messages')->latest('topics.created_at')->paginate($this->nbr);
     }
     public function findTipic($id){
          return $this->model->where($this->model->getKeyName(),$id)
-             ->with('user:id,first_name,last_name,status,url_file')?->first();
+             ->with('user:id,first_name,last_name,status,url_file,created_at')?->first();
     }
 }

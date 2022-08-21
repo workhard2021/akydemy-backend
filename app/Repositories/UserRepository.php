@@ -27,8 +27,8 @@ class UserRepository extends RepositoryBase{
         ->join('modules','module_users.module_id','=','modules.id')
         ->join('categories','categories.id','=','modules.categorie_id')
         ->select('users.*','module_users.id as subscription_id','module_users.title','somme','type','status_attestation','is_valide','module_users.url_attestation','module_users.name_attestation','module_users.description as description','user_id','module_id','module_users.id as module_users_id',
-          'module_users.created_at as subscription_created_at','module_users.updated_at as subscription_updated_at',
-          'modules.id as module_id','modules.title  as module_title','categories.name as categorie_name','categories.id as categorie_id')
+          'module_users.created_at as subscription_created_at','module_users.updated_at as subscription_updated_at','module_users.tel as subscription_tel',
+          'modules.id as module_id','modules.title as module_title','categories.name as categorie_name','categories.id as categorie_id')
         ->when($categorieId!='default',function($query)use($categorieId){
             $query->where('categories.id',$categorieId);
         })->when($moduleId!='default',function($query)use($moduleId){
@@ -38,8 +38,9 @@ class UserRepository extends RepositoryBase{
         })->when(($dateEnd!='default' || $dateBegin!='default'),function($query)use($dateEnd,$dateBegin){
             $query->whereDate('module_users.created_at','<=',$dateEnd)
             ->whereDate('module_users.created_at','>=',$dateBegin);
-        })->oldest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
+        })->latest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
     }
+
     public function searchAllUser($search,$country,$dateBegin,$dateEnd){
         return $this->model->when($search!='default',function($query)use($search){
                  $query->where(function($q)use($search){
