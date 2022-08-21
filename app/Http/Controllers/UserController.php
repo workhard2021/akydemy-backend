@@ -129,7 +129,7 @@ class UserController extends Controller
         }
         if($user && Hash::check($request->input('password', ''), $user->password)) {
             $token= $user->createToken($this->service->tokenName)->plainTextToken;
-            return response($token,200);
+            return response(['user'=>$user,'token'=>$token],200);
         }
         return  response(['errors'=>['message'=>['Mot de passe ou email est invalide']]],422);
     }
