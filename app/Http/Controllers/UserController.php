@@ -6,6 +6,7 @@ use App\Enums\eStatus;
 use App\Libs\ManagerFile;
 use App\Services\UserService;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -44,6 +45,7 @@ class UserController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'actions'=>'nullable|string'
             ]);
+            $data['email']=strtolower($data["email"]);
             $data['password']=Hash::make($data['password']);
             $user=$this->service->create($data);
             $item=$user['user'];
@@ -90,6 +92,7 @@ class UserController extends Controller
                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
            ]);
            $id=$request->user()->id;
+           $data['email']=strtolower($data["email"]);
            if($this->service->repos->exists("email",$data['email'],'id',$id)){
               return response(['errors'=>['email'=>['Email existe déja'] ]],422);
            } 
@@ -123,7 +126,12 @@ class UserController extends Controller
     
     public function login(Request $request)
     {   
-        $user = $this->service->repos->findOneByColumn('email',$request->input('email', ''));
+        $data=$request->validate([
+               'email'=>'required|email|max:100',
+               'password'=>'required'
+        ]);
+        $data['email']=strtolower($data["email"]);
+        $user = $this->service->repos->findOneByColumn('email',$data["email"]);
         if($user && $user->active){
             return  response(['errors' => ['message' => ['Votre compte est bloqué, veuillez contacter l\'admin de site']]], 422);
         }
@@ -140,6 +148,7 @@ class UserController extends Controller
             "email"=> "required|email|max:100",
             "password"=> "required"
         ]);
+        $data['email']=strtolower($data["email"]);
         $user = $this->service->repos->findOneByColumn('email',$data['email']);
         if($user && $user->active){
             return  response(['errors' => ['message' => ['Votre compte est bloqué, veuillez contacter l\'admin de site']]], 422);
