@@ -19,7 +19,7 @@ class PubliciteController extends Controller
     public function create(Request $request){
         $data=$request->validate([
             'name'=>'required|string|max:250',
-            'title'=>'nullable|string|max:250|unique:publicites',
+            'title'=>'required|string|max:250|unique:publicites',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
         $item= $this->service->create($data);
@@ -42,9 +42,9 @@ class PubliciteController extends Controller
     public function update(Request $request,$id){
         $data=$request->validate([
             'name'=>'required|string|max:250',
-            'title'=>'nullable|string|max:250',
+            'title'=>'required|string|max:250',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_active'=>"boolean"
+            'is_active'=>"nullable|boolean"
         ]);
         if($this->service->repos->exists('title',$data['title'],'id',$id)){
             return  response(["errors"=>["title"=>"le titre existe déja"]],422);

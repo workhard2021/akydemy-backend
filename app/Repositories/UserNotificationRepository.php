@@ -7,7 +7,7 @@ class UserNotificationRepository extends RepositoryBase{
     public function __construct(public UserNotification $model)
     {}
     public function currentUserNotif(){
-        return $this->model->where('user_id',auth()->user()->id)->latest('created_at')->get();
+        return $this->model->where('user_id',auth()->user()->id)->latest('created_at')->paginate(12);
     }
    
 }

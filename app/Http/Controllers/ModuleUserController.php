@@ -24,6 +24,9 @@ class ModuleUserController extends Controller
         ]);
         $data['user_id']=auth()->user()->id;
         $module=$this->service->repos->findModule($data["module_id"]);
+        if($module && !$module->is_active){
+            return response(['errors'=>['error'=>"Votre abonnenement est en cours de traitement, on vous contactera très rapdement pour finaliser le processus"]],422);
+        }
         if($this->service->repos->moduelExistForUser($data['user_id'],$data['module_id'])){
             return response(['errors'=>['error'=>'Vous êtes déja souscrit à ce module']],422);
         }
@@ -58,7 +61,6 @@ class ModuleUserController extends Controller
             'module_id'=>'required|numeric',
             'user_id'=>'required|numeric',
         ]);
-
         if(!$this->service->repos->moduelExistForUser($data['user_id'],$data['module_id'])){
             return response(['errors'=>["error"=>"Utilisateur et module non trouvés"]],422);
         }
@@ -67,7 +69,6 @@ class ModuleUserController extends Controller
         if(!$module){
             return response(['errors'=>['error'=>'Ressource existe pas']],404);
         }
-
         $item= $this->service->update($id,$data);
         if($request->hasFile('image')){
             $file_name=ManagerFile::genererChaineAleatoire(2).Carbon::now()->format('Y-m-d').'-'.str_replace(['ô','Ô','é'],['o','o','e','É'],strtolower($item->type));
@@ -81,6 +82,7 @@ class ModuleUserController extends Controller
         $this->service->createNoticationForTeacherAndStudiant($item);
         return response($item,200);
     }
+
     public function destroy($id){
         return response($this->service->delete($id),204);
     }

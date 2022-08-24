@@ -24,7 +24,10 @@ class RessourceModuleRepository extends RepositoryBase{
         ->when($search,function($query)use($search){
             return $query->where('modules.title','like','%'.$search.'%')
              ->orWhere('ressources_modules.title','like','%'.$search.'%');
-        })->where('modules.is_active',true)
+        })->where([
+            ['ressources_modules.name_pdf','!=',null],
+            ['ressources_modules.name_movie','=',null],
+        ])
         ->join('modules','modules.id','=','ressources_modules.module_id')
         ->select('ressources_modules.id as id','ressources_modules.title',
            'ressources_modules.url_pdf','ressources_modules.name_pdf',
@@ -34,12 +37,18 @@ class RessourceModuleRepository extends RepositoryBase{
         ->oldest('ressources_modules.updated_at','ressources_modules.created_at')->paginate($this->nbr);
     }
     public function searchResourceModuleStudiant($search){
-        // ->where('user_id',auth()->user()->id)
         return $this->model
         ->when($search,function($query)use($search){
             return $query->where('modules.title','like','%'.$search.'%')
+             ->orWhere('ressources_modules.title','like','%'.$search.'%')
              ->orWhere('ressources_modules.title','like','%'.$search.'%');
-        })->where('modules.is_active',1)
+        })->where([
+              ['module_users.user_id','=',auth()->user()->id],
+              ['modules.is_active','!=',1],
+              ['ressources_modules.name_pdf','!=',null],
+              ['ressources_modules.name_movie','=',null],
+              //['ressources_modules.is_default','!=',false],
+        ])
         ->join('modules','modules.id','=','ressources_modules.module_id')
          ->join('module_users','module_users.module_id','=','modules.id')
         ->join('users','users.id','=','module_users.user_id')
