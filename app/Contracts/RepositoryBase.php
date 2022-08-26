@@ -23,7 +23,7 @@ abstract class RepositoryBase
    } 
    public function findManyByColumn($id,$culumn){
        $key=$culumn?$culumn:$this->model->getKeyName($id);
-       return $this->model->where($key,$id)->paginate($this->nbr);
+       return $this->model->where($key,$id)->latest('created_at')->paginate($this->nbr);
    }  
    public function exists($column, $value, $columnDif, $valueDiff)
    {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\eTypeEvaluation;
+use App\Enums\eTypeFile;
 use App\Libs\ManagerFile;
 use App\Services\EvaluationService;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ class EvaluationController extends Controller
             'session_title'=>'required|string',
             'type'=>'required|string|'.Rule::in(eTypeEvaluation::getValues()),
             'visibility_date_limit'=>'required|date',
-            'image'=>'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image'=>'required|file|mimes:'.Rule::in(eTypeFile::getValues()),
         ]);
         $module=$this->service->repos->findModule($data['module_id']);
         if(!$module){

@@ -41,7 +41,7 @@ Route::prefix('/v0.1')->group(function(){
            
                Route::get('public/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/categories/{url_file}',[ManagerFileController::class,'download']);
-               Route::get('/ressources/programmes/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('/ressources/programmes/{Id}/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/ressources/modules/{Id}/pdf/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/ressources/modules/{Id}/image/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/ressources/modules/{Id}/video/{url_file}',[ManagerFileController::class,'download']);

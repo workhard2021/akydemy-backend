@@ -82,7 +82,7 @@ class ModuleUserController extends Controller
         $this->service->createNoticationForTeacherAndStudiant($item);
         return response($item,200);
     }
-
+    
     public function destroy($id){
         return response($this->service->delete($id),204);
     }

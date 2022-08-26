@@ -12,10 +12,16 @@ class ProgrammeRepository extends RepositoryBase{
          return $this->model->where('programmes.id',$id)
          ->join('modules','modules.id','=','programmes.module_id')
          ->join('users','users.id','=','modules.owner_id')
-         ->select('modules.*','programmes.module_id as module_id','users.first_name',
-                 'users.last_name',
-                 'users.profession',
-                 'users.description as user_description',
-                 'users.url_file as user_url_file')->first();
+         ->select(
+                'programmes.id',
+                'programmes.title',
+                'programmes.description',
+                'programmes.url_file_dowload',
+                'programmes.module_id as module_id',
+                'users.first_name',
+                'users.last_name',
+                'users.profession',
+                'users.description as user_description',
+                'users.url_file as user_url_file')->first();
     }
 }
