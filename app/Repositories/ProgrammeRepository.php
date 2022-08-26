@@ -6,7 +6,7 @@ class ProgrammeRepository extends RepositoryBase{
     public function __construct(public Programme $model)
     {}
     public function allPublic(){
-        return $this->model->oldest('created_at','title','update_at')->get();
+        return $this->model->where('is_active',true)->oldest('created_at','title','update_at')->get();
     }
     public function findProgrammeWithProf($id){
          return $this->model->where('programmes.id',$id)
