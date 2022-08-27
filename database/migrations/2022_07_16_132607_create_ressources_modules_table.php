@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('name_movie',50)->nullable();
             $table->string('url_pdf',50)->nullable();
             $table->string('name_pdf',50)->nullable();
-            $table->boolean('is_public')->default(false);
-            $table->boolean('is_default')->default(false);
+            $table->boolean('is_public')->nullable();
+            $table->boolean('is_default')->nullable();
             $table->text('description')->nullable();
             $table->foreignId('module_id')->constrained('modules')->onDelete('CASCADE');
             $table->timestamps();

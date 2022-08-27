@@ -29,7 +29,7 @@ class EvaluationController extends Controller
             'session_title'=>'required|string',
             'type'=>'required|string|'.Rule::in(eTypeEvaluation::getValues()),
             'visibility_date_limit'=>'required|date',
-            'image'=>'required|file|mimes:'.Rule::in(eTypeFile::getValues()),
+            'fichier'=>'required|file|mimes:'.Rule::in(eTypeFile::getValues()),
         ]);
         $module=$this->service->repos->findModule($data['module_id']);
         if(!$module){
@@ -40,9 +40,9 @@ class EvaluationController extends Controller
         }
         $data['title']=$module->title;
         $item= $this->service->create($data);
-        if($request->hasFile('image')){
+        if($request->hasFile('fichier')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],
+            $file_name=ManagerFile::upload($data['fichier'],
             config('ressources-file.ressources-modules').'/'.$data['module_id'].'/'.$data['type'].'/'.$data['visibility_date_limit'],$file_name);
             $item->url_file=$file_name['url'];
             $item->name_file=$file_name['name'];
@@ -59,8 +59,8 @@ class EvaluationController extends Controller
     }
     public function update(Request $request,$id){
         $data=$request->validate([
-            'published'=>'nullable|boolean',
-            'is_closed'=>'nullable|boolean'
+            'published'=>'required|boolean',
+            'is_closed'=>'required|boolean'
         ]);
         $item= $this->service->update($id,$data);
         return response($item,200);

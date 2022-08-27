@@ -18,6 +18,6 @@ class ModuleRepository extends RepositoryBase{
             ->when($search!='default',function($query)use($search){
                  $query->where('title','like','%'.$search.'%'
                  )->orWhere('sub_title','like','%'.$search.'%');
-            })/*->select('id','title','url_file')*/->paginate($this->nbr);
+            })->paginate($this->nbr);
     }
 }

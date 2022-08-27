@@ -7,6 +7,7 @@ class PageRepository extends RepositoryBase{
     public function __construct(public Page $model)
     {}
     public function showPublic($name){
-        return $this->model->firstWhere('name',$name);
+        return $this->model->where('is_active',1)
+                 ->where('name',$name);
     }
 }

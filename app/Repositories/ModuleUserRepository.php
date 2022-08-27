@@ -16,7 +16,28 @@ class ModuleUserRepository extends RepositoryBase{
     public function moduelExistForUser($userId,$moduleId){
         return $this->model->where([
                ['user_id','=',$userId],
-               ['module_id','=',$moduleId]
+               ['module_id','=',$moduleId],
+               ['is_valide','=',true],
+        ])->exists();
+    }
+    public function moduelAndUserExist($userId,$moduleId){
+        return $this->model->where([
+               ['user_id','=',$userId],
+               ['module_id','=',$moduleId],
+        ])->exists();
+    }
+    public function moduelExistForUserCancel($userId,$moduleId){
+        return $this->model->where([
+               ['user_id','=',$userId],
+               ['module_id','=',$moduleId],
+               ['is_valide','=',false]
+        ])->exists();
+    }
+    public function subscriber($userId,$moduleId){
+        return $this->model->where([
+               ['user_id','=',$userId],
+               ['module_id','=',$moduleId],
+               ['is_valide','=',null]
         ])->exists();
     }
     public function findModule($moduleId){

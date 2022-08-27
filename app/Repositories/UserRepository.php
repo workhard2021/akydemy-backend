@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 use App\Contracts\RepositoryBase;
+use App\Enums\eStatus;
 use App\Models\User;
 use DateTime;
 
@@ -38,7 +39,8 @@ class UserRepository extends RepositoryBase{
         })->when(($dateEnd!='default' || $dateBegin!='default'),function($query)use($dateEnd,$dateBegin){
             $query->whereDate('module_users.created_at','<=',$dateEnd)
             ->whereDate('module_users.created_at','>=',$dateBegin);
-        })->latest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
+        })->where('users.email','!=','akydemy@gmail.com')
+        ->whereIn('users.status',[eStatus::ETUDIANT->value,eStatus::AUTRE->value])->latest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
     }
 
     public function searchAllUser($search,$country,$dateBegin,$dateEnd){
@@ -53,7 +55,7 @@ class UserRepository extends RepositoryBase{
         })->when(($dateEnd!='default' || $dateBegin!='default'),function($query)use($dateEnd,$dateBegin){
             $query->whereDate('created_at','<=',$dateEnd)
             ->whereDate('created_at','>=',$dateBegin);
-        }) ->latest('created_at','fist_name','last_name','updated_at')->paginate($this->nbr); 
+        })->where('users.email','!=','akydemy@gmail.com')->latest('created_at','fist_name','last_name','updated_at')->paginate($this->nbr); 
     }
     public function currentUserModules(){
         return $this->model->where('id',auth()->user()->id)

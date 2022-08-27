@@ -33,7 +33,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 // PUBLIC ROUTES
-
 Route::prefix('/v0.1')->group(function(){
          //NOT AUTH
         //  akydemy/users/1/4/EVALUATION/2022-08-20/3icnwNeEG.png
@@ -83,7 +82,6 @@ Route::prefix('/v0.1')->group(function(){
                 Route::get('current/user',[UserNotificationController::class,'currentUserNotif'])->name('currentUserNotif');
                 Route::put('current/user/{id}',[UserNotificationController::class,'update'])->name('currentUserNotif-update');
             });
-
             Route::get('current-users/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-index');
             Route::prefix('users')->group(function(){
                 Route::get('{id}',[UserController::class,'show'])->name('show-users');

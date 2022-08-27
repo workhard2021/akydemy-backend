@@ -24,14 +24,17 @@ class ModuleUserController extends Controller
         ]);
         $data['user_id']=auth()->user()->id;
         $module=$this->service->repos->findModule($data["module_id"]);
-        if($module && !$module->is_active){
-            return response(['errors'=>['error'=>"Votre abonnenement est en cours de traitement, on vous contactera très rapdement pour finaliser le processus"]],422);
+        if($this->service->repos->subscriber($data['user_id'],$data['module_id'])){
+          return response(['errors'=>['error'=>"Votre abonnement est en cours de traitement, on vous contactera très rapidement pour finaliser le processus. Merci !"]],422);
         }
         if($this->service->repos->moduelExistForUser($data['user_id'],$data['module_id'])){
-            return response(['errors'=>['error'=>'Vous êtes déja souscrit à ce module']],422);
+            return response(['errors'=>['error'=>'Vous êtes déja abonné(e) à ce module. Merci !']],422);
+        }
+        if($this->service->repos->moduelExistForUserCancel($data['user_id'],$data['module_id'])){
+            return response(['errors'=>['error'=>"Votre abonnement a été annulé, veuillez contacter l'administrateur de site. Merci !"]],422);
         }
         if(!$module){
-            return response(['errors'=>['error'=>'Ressource existe pas']],404);
+            return response(['errors'=>['error'=>'Ressource existe pas']],422);
         }
         $module=$this->service->repos->findModule($data["module_id"]);
         $data["module_id"]=$module->id;
@@ -40,7 +43,7 @@ class ModuleUserController extends Controller
         // NOTIFICATION
         $item=$this->service->create($data);
         $this->service->createNotication($item);
-        return response($item,201);
+        return response("Votre demande a été envoyée, l’équipe AKYDEMY vous contactera !",201);
     }
     public function show($id){
         return response($this->service->repos->find($id,['*']),200);
@@ -61,7 +64,7 @@ class ModuleUserController extends Controller
             'module_id'=>'required|numeric',
             'user_id'=>'required|numeric',
         ]);
-        if(!$this->service->repos->moduelExistForUser($data['user_id'],$data['module_id'])){
+        if(!$this->service->repos->moduelAndUserExist($data['user_id'],$data['module_id'])){
             return response(['errors'=>["error"=>"Utilisateur et module non trouvés"]],422);
         }
 

@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Enums\eTypeFile;
 use App\Libs\ManagerFile;
 use App\Services\RessourceModuleService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class RessourcesModuleController extends Controller
 {
@@ -26,10 +28,10 @@ class RessourcesModuleController extends Controller
         $data=$request->validate([
             'title'=>'required|string|max:255',
             'video' => 'nullable|file|mimetypes:video/mp4',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'fichier' => 'nullable|file|mimes:'.Rule::in(eTypeFile::getValues()),
             'module_id'=>'required|numeric',
-            'is_default'=>'required|boolean',
-            'is_public'=>'required|boolean',
+            'is_default'=>'boolean',
+            'is_public'=>'boolean',
             'description'=>'nullable|string'
         ]);
         // return $request->video->getClientOriginalName();
@@ -42,9 +44,9 @@ class RessourcesModuleController extends Controller
             $item->name_movie=$file_name['name'];
             $item->save();
         }
-        if($request->hasFile('image')){
+        if($request->hasFile('fichier')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf',$file_name);
+            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf',$file_name);
             ManagerFile::delete($item->name_pdf,config('ressources-file.ressources-modules').'/'.$item->module_id.'pdf');
             $item->url_pdf=$file_name['url'];
             $item->name_pdf=$file_name['name'];
@@ -59,10 +61,10 @@ class RessourcesModuleController extends Controller
         $data=$request->validate([
             'title'=>'required|string|max:255',
             'video' => 'nullable|file|mimetypes:video/mp4',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'fichier' => 'nullable|file|mimes:'.Rule::in(eTypeFile::getValues()),
             'module_id'=>'required|numeric',
-            'is_default'=>'required|boolean',
-            'is_public'=>'required|boolean',
+            'is_default'=>'nullable|boolean',
+            'is_public'=>'nullable|boolean',
             'description'=>'nullable|string'
         ]);
         $item=$this->service->update($id,$data);
@@ -74,9 +76,9 @@ class RessourcesModuleController extends Controller
             $item->name_movie=$file_name['name'];
             $item->save();
         }
-        if($request->hasFile('image')){
+        if($request->hasFile('fichier')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf',$file_name);
+            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf',$file_name);
             ManagerFile::delete($item->name_pdf,config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf');
             $item->url_pdf=$file_name['url'];
             $item->name_pdf=$file_name['name'];

@@ -32,20 +32,22 @@ class Module extends Model
     
     public function getUpdatedAtAttribute($value)
     {
-        return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
+        return ucfirst(Carbon::parse($value,'UTC')->format('Y-m-d H:i:s'));
+       // return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
     }
     public function getCreatedAtAttribute($value)
     {
-        return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
+        // return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
+        return ucfirst(Carbon::parse($value,'UTC')->format('Y-m-d H:i:s'));
     }
     public function toSearchableArray()
-    {
+    {    
         return [
         'title' => $this->title,
         'sub_title' => $this->sub_title,
         'description' => $this->description,
         'price' => $this->price,
-        'promo_price' => $this->promo_price
+        'promo_price' => $this->promo_price,
        ];
     }
 }

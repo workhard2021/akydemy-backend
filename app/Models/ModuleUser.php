@@ -17,12 +17,12 @@ class ModuleUser extends Model
 
     public function getUpdatedAtAttribute($value)
     {
-        // return ucfirst(Carbon::parse($value,'UTC')->locale(config('app.locale'))->isoFormat('llll'));
-        return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
+        return ucfirst(Carbon::parse($value,'UTC')->format('Y-m-d H:i:s'));
+       // return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
     }
     public function getCreatedAtAttribute($value)
     {
-        return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
-        //  return ucfirst(Carbon::parse($value,'UTC')->locale(config('app.locale'))->isoFormat('llll'));
+        // return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
+        return ucfirst(Carbon::parse($value,'UTC')->format('Y-m-d H:i:s'));
     }
 }

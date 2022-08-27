@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\PubliciteService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PubliciteController extends Controller
 {
@@ -18,9 +20,10 @@ class PubliciteController extends Controller
     }
     public function create(Request $request){
         $data=$request->validate([
-            'name'=>'required|string|max:250',
-            'title'=>'required|string|max:250|unique:publicites',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'name'=>'required|string|max:50',
+            'title'=>'required|string|max:50|unique:publicites',
+            'url'=>'required|max:150',
+            'image' => 'nullable|max:2048|image|mimes:'.Rule::in(eTypeImage::getValues()),
         ]);
         $item= $this->service->create($data);
         if($request->hasFile('image')){
@@ -41,10 +44,11 @@ class PubliciteController extends Controller
     }
     public function update(Request $request,$id){
         $data=$request->validate([
-            'name'=>'required|string|max:250',
-            'title'=>'required|string|max:250',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_active'=>"nullable|boolean"
+            'name'=>'required|string|max:50',
+            'title'=>'required|string|max:50',
+            'url'=>'required|max:150',
+            'image' => 'nullable|max:2048|image|mimes:'.Rule::in(eTypeImage::getValues()),
+            'is_active'=>"boolean"
         ]);
         if($this->service->repos->exists('title',$data['title'],'id',$id)){
             return  response(["errors"=>["title"=>"le titre existe déja"]],422);

@@ -17,9 +17,9 @@ class RessourceModuleRepository extends RepositoryBase{
         })->when($published==1,function($query)use($published){
             return $query->where('is_public', $published);
         })->paginate($this->nbr);
-     }
+    }
 
-     public function searchResourceModuleAdmin($search){
+    public function searchResourceModuleAdmin($search){
         return $this->model
         ->when($search,function($query)use($search){
             return $query->where('modules.title','like','%'.$search.'%')
@@ -36,23 +36,33 @@ class RessourceModuleRepository extends RepositoryBase{
            'ressources_modules.created_at','ressources_modules.updated_at')
         ->oldest('ressources_modules.updated_at','ressources_modules.created_at')->paginate($this->nbr);
     }
+
     public function searchResourceModuleStudiant($search){
         return $this->model
         ->when($search,function($query)use($search){
-            return $query->where('modules.title','like','%'.$search.'%')
-             ->orWhere('ressources_modules.title','like','%'.$search.'%')
-             ->orWhere('ressources_modules.title','like','%'.$search.'%');
-        })->where([
-              ['module_users.user_id','=',auth()->user()->id],
-              ['modules.is_active','!=',1],
-              ['ressources_modules.name_pdf','!=',null],
-              ['ressources_modules.name_movie','=',null],
-              //['ressources_modules.is_default','!=',false],
-        ])
+            return $query->where([
+               ['modules.title','like','%'.$search.'%'],
+               ['ressources_modules.name_movie','=',null],
+               ['module_users.user_id','=',auth()->user()->id],
+               ['ressources_modules.name_pdf','!=',null],
+            ])
+            ->orWhere([
+               ['ressources_modules.title','like','%'.$search.'%'],
+               ['ressources_modules.name_movie','=',null],
+               ['module_users.user_id','=',auth()->user()->id],
+               ['ressources_modules.name_pdf','!=',null],
+            ]);
+        })->when(!$search,function($query){
+            $query->where([
+                ['ressources_modules.name_movie','=',null],
+                ['module_users.user_id','=',auth()->user()->id],
+                ['ressources_modules.name_pdf','!=',null],
+            ]);
+        })
         ->join('modules','modules.id','=','ressources_modules.module_id')
-         ->join('module_users','module_users.module_id','=','modules.id')
+        ->join('module_users','module_users.module_id','=','modules.id')
         ->join('users','users.id','=','module_users.user_id')
         ->select('ressources_modules.*','modules.title as module_title','users.id as user_id')
-         ->latest('ressources_modules.updated_at','ressources_modules.created_at')->paginate($this->nbr);
+        ->latest('ressources_modules.updated_at','ressources_modules.created_at')->paginate($this->nbr);
      }
 }

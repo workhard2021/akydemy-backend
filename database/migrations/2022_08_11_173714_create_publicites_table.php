@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('publicites', function (Blueprint $table) {
             $table->id();
-            $table->string('name',);
-            $table->string('title')->nullable();
+            $table->string('name',50);
+            $table->string('title',50);
+            $table->string('url',150);
             $table->boolean('is_active')->default(false);
             $table->string('url_file',100)->nullable();
             $table->string('name_file',100)->nullable();

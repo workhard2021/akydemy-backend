@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\ModuleService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ModuleController extends Controller
 {
@@ -32,7 +34,7 @@ class ModuleController extends Controller
             'owner_id' => 'required|numeric',
             'categorie_id' => 'required|numeric',
             'nbr_month' => 'nullable|numeric',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|max:2048|image|mimes:'.Rule::in(eTypeImage::getValues())
         ]);
         $item=$this->service->create($data);
         if($request->hasFile('image')){
@@ -71,7 +73,7 @@ class ModuleController extends Controller
             'owner_id' => 'required|numeric',
             'categorie_id' => 'required|numeric',
             'nbr_month' => 'nullable|numeric',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|max:2048|image|mimes'.Rule::in(eTypeImage::getValues())
          ]);
          if($this->service->repos->exists('title',$data['title'],'id',$id)){
             return  response(["errors"=>["title"=>"le titre existe déja"]],422);
