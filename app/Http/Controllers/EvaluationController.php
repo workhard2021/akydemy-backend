@@ -29,7 +29,7 @@ class EvaluationController extends Controller
             'title'=>'required|string|max:200',
             'type'=>'required|string|'.Rule::in(eTypeEvaluation::getValues()),
             'visibility_date_limit'=>'required|date',
-            'fichier'=>'required|file|mimes:'.Rule::in(eTypeFile::getValues()),
+            'fichier'=>'nullable|mimes:'.implode(",",eTypeFile::getValues())
         ]);
         $module=$this->service->repos->findModule($data['module_id']);
         if(!$module){

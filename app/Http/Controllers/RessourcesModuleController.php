@@ -28,7 +28,7 @@ class RessourcesModuleController extends Controller
         $data=$request->validate([
             'title'=>'required|string|max:255',
             'video' => 'nullable|file|mimetypes:video/mp4',
-            'fichier' => 'nullable|file|mimes:'.Rule::in(eTypeFile::getValues()),
+            'fichier'=>'nullable|mimes:'.implode(",",eTypeFile::getValues()),
             'module_id'=>'required|numeric',
             'is_default'=>'boolean',
             'is_public'=>'boolean',
@@ -61,7 +61,7 @@ class RessourcesModuleController extends Controller
         $data=$request->validate([
             'title'=>'required|string|max:255',
             'video' => 'nullable|file|mimetypes:video/mp4',
-            'fichier' => 'nullable|file|mimes:'.Rule::in(eTypeFile::getValues()),
+            'fichier'=>'nullable|mimes:'.implode(",",eTypeFile::getValues()),
             'module_id'=>'required|numeric',
             'is_default'=>'nullable|boolean',
             'is_public'=>'nullable|boolean',

@@ -23,7 +23,7 @@ class PubliciteController extends Controller
             'name'=>'required|string|max:50',
             'title'=>'required|string|max:50|unique:publicites',
             'url'=>'required|max:150',
-            'image' => 'nullable|max:2048|image|mimes:'.Rule::in(eTypeImage::getValues()),
+            'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
         ]);
         $item= $this->service->create($data);
         if($request->hasFile('image')){
@@ -47,7 +47,7 @@ class PubliciteController extends Controller
             'name'=>'required|string|max:50',
             'title'=>'required|string|max:50',
             'url'=>'required|max:150',
-            'image' => 'nullable|max:2048|image|mimes:'.Rule::in(eTypeImage::getValues()),
+            'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
             'is_active'=>"boolean"
         ]);
         if($this->service->repos->exists('title',$data['title'],'id',$id)){

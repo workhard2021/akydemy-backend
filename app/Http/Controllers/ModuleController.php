@@ -39,7 +39,7 @@ class ModuleController extends Controller
             'owner_id' => 'required|numeric',
             'categorie_id' => 'required|numeric',
             'nbr_month' => 'nullable|numeric',
-            'image' => 'nullable|max:2048|image|mimes:'.Rule::in(eTypeImage::getValues())
+            'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
         ]);
         $item=$this->service->create($data);
         if($request->hasFile('image')){
@@ -78,7 +78,7 @@ class ModuleController extends Controller
             'owner_id' => 'required|numeric',
             'categorie_id' => 'required|numeric',
             'nbr_month' => 'nullable|numeric',
-            'image' => 'nullable|max:2048|image|mimes'.Rule::in(eTypeImage::getValues())
+            'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
          ]);
          if($this->service->repos->exists('title',$data['title'],'id',$id)){
             return  response(["errors"=>["title"=>"le titre existe déja"]],422);

@@ -26,8 +26,8 @@ class ProgrammeController extends Controller
             'is_active'=>'nullable|boolean',
             'module_id'=>'required|numeric|unique:programmes',
             'description'=>'nullable|string',
-            'image' => 'nullable|image|mimes:'.Rule::in(eTypeImage::getValues()),
-            'file_dowload'=>'nullable|file|mimes:'.Rule::in(eTypeFile::getValues())
+            'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
+            'file_dowload'=>'nullable|mimes:'.implode(",",eTypeFile::getValues())
         ]);
         $item=$this->service->create($data);
         if($request->hasFile('image')){
@@ -62,9 +62,10 @@ class ProgrammeController extends Controller
             'is_active'=>'nullable|boolean',
             'module_id'=>'required',
             'description'=>'nullable|string',
-            'image' => 'nullable|image|mimes:'.Rule::in(eTypeImage::getValues()),
-            'file_dowload'=>'nullable|file|mimes:'.Rule::in(eTypeFile::getValues())
+            'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
+            'file_dowload'=>'nullable|mimes:'.implode(",",eTypeFile::getValues())
         ]);
+        
         if($this->service->repos->exists('id',$id,'module_id',$data['module_id'])){
             return response(["errors"=>["module_id"=>"Le module a déja un programme"]],422);
         }

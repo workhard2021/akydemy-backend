@@ -6,7 +6,6 @@ use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\CategorieService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class CategorieController extends Controller
 {
@@ -22,7 +21,7 @@ class CategorieController extends Controller
         $data=$request->validate([
             'name'=>'required|string|unique:categories',
             'title'=>'nullable|string|max:250',
-            'image' => 'nullable|image|max:2048|mimes:'.Rule::in(eTypeImage::getValues())
+            'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
         ]);
         $item= $this->service->create($data);
         if($request->hasFile('image')){
@@ -45,7 +44,7 @@ class CategorieController extends Controller
         $data=$request->validate([
             'name'=>'required|string',
             'title'=>'nullable|string|max:250',
-            'image' => 'nullable|image|max:2048|mimes:'.Rule::in(eTypeImage::getValues())
+            'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
         ]);
         if($this->service->repos->exists('name',$data['name'],'id',$id)){
             return  response(["errors"=>["name"=>"le nom existe déja"]],422);

@@ -9,10 +9,10 @@ abstract class RepositoryBase
    public $nbr_publicite = 8;
 
    public function all(){
-      return $this->model->orderBy('created_at','desc')->paginate($this->nbr);
+      return $this->model->orderBy('created_at','asc')->paginate($this->nbr);
    }
    public function listNotPaginate(){
-      return $this->model->orderBy('created_at','desc')->get();
+      return $this->model->orderBy('created_at','asc')->get();
    }
    public function find($id){
       return $this->model->find($id);

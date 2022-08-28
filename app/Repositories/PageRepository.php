@@ -8,6 +8,6 @@ class PageRepository extends RepositoryBase{
     {}
     public function showPublic($name){
         return $this->model->where('is_active',1)
-                 ->where('name',$name);
+                 ->where('name',$name)->first();
     }
 }
