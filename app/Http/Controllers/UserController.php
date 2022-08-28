@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\eStatus;
+use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\UserService;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -41,8 +41,8 @@ class UserController extends Controller
                 "email" => "required|email|max:60|unique:users",
                 "first_name" =>"required|string|max:30",
                 "last_name" => "required|string|max:30",
-                "password" => "required|string|min:3",
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                "password" => "required|string|min:8",
+                'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
                 'actions'=>'nullable|string'
             ]);
             $data['email']=strtolower($data["email"]);
@@ -89,7 +89,7 @@ class UserController extends Controller
                "last_name"=> "required|string|max:30",
                "password"=> "nullable|string|min:3",
                "country"=> "nullable|string|max:50",
-               'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+               'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
            ]);
            $id=$request->user()->id;
            $data['email']=strtolower($data["email"]);

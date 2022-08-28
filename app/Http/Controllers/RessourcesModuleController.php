@@ -38,8 +38,8 @@ class RessourcesModuleController extends Controller
         $item=$this->service->create($data);
         if($request->hasFile('video')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['video'],config('ressources-file.ressources-modules').'/'.$item->module_id.'videos',$file_name);
-            ManagerFile::delete($item->name_movie,config('ressources-file.ressources-modules').'/'.$item->module_id.'videos');
+            $file_name=ManagerFile::upload($data['video'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos',$file_name);
+            ManagerFile::delete($item->name_movie,config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos');
             $item->url_movie=$file_name['url'];
             $item->name_movie=$file_name['name'];
             $item->save();
@@ -47,7 +47,7 @@ class RessourcesModuleController extends Controller
         if($request->hasFile('fichier')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
             $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf',$file_name);
-            ManagerFile::delete($item->name_pdf,config('ressources-file.ressources-modules').'/'.$item->module_id.'pdf');
+            ManagerFile::delete($item->name_pdf,config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf');
             $item->url_pdf=$file_name['url'];
             $item->name_pdf=$file_name['name'];
             $item->save();
@@ -70,8 +70,8 @@ class RessourcesModuleController extends Controller
         $item=$this->service->update($id,$data);
         if($request->hasFile('video')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['video'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/video',$file_name);
-            ManagerFile::delete($item->name_movie,config('ressources-file.ressources-modules').'/'.$item->module_id.'/video');
+            $file_name=ManagerFile::upload($data['video'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos',$file_name);
+            ManagerFile::delete($item->name_movie,config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos');
             $item->url_movie=$file_name['url'];
             $item->name_movie=$file_name['name'];
             $item->save();

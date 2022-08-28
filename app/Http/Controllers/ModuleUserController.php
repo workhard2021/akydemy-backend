@@ -60,7 +60,7 @@ class ModuleUserController extends Controller
             'type'=>'required|string|'.Rule::in(eTypeCertificate::getValues()),
             'status_attestation'=>'required|string|'.Rule::in(eStatusAttestation::getValues()),
             'is_valide'=>'nullable|boolean',
-            'fichier' => 'nullable|file|max:2048|mimes:'.Rule::in(eTypeFile::getValues()),
+            'fichier' => 'nullable|mimes:'.Rule::in(eTypeFile::getValues()),
             'description'=>'nullable|string',
             'module_id'=>'required|numeric',
             'user_id'=>'required|numeric',

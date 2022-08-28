@@ -22,12 +22,24 @@ class RessourceModuleRepository extends RepositoryBase{
     public function searchResourceModuleAdmin($search){
         return $this->model
         ->when($search,function($query)use($search){
-            return $query->where('modules.title','like','%'.$search.'%')
-             ->orWhere('ressources_modules.title','like','%'.$search.'%');
-        })->where([
-            ['ressources_modules.name_pdf','!=',null],
-            ['ressources_modules.name_movie','=',null],
-        ])
+            return $query->where([
+               ['modules.title','like','%'.$search.'%'],
+               ['modules.is_active','=',true],
+               ['ressources_modules.name_movie','=',null],
+               ['ressources_modules.name_pdf','!=',null],
+            ])->orWhere([
+               ['ressources_modules.title','like','%'.$search.'%'],
+               ['modules.is_active','=',true],
+               ['ressources_modules.name_movie','=',null],
+               ['ressources_modules.name_pdf','!=',null],
+            ]);
+        })->when(!$search,function($query){
+            $query->where([
+                ['ressources_modules.name_movie','=',null],
+                ['modules.is_active','=',true],
+                ['ressources_modules.name_pdf','!=',null],
+            ]);
+        })
         ->join('modules','modules.id','=','ressources_modules.module_id')
         ->select('ressources_modules.id as id','ressources_modules.title',
            'ressources_modules.url_pdf','ressources_modules.name_pdf',
@@ -42,19 +54,24 @@ class RessourceModuleRepository extends RepositoryBase{
         ->when($search,function($query)use($search){
             return $query->where([
                ['modules.title','like','%'.$search.'%'],
+               ['modules.is_active','=',true],
                ['ressources_modules.name_movie','=',null],
                ['module_users.user_id','=',auth()->user()->id],
                ['ressources_modules.name_pdf','!=',null],
             ])
             ->orWhere([
                ['ressources_modules.title','like','%'.$search.'%'],
+               ['modules.is_active','=',true],
                ['ressources_modules.name_movie','=',null],
+               ['module_users.is_valide','=',true],
                ['module_users.user_id','=',auth()->user()->id],
                ['ressources_modules.name_pdf','!=',null],
             ]);
         })->when(!$search,function($query){
             $query->where([
                 ['ressources_modules.name_movie','=',null],
+                ['modules.is_active','=',true],
+                ['module_users.is_valide','=',true],
                 ['module_users.user_id','=',auth()->user()->id],
                 ['ressources_modules.name_pdf','!=',null],
             ]);

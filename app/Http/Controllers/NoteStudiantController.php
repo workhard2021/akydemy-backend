@@ -28,7 +28,7 @@ class NoteStudiantController extends Controller
     public function create(Request $request){
         $data=$request->validate([
             'evaluation_id'=>'required|numeric',
-            'fichier' => 'required|file|max:2048|mimes:'.Rule::in(eTypeFile::getValues()),
+            'fichier'=>'required|mimes:'.implode(",",eTypeFile::getValues()),
             'is_closed'=>'nullable|boolean'
         ]);
 

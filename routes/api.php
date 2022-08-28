@@ -43,13 +43,12 @@ Route::prefix('/v0.1')->group(function(){
                Route::get('/ressources/programmes/{Id}/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/ressources/modules/{Id}/pdf/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/ressources/modules/{Id}/image/{url_file}',[ManagerFileController::class,'download']);
-               Route::get('/ressources/modules/{Id}/video/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('/ressources/modules/{Id}/videos/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/users/{Id}/profile/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/users/{Id}/attestations/{url_file}',[ManagerFileController::class,'download']); 
                Route::get('/publicites/{Id}/image/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/users/{Id}/{moduleId}/{type}/{date}/{url_file}',[ManagerFileController::class,'download']);
         });
-        
         Route::prefix('users')->group(function(){
             Route::get('/status/professeur',[UserController::class,'userByStatusProf'])->name('userByStatusProf-users');
             Route::post('',[UserController::class,'create'])->name('create-users');
