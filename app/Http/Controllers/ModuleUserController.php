@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\eStatusAttestation;
 use App\Enums\eTypeCertificate;
+use App\Enums\eTypeFile;
 use App\Libs\ManagerFile;
 use App\Services\ModuleUserService;
 use Carbon\Carbon;
@@ -59,7 +60,7 @@ class ModuleUserController extends Controller
             'type'=>'required|string|'.Rule::in(eTypeCertificate::getValues()),
             'status_attestation'=>'required|string|'.Rule::in(eStatusAttestation::getValues()),
             'is_valide'=>'nullable|boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'fichier' => 'nullable|file|max:2048|mimes:'.Rule::in(eTypeFile::getValues()),
             'description'=>'nullable|string',
             'module_id'=>'required|numeric',
             'user_id'=>'required|numeric',
@@ -73,9 +74,9 @@ class ModuleUserController extends Controller
             return response(['errors'=>['error'=>'Ressource existe pas']],404);
         }
         $item= $this->service->update($id,$data);
-        if($request->hasFile('image')){
-            $file_name=ManagerFile::genererChaineAleatoire(2).Carbon::now()->format('Y-m-d').'-'.str_replace(['ô','Ô','é'],['o','o','e','É'],strtolower($item->type));
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.users').'/'.$item->user_id.'/attestations',$file_name);
+        if($request->hasFile('fichier')){
+            $file_name=ManagerFile::genererChaineAleatoire(2).'-'.Carbon::now()->format('Y-m-d').'-'.str_replace(['ô','Ô','é'],['o','o','e','É'],strtolower($item->type));
+            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.users').'/'.$item->user_id.'/attestations',$file_name);
             ManagerFile::delete($item->name_file,config('ressources-file.users').'/'.$item->user_id.'/attestations');
             $item->url_attestation=$file_name['url'];
             $item->name_attestation=$file_name['name'];

@@ -16,11 +16,16 @@ class ModuleController extends Controller
     public function moduleforExams($search=''){
         return $this->service->repos->moduleforExams($search);
     }
+    
     public function index($search=''){
         return $this->service->repos->searchText($search);
     }
     public function indexPublic(){
         return $this->service->repos->allPublic();
+    }
+
+    public function listNotPaginate(){
+        return $this->service->repos->listNotPaginate();
     }
     public function create(Request $request){
         $data=$request->validate([

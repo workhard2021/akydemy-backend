@@ -29,7 +29,7 @@ class NoteStudiantRepository extends RepositoryBase{
                   ->orWhere('users.last_name','like','%'.$search.'%')
                   ->orWhere('teacher.email','like','%'.$search.'%')
                   ->orWhere('note_studiants.title','like','%'.$search.'%')
-                  ->orWhere('evaluations.session_title','like','%'.$search.'%')
+                  ->orWhere('evaluations.title','like','%'.$search.'%')
                   ->orWhere('evaluations.type','like','%'.$search.'%');
                 });
               })->where(function($query)use($dateEnd,$dateBegin){
@@ -42,7 +42,7 @@ class NoteStudiantRepository extends RepositoryBase{
               })->select('note_studiants.*','users.id as user_id','users.first_name','users.last_name',
               'users.url_file as user_url_file','users.tel','users.email','teacher.id as teacher_id',
               'teacher.first_name as teacher_first_name','teacher.last_name as teacher_last_name',
-              'teacher.email as teacher_email','evaluations.session_title',
+              'teacher.email as teacher_email','evaluations.title as session_title',
               'evaluations.visibility_date_limit','evaluations.type')
               ->latest('evaluations.created_at','users.first_name','users.last_name')
               ->paginate($this->nbr);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\eTypeFile;
+use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\ProgrammeService;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class ProgrammeController extends Controller
             'is_active'=>'nullable|boolean',
             'module_id'=>'required|numeric|unique:programmes',
             'description'=>'nullable|string',
-            'image' => 'nullable|image|mimes:'.Rule::in(eTypeFile::getValues()),
+            'image' => 'nullable|image|mimes:'.Rule::in(eTypeImage::getValues()),
             'file_dowload'=>'nullable|file|mimes:'.Rule::in(eTypeFile::getValues())
         ]);
         $item=$this->service->create($data);
@@ -61,7 +62,7 @@ class ProgrammeController extends Controller
             'is_active'=>'nullable|boolean',
             'module_id'=>'required',
             'description'=>'nullable|string',
-            'image' => 'nullable|image|max:2048|mimes:'.Rule::in(eTypeFile::getValues()),
+            'image' => 'nullable|image|mimes:'.Rule::in(eTypeImage::getValues()),
             'file_dowload'=>'nullable|file|mimes:'.Rule::in(eTypeFile::getValues())
         ]);
         if($this->service->repos->exists('id',$id,'module_id',$data['module_id'])){

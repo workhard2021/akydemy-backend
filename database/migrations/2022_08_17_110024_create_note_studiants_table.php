@@ -20,8 +20,8 @@ return new class extends Migration
             $table->enum('type',eTypeEvaluation::getValues());
             $table->string('url_file',200)->nullable();
             $table->string('name_file',200)->nullable();
-            $table->double('note',4,2)->nullable();
-            $table->double('note_teacher',4,2)->nullable();
+            $table->double('note',8,2)->nullable();
+            $table->double('note_teacher',8,2)->nullable();
             $table->boolean('is_closed')->nullable();
             $table->foreignId('user_id')->constrained('users')->onDelete('CASCADE');
             $table->foreignId('teacher_id')->nullable()->constrained('users')->onDelete('SET NULL');

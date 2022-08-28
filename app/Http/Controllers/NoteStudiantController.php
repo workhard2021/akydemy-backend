@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\eTypeFile;
 use App\Libs\ManagerFile;
 use App\Services\NoteStudiantService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class NoteStudiantController extends Controller
 {
     public function __construct(private NoteStudiantService $service)
     {}
     
-    public function noteStudiantWithInfo($search='',$dateBegin='default',$dateEnd='default'){
+    public function noteStudiantWithInfo($search='default',$dateBegin='default',$dateEnd='default'){
          return $this->service->repos->noteStudiantWithInfo($search,$dateBegin,$dateEnd);
     }
 
@@ -26,7 +28,7 @@ class NoteStudiantController extends Controller
     public function create(Request $request){
         $data=$request->validate([
             'evaluation_id'=>'required|numeric',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'fichier' => 'required|file|max:2048|mimes:'.Rule::in(eTypeFile::getValues()),
             'is_closed'=>'nullable|boolean'
         ]);
 
@@ -44,15 +46,15 @@ class NoteStudiantController extends Controller
         $data['title']=$module->title;
         $data['teacher_id']=$module->owner_id;
         if($note_etudiant && $evaluation->is_closed){
-            return response(['errors'=>['error'=>'Vous avez déja fait le teste pour ce module']],422);
+            return response(['errors'=>['error'=>"L'examen est terminé, veuillez contacter l'equipe config('app.name') pour plus d'info"]],422);
         }else if($note_etudiant){
             $item=$this->service->update($note_etudiant->id,$data);
         }else{
             $item= $this->service->create($data);
         } 
-        if($request->hasFile('image')){
+        if($request->hasFile('fichier')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.users').'/'.$data['user_id'].'/'.$module->id.'/'.$evaluation->type.'/'.$evaluation->visibility_date_limit,$file_name);
+            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.users').'/'.$data['user_id'].'/'.$module->id.'/'.$evaluation->type.'/'.$evaluation->visibility_date_limit,$file_name);
             ManagerFile::delete($item->name_file,config('ressources-file.users').'/'.$data['user_id'].'/'.$module->id.'/'.$evaluation->type.'/'.$evaluation->visibility_date_limit);
             $item->url_file=$file_name['url'];
             $item->name_file=$file_name['name'];

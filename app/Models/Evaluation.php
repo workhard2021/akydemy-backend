@@ -9,7 +9,7 @@ use Laravel\Scout\Searchable;
 
 class Evaluation extends Model
 {   protected $table="evaluations";
-    protected $fillable=['type','title','session_title','visibility_date_limit','published','is_closed','module_id','teacher_id'];
+    protected $fillable=['type','title','visibility_date_limit','published','is_closed','module_id','teacher_id'];
     use HasFactory,Searchable;
     
     public function module(){

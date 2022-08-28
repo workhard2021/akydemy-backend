@@ -11,6 +11,10 @@ class UserNotificationController extends Controller
     public function currentUserNotif(){
         return $this->service->repos->currentUserNotif();
     } 
+    public function currentTecherNotif(){
+        return $this->service->repos->currentTecherNotif();
+    } 
+
     public function index(){
         return $this->service->repos->all();
     }

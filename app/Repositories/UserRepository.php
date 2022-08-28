@@ -67,6 +67,7 @@ class UserRepository extends RepositoryBase{
             }]);
          }])?->first();
     }
+    
     public  function currentUserEvaluationModule(){
         return $this->model->where('id',auth()->user()->id)->with(['cours'=>function($query){
              return $query->select('modules.id','modules.title','url_file')

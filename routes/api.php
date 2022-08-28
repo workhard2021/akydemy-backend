@@ -35,9 +35,9 @@ use Illuminate\Support\Facades\Route;
 // PUBLIC ROUTES
 Route::prefix('/v0.1')->group(function(){
          //NOT AUTH
-        //  akydemy/users/1/4/EVALUATION/2022-08-20/3icnwNeEG.png
          Route::prefix(config('app.name'))->group(function(){
-           
+            
+               Route::get('/ressources/modules/{Id}/EVALUATION/{Date}/{url_file}',[ManagerFileController::class,'download']);
                Route::get('public/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/categories/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/ressources/programmes/{Id}/{url_file}',[ManagerFileController::class,'download']);
@@ -65,7 +65,6 @@ Route::prefix('/v0.1')->group(function(){
         Route::get('modules',[ModuleController::class,'indexPublic'])->name('indexPublic-modules');
         Route::get('modules/{id}',[ModuleController::class,'show'])->name('show-public-modules');
         Route::get('modules/{id}/ressources',[ModuleController::class,'showModuleRessource'])->name('showModuleRessource-modules');
-        
         Route::get('programmes',[ProgrammeController::class,'indexPublic'])->name('indexPublic-programmes');
         Route::get('programmes/{id}',[ProgrammeController::class,'show'])->name('showPublic-programmes');
         Route::get('pays',[CountryController::class,'indexPublic'])->name('indexPublic-pays');
@@ -80,6 +79,7 @@ Route::prefix('/v0.1')->group(function(){
             // });
             Route::prefix('notifs')->group(function(){
                 Route::get('current/user',[UserNotificationController::class,'currentUserNotif'])->name('currentUserNotif');
+                Route::get('current/teacher',[UserNotificationController::class,'currentTecherNotif'])->name('currentTecherNotif');
                 Route::put('current/user/{id}',[UserNotificationController::class,'update'])->name('currentUserNotif-update');
             });
             Route::get('current-users/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-index');
@@ -96,7 +96,7 @@ Route::prefix('/v0.1')->group(function(){
                 Route::get('{search?}/{country?}/{categorieId?}/{moduleId?}/{is_valide?}/{dateBegin?}/{dateEnd?}',[UserController::class,'index'])->name('index-users');
             });
             Route::prefix('categories')->group(function(){
-                Route::get('lists',[CategorieController::class,'lists'])->name('lists-categorie');
+                Route::get('list/no-paginate',[CategorieController::class,'listNotPaginate'])->name('categories-listNotPaginate');
                 Route::get('/{search?}',[CategorieController::class,'index'])->name('index-categorie');
                 Route::get('{id}',[CategorieController::class,'show'])->name('show-categorie');
                 Route::post('',[CategorieController::class,'create'])->name('create-categorie');
@@ -121,6 +121,7 @@ Route::prefix('/v0.1')->group(function(){
                 Route::delete('{id}',[ModuleUserController::class,'destroy'])->name('destroy-module-user');
             });
             Route::prefix('modules')->group(function(){
+                Route::get('list-no-paginate',[ModuleController::class,'listNotPaginate'])->name('modules-listNotPaginate');
                 Route::get('for/examens/{search?}',[ModuleController::class,'moduleforExams'])->name('moduleforExams-index');
                 Route::get('{search?}',[ModuleController::class,'index'])->name('index-modules');
                 Route::get('{id}',[ModuleController::class,'show'])->name('show-modules');
@@ -128,7 +129,6 @@ Route::prefix('/v0.1')->group(function(){
                 Route::post('{id}',[ModuleController::class,'update'])->name('update-modules');
                 Route::delete('{id}',[ModuleController::class,'destroy'])->name('destroy-modules');
             });
-
             Route::get('ressources/studiant/{search?}',[RessourcesModuleController::class,'searchResourceModuleStudiant'])->name('searchResourceModuleStudiant-ressources');
             Route::get('ressources/{id?}/module/{search?}',[RessourcesModuleController::class,'ressourceFormModule'])->name('ressourceFormModule-ressources');
             Route::prefix('ressources')->group(function(){
@@ -139,13 +139,6 @@ Route::prefix('/v0.1')->group(function(){
                 Route::post('{id}',[RessourcesModuleController::class,'update'])->name('update-module-ressources');
                 Route::delete('{id}',[RessourcesModuleController::class,'destroy'])->name('destroy-module-ressources');
             });
-            // Route::prefix('abonnees')->group(function(){
-            //     Route::get('',[CountryController::class,'index'])->name('index-abonnees');
-            //     Route::get('{id}',[CountryController::class,'show'])->name('show-abonnees');
-            //     Route::post('',[CountryController::class,'create'])->name('create-abonnees');
-            //     Route::put('{id}',[CountryController::class,'update'])->name('update-abonnees');
-            //     Route::delete('{id}',[CountryController::class,'destroy'])->name('destroy-abonnees');
-            // });
             Route::prefix('programmes')->group(function(){
                 Route::get('{search?}',[ProgrammeController::class,'index'])->name('index-programmes');
                 Route::get('{id}',[ProgrammeController::class,'show'])->name('show-programmes');
@@ -153,13 +146,6 @@ Route::prefix('/v0.1')->group(function(){
                 Route::post('{id}',[ProgrammeController::class,'update'])->name('update-programmes');
                 Route::delete('{id}',[ProgrammeController::class,'destroy'])->name('destroy-programmes');
             });
-            // Route::prefix('abonnees')->group(function(){
-            //     Route::get('',[CountryController::class,'index'])->name('index-pays');
-            //     Route::get('{id}',[CountryController::class,'show'])->name('show-pays');
-            //     Route::post('',[CountryController::class,'create'])->name('create-pays');
-            //     Route::put('{id}',[CountryController::class,'update'])->name('update-pays');
-            //     Route::delete('{id}',[CountryController::class,'destroy'])->name('destroy-pays');
-            // });
             Route::prefix('pages')->group(function(){
                 Route::get('{search?}',[PageController::class,'index'])->name('index-pages');
                 Route::get('{id}',[PageController::class,'show'])->name('show-pages');
@@ -211,7 +197,7 @@ Route::prefix('/v0.1')->group(function(){
 
             Route::prefix('note-studiants')->group(function(){
                 Route::get('result/{search?}/{dateBegin?}/{dateEnd?}',[NoteStudiantController::class,'noteStudiantWithInfo'])->name('noteStudiantWithInfo-search-studiant');
-                Route::get('current/users-notes/{moduleId}',[NoteStudiantController::class,'currentUserNote'])->name('currentUserNote-statuant');
+                Route::get('current/users-notes/{moduleId}',[NoteStudiantController::class,'currentUserNote'])->name('currentUserNote-studiant');
                 Route::get('',[NoteStudiantController::class,'index'])->name('index-notes-studiant');
                 Route::get('{id}',[NoteStudiantController::class,'show'])->name('show-notes-studiant');
                 Route::post('',[NoteStudiantController::class,'create'])->name('create-notes-studiant');

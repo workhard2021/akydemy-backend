@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\CategorieService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CategorieController extends Controller
 {
     public function __construct(private CategorieService $service)
     {}
-    public function lists(){
+    public function listNotPaginate(){
         return $this->service->repos->listNotPaginate();
     }
     public function index($search=''){
@@ -20,7 +22,7 @@ class CategorieController extends Controller
         $data=$request->validate([
             'name'=>'required|string|unique:categories',
             'title'=>'nullable|string|max:250',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|max:2048|mimes:'.Rule::in(eTypeImage::getValues())
         ]);
         $item= $this->service->create($data);
         if($request->hasFile('image')){
@@ -43,7 +45,7 @@ class CategorieController extends Controller
         $data=$request->validate([
             'name'=>'required|string',
             'title'=>'nullable|string|max:250',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|max:2048|mimes:'.Rule::in(eTypeImage::getValues())
         ]);
         if($this->service->repos->exists('name',$data['name'],'id',$id)){
             return  response(["errors"=>["name"=>"le nom existe déja"]],422);

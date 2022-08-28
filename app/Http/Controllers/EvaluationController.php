@@ -26,7 +26,7 @@ class EvaluationController extends Controller
     public function create(Request $request){
         $data=$request->validate([
             'module_id'=>'required|numeric',
-            'session_title'=>'required|string',
+            'title'=>'required|string|max:200',
             'type'=>'required|string|'.Rule::in(eTypeEvaluation::getValues()),
             'visibility_date_limit'=>'required|date',
             'fichier'=>'required|file|mimes:'.Rule::in(eTypeFile::getValues()),
