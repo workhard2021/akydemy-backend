@@ -35,7 +35,6 @@ class RessourcesModuleController extends Controller
             'description'=>'nullable|string'
         ]);
         // return $request->video->getClientOriginalName();
-        return $data;
         $item=$this->service->create($data);
         if($request->hasFile('video')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
@@ -53,6 +52,7 @@ class RessourcesModuleController extends Controller
             $item->name_pdf=$file_name['name'];
             $item->save();
         }
+       
         return response($item,201);
     }
     public function show($id){
@@ -87,6 +87,7 @@ class RessourcesModuleController extends Controller
         }
         return response($item,200);
     }
+
     public function destroy($id){
         return $this->service->delete($id);
     }
