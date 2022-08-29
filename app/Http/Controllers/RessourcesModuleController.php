@@ -34,6 +34,7 @@ class RessourcesModuleController extends Controller
             'description'=>'nullable|string'
         ]);
         // return $request->video->getClientOriginalName();
+        
         return $data;
         $item=$this->service->create($data);
         if($request->hasFile('video')){
