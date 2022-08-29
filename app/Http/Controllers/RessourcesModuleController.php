@@ -27,14 +27,14 @@ class RessourcesModuleController extends Controller
     public function create(Request $request){
         $data=$request->validate([
             'title'=>'required|string|max:255',
-           
+            'video' => 'nullable|file|mimetypes:video/mp4',
+            'fichier'=>'nullable|mimes:'.implode(",",eTypeFile::getValues()),
             'module_id'=>'required|numeric',
             'is_default'=>'boolean',
             'is_public'=>'boolean',
             'description'=>'nullable|string'
         ]);
         // return $request->video->getClientOriginalName();
-        
         return $data;
         $item=$this->service->create($data);
         if($request->hasFile('video')){
