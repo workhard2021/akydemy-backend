@@ -35,6 +35,7 @@ class RessourcesModuleController extends Controller
             'description'=>'nullable|string'
         ]);
         // return $request->video->getClientOriginalName();
+        return $data;
         $item=$this->service->create($data);
         if($request->hasFile('video')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
@@ -68,7 +69,6 @@ class RessourcesModuleController extends Controller
             'description'=>'nullable|string'
         ]);
         $item=$this->service->update($id,$data);
-        return $item;
         if($request->hasFile('video')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
             $file_name=ManagerFile::upload($data['video'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos',$file_name);
