@@ -33,7 +33,7 @@ class ReplyController extends Controller
             'description'=>'required|string',
             'is_active'=>'required|boolean',
         ]);
-        $data['user_id']=auth()->user()->id;
+        // $data['user_id']=auth()->user()->id;
         return response($this->service->update($id,$data),200);
     }
     public function destroy($id){

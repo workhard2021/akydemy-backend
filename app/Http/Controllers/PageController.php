@@ -55,7 +55,7 @@ class PageController extends Controller
             $errors['title']="Ce title existe déja";
         }
         if($errors){
-            return $errors;
+            return  response(['errors'=>$errors],422);
         }
         $data['user_id']=auth()->user()->id;
         return $this->service->update($id,$data);

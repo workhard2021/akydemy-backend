@@ -5,9 +5,12 @@ use App\Models\Programme;
 class ProgrammeRepository extends RepositoryBase{
     public function __construct(public Programme $model)
     {}
-    public function allPublic(){
-        
-        return $this->model->where('is_active',1)->oldest('created_at','title','update_at')->get();
+    public function allPublic($search){
+        return $this->model->where('is_active',1)
+        ->when($search,function($query)use($search){
+          $query->where('title','like','%'.$search.'%'
+          )->orWhere('sub_title','like','%'.$search.'%');
+        })->paginate($this->nbr);
     }
     public function findProgrammeWithProf($id){
          return $this->model->where('programmes.id',$id)

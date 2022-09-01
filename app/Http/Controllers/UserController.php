@@ -22,6 +22,13 @@ class UserController extends Controller
     public function currentUserEvaluationModule(){
         return $this->service->repos->currentUserEvaluationModule();
     }
+    public  function currentUserEvaluations($moduleId){
+        return $this->service->repos->currentUserEvaluations($moduleId);
+    }
+    public  function currentUserNotes(){
+        return $this->service->repos->currentUserNotes();
+    }
+    
     public function allUsers($search='',$country='',$dateBegin='',$dateEnd=''){
         return $this->service->repos->searchAllUser($search,$country,$dateBegin,$dateEnd);
     }

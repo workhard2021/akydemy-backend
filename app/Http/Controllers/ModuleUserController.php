@@ -60,11 +60,12 @@ class ModuleUserController extends Controller
             'type'=>'required|string|'.Rule::in(eTypeCertificate::getValues()),
             'status_attestation'=>'required|string|'.Rule::in(eStatusAttestation::getValues()),
             'is_valide'=>'nullable|boolean',
-            'fichier' => 'nullable|mimes:'.Rule::in(eTypeFile::getValues()),
+            'fichier' => 'nullable|mimes:'.implode(',',eTypeFile::getValues()),
             'description'=>'nullable|string',
             'module_id'=>'required|numeric',
             'user_id'=>'required|numeric',
         ]);
+
         if(!$this->service->repos->moduelAndUserExist($data['user_id'],$data['module_id'])){
             return response(['errors'=>["error"=>"Utilisateur et module non trouvés"]],422);
         }

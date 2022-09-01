@@ -20,8 +20,8 @@ class ModuleController extends Controller
     public function index($search=''){
         return $this->service->repos->searchText($search);
     }
-    public function indexPublic(){
-        return $this->service->repos->allPublic();
+    public function indexPublic($search=''){
+        return $this->service->repos->allPublic($search);
     }
 
     public function listNotPaginate(){

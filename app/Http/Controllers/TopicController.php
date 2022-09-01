@@ -36,12 +36,18 @@ class TopicController extends Controller
         $data=$request->validate([
             'title'=>'required|string|max:255',
             'description'=>'required|string',
-            'module_id'=>'required|numeric',
             'is_active'=>'required|boolean',
         ]);
-        $data['user_id']=auth()->user()->id;
+        // $data['user_id']=auth()->user()->id;
         return $this->service->update($id,$data);
     }
+    public function updateByAdmin(Request $request,$id){
+        $data=$request->validate([
+            'is_active'=>'required|boolean',
+        ]);
+        return $this->service->update($id,$data);
+    }
+    
     public function destroy($id){
         return response($this->service->delete($id),204);
     }

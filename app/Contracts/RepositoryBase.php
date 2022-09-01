@@ -29,7 +29,12 @@ abstract class RepositoryBase
    {
       return $this->model->where($column, $value)->where($columnDif, '!=', $valueDiff)->exists();
    }
-   public function searchText($search=''){
-      return $this->model->search($search)->paginate($this->nbr);
+   public function searchText($search){
+      if($search){
+         return $this->model->search($search)->paginate($this->nbr);
+      }else{
+         return $this->model->latest('updated_at','created_at')->paginate($this->nbr);
+      }
+     
    }
 }

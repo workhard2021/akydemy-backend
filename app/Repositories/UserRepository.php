@@ -63,17 +63,68 @@ class UserRepository extends RepositoryBase{
             $query->where('is_valide',1)
             ->with(['modules'=>function($query){
                 $query->where('is_active',1)->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
-                ->with(['ressourceModdules']);
+                ->with(['ressourceModdules'=>function($q){
+                      return $q->where('url_movie','!=',null)
+                       ->where('url_pdf','=',null);
+                }]);
             }]);
          }])?->first();
     }
     
     public  function currentUserEvaluationModule(){
-        return $this->model->where('id',auth()->user()->id)->with(['cours'=>function($query){
-             return $query->select('modules.id','modules.title','url_file')
-              ->with(['evaluations'=>function($query){
-                 return $query->where('published',true)->with('noteStudiants');
-              }]);
-        }])->first();
+        // RETURN MODULE FOR EVALUATION ACTIVE 
+        return $this->model->
+         where('users.id',auth()->user()->id)
+        ->where('module_users.is_valide',1)
+        ->join('module_users','module_users.user_id','=','users.id')
+        ->join('modules','modules.id','=','module_users.module_id')
+        ->select('modules.id','modules.title','modules.url_file')
+        ->paginate($this->nbr);
     }
+    public  function currentUserEvaluations($moduleId){
+        return $this->model->
+         where('users.id',auth()->user()->id)
+        ->where('modules.id',$moduleId)
+        ->where('module_users.is_valide',1)
+        ->where('evaluations.published',1)
+        ->join('module_users','module_users.user_id','=','users.id')
+        ->join('modules','modules.id','=','module_users.module_id')
+        ->join('evaluations','evaluations.module_id','=','modules.id')
+        ->leftJoin('note_studiants','note_studiants.evaluation_id','=','evaluations.id')
+        ->select('evaluations.*',
+        'note_studiants.id as note_studiant_id',
+        // 'note','note_teacher',
+        'note_studiants.url_file as note_studiant_url_file',
+        'note_studiants.name_file as note_studiant_name_file',
+        'evaluations.module_id as note_studiant_module_id'
+        )
+        ->paginate($this->nbr);
+    }
+
+    public  function currentUserNotes(){
+        return $this->model->
+         where('users.id',auth()->user()->id)
+        ->where('module_users.is_valide',1)
+        ->where('evaluations.published',1)
+        ->where('evaluations.is_closed',1)
+        ->join('module_users','module_users.user_id','=','users.id')
+        ->join('modules','modules.id','=','module_users.module_id')
+        ->join('evaluations','evaluations.module_id','=','modules.id')
+        ->join('note_studiants','note_studiants.evaluation_id','=','evaluations.id')
+        ->select('evaluations.id as id',
+        'evaluations.visibility_date_limit',
+        'evaluations.type as type',
+        'evaluations.title as title',
+        'note_studiants.note_teacher as note_teacher',
+      )->paginate($this->nbr);
+    }
+    
+    // public  function currentUserEvaluationModule(){
+    //     return $this->model->where('id',auth()->user()->id)->with(['cours'=>function($query){
+    //          return $query->select('modules.id','modules.title','url_file')
+    //           ->with(['evaluations'=>function($query){
+    //              return $query->where('published',true)->with('noteStudiants');
+    //           }]);
+    //     }])->first();
+    // }
 }

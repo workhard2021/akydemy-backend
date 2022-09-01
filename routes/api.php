@@ -60,11 +60,12 @@ Route::prefix('/v0.1')->group(function(){
         Route::get('topics/module/{moduleId?}/{search?}',[TopicController::class,'topicsModule'])->name('topicsModule-public-modules');
         Route::get('/messages/topic/{topicId}',[MessagesController::class,'messagesTopic'])->name('messagesTopic-public-modules');
         Route::get('topics/{id}',[TopicController::class,'show'])->name('show-public-topics');
-
-        Route::get('modules',[ModuleController::class,'indexPublic'])->name('indexPublic-modules');
+        
+        Route::get('modules',[ModuleController::class,'listNotPaginate'])->name('listNotPaginate-modules');
+        Route::get('modules/public/{search?}',[ModuleController::class,'indexPublic'])->name('indexPublic-modules');
         Route::get('modules/{id}',[ModuleController::class,'show'])->name('show-public-modules');
         Route::get('modules/{id}/ressources',[ModuleController::class,'showModuleRessource'])->name('showModuleRessource-modules');
-        Route::get('programmes',[ProgrammeController::class,'indexPublic'])->name('indexPublic-programmes');
+        Route::get('programmes/public/{search?}',[ProgrammeController::class,'indexPublic'])->name('indexPublic-programmes');
         Route::get('programmes/{id}',[ProgrammeController::class,'show'])->name('showPublic-programmes');
         Route::get('pays',[CountryController::class,'indexPublic'])->name('indexPublic-pays');
         Route::get('/pages/name/{name}',[PageController::class,'showPublic'])->name('showPublic-pages');
@@ -81,7 +82,10 @@ Route::prefix('/v0.1')->group(function(){
                 Route::get('current/teacher',[UserNotificationController::class,'currentTecherNotif'])->name('currentTecherNotif');
                 Route::put('current/user/{id}',[UserNotificationController::class,'update'])->name('currentUserNotif-update');
             });
-            Route::get('current-users/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-index');
+            Route::get('current-users/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-module');
+            Route::get('current-users/evaluations/{moduleId}',[UserController::class,'currentUserEvaluations'])->name('currentUserEvaluations-evaluation');
+            Route::get('current-users/notes',[UserController::class,'currentUserNotes'])->name('currentUserNotes-notes');
+            
             Route::prefix('users')->group(function(){
                 Route::get('{id}',[UserController::class,'show'])->name('show-users');
                 Route::get('current/users/module',[UserController::class,'currentUserModule'])->name('currentUserModules');
@@ -113,6 +117,7 @@ Route::prefix('/v0.1')->group(function(){
                 Route::get('{id}',[ModuleUserController::class,'show'])->name('show-module-user');
                 Route::get('current/user',[ModuleUserController::class,'attestationsUser'])->name('attestationsUser-module-user');
             });
+            
             Route::prefix('subscriptions')->group(function(){
                 Route::get('/{search?}',[ModuleUserController::class,'index'])->name('index-module-user');
                 Route::post('',[ModuleUserController::class,'create'])->name('create-module-user');
@@ -156,7 +161,7 @@ Route::prefix('/v0.1')->group(function(){
                 Route::get('',[TopicController::class,'index'])->name('index-topics');
                 Route::get('{id}',[TopicController::class,'show'])->name('show-topics');
                 Route::post('',[TopicController::class,'create'])->name('create-topics');
-                Route::put('{id}',[TopicController::class,'update'])->name('update-topics');
+                Route::post('{id}',[TopicController::class,'update'])->name('update-topics');
                 Route::delete('{id}',[TopicController::class,'destroy'])->name('destroy-topics');
             });
             Route::prefix('messages')->group(function(){
@@ -194,6 +199,7 @@ Route::prefix('/v0.1')->group(function(){
                 Route::delete('{id}',[EvaluationController::class,'destroy'])->name('destroy-evaluation');
             });
 
+            
             Route::prefix('note-studiants')->group(function(){
                 Route::get('result/{search?}/{dateBegin?}/{dateEnd?}',[NoteStudiantController::class,'noteStudiantWithInfo'])->name('noteStudiantWithInfo-search-studiant');
                 Route::get('current/users-notes/{moduleId}',[NoteStudiantController::class,'currentUserNote'])->name('currentUserNote-studiant');
