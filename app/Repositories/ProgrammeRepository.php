@@ -7,7 +7,7 @@ class ProgrammeRepository extends RepositoryBase{
     {}
     public function allPublic($search){
         return $this->model->where('is_active',1)
-        ->when($search,function($query)use($search){
+        ->when($search!="default",function($query)use($search){
           $query->where('title','like','%'.$search.'%'
           )->orWhere('sub_title','like','%'.$search.'%');
         })->paginate($this->nbr);

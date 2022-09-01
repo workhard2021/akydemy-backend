@@ -6,12 +6,12 @@ use App\Models\Module;
 class ModuleRepository extends RepositoryBase{
     public function __construct(public Module $model)
     {}
-    public function allPublic($search=''){
-     return $this->model->where('is_active',1)
-      ->when($search,function($query)use($search){
-        $query->where('title','like','%'.$search.'%'
+    public function allPublic($search){
+      return $this->model->where('is_active',1)
+       ->when($search!='default',function($query)use($search){
+          $query->where('title','like','%'.$search.'%'
        )->orWhere('sub_title','like','%'.$search.'%');
-     })->paginate($this->nbr);
+      })->paginate($this->nbr);
     }
 
     public function showModuleRessource($id){
