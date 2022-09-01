@@ -18,7 +18,6 @@ class ModuleRepository extends RepositoryBase{
         return $this->model->where($this->model->getKeyName(),$id)
          ->with('ressourceModdules')->first();
     }
-    
     public function moduleforExams($search){
        return $this->model->withCount('evaluations as count')
             ->when($search!='default',function($query)use($search){
