@@ -18,7 +18,6 @@ class RessourceModuleRepository extends RepositoryBase{
             return $query->where('is_public', $published);
         })->paginate($this->nbr);
     }
-
     public function searchResourceModuleAdmin($search){
         return $this->model
         ->when($search,function($query)use($search){

@@ -4,7 +4,7 @@ namespace App\Contracts;
 
 abstract class RepositoryBase
 {
-   public $nbr = 5;
+   public $nbr = 8;
    public $nbr_premium = 14;
    public $nbr_publicite = 8;
 

@@ -9,7 +9,9 @@ class ProgrammeRepository extends RepositoryBase{
         return $this->model->where('is_active',1)
         ->when($search!="default",function($query)use($search){
           $query->where('title','like','%'.$search.'%'
-          )->orWhere('sub_title','like','%'.$search.'%');
+          )->orWhere('sub_title','like','%'.$search.'%')
+          ->orWhere('title','like','%'.strtoupper($search).'%')
+          ->orWhere('sub_title','like','%'.strtoupper($search).'%');
         })->paginate($this->nbr);
     }
     public function findProgrammeWithProf($id){
