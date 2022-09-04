@@ -10,7 +10,7 @@ use Laravel\Scout\Searchable;
 class Page extends Model
 {  
     protected $model='pages';
-    protected $fillable=['name','title','description','user_id','is_active'];
+    protected $fillable=['name','title','sub_title','description','user_id','is_active'];
     use HasFactory,Searchable;
     public function getUpdatedAtAttribute($value)
     {
@@ -27,7 +27,8 @@ class Page extends Model
         return [
         'name' => $this->name,
         'title' => $this->title,
-        'description'=>$this->description
+        'sub_title' => $this->sub_title,
+        // 'description'=>$this->description
        ];
     }
 }

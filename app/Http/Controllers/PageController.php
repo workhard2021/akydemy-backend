@@ -18,7 +18,8 @@ class PageController extends Controller
     public function create(Request $request){
         $data=$request->validate([
             'name'=>'required|string|unique:pages|'.Rule::in(ePageName::getValues()),
-            'title'=>'required|string|max:250|unique:pages',
+            'title'=>'required|string|max:80|unique:pages',
+            'sub_title'=>'nullable|string|max:255',
             "description"=>'required|string',
             "is_active"=>'required|boolean'
         ]);
@@ -43,7 +44,8 @@ class PageController extends Controller
     public function update(Request $request,$id){
         $data=$request->validate([
             'name'=>'required|string|'.Rule::in(ePageName::getValues()),
-            'title'=>'required|string|max:250',
+            'title'=>'required|string|max:80',
+            'sub_title'=>'nullable|string|max:255',
             "description"=>'required|string',
             "is_active"=>'required|boolean'
         ]);

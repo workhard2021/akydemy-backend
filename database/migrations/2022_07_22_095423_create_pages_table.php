@@ -17,7 +17,8 @@ return new class extends Migration
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
             $table->enum('name',ePageName::getValues());
-            $table->string('title');
+            $table->string('title',80);
+            $table->string('sub_title',255)->nullable();
             $table->longText('description');
             $table->boolean('is_active')->default(false);
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('SET NULL');

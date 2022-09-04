@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\eStatus;
 use App\Enums\eStatusAttestation;
 use App\Enums\eTypeCertificate;
 use App\Enums\eTypeFile;
@@ -23,7 +24,11 @@ class ModuleUserController extends Controller
             'module_id'=>'required|numeric',
             'tel'=>'required|string'
         ]);
-        $data['user_id']=auth()->user()->id;
+        $user=auth()->user();
+        $data['user_id']=$user->id;
+        if($user->status==eStatus::ADMIN->value || $user->status==eStatus::SUPER_ADMIN->value || $user->status==eStatus::PROFESSEUR->value){
+            return response(['errors'=>['error'=>"Vous ne pouvez pas effectuer cet opération, veuillez contacter administrateur de site. Merci !"]],422);
+        }
         $module=$this->service->repos->findModule($data["module_id"]);
         if($this->service->repos->subscriber($data['user_id'],$data['module_id'])){
           return response(['errors'=>['error'=>"Votre abonnement est en cours de traitement, on vous contactera très rapidement pour finaliser le processus. Merci !"]],422);
