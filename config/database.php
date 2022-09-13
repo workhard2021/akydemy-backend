@@ -45,12 +45,12 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
+            'url' =>  array_key_exists('DATABASE_URL',$_SERVER) ? $_SERVER['DATABASE_URL']:env('DATABASE_URL'),
+            'host' =>  array_key_exists('DB_HOST',$_SERVER) ? $_SERVER['DB_HOST']:env('DB_HOST','127.0.0.1'),
+            'port' =>  array_key_exists('DB_PORT',$_SERVER) ? $_SERVER['DB_PORT']:env('DB_PORT','3306'),
+            'database' =>  array_key_exists('DB_DATABASE',$_SERVER) ? $_SERVER['DB_DATABASE']:env('DB_DATABASE','akydemy'),
+            'username' =>  array_key_exists('DB_USERNAME',$_SERVER) ? $_SERVER['DB_USERNAME']:env('DB_USERNAME','akydemy'),
+            'password' =>  array_key_exists('DB_USERNAME',$_SERVER) ? $_SERVER['DB_PASSWORD']:env('DB_PASSWORD','akydemy123'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
