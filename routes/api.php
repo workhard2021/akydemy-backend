@@ -35,6 +35,9 @@ use Illuminate\Support\Facades\Route;
 // PUBLIC ROUTES
 Route::prefix('/v0.1')->group(function(){
          //NOT AUTH
+         Route::get('/test',function(){
+            return "test deployement";
+         });
          Route::prefix(config('app.name'))->group(function(){
             
                Route::get('/ressources/modules/{Id}/EVALUATION/{Date}/{url_file}',[ManagerFileController::class,'download']);
