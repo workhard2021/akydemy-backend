@@ -6,7 +6,6 @@ use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\ModuleService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class ModuleController extends Controller
 {
@@ -44,10 +43,12 @@ class ModuleController extends Controller
         $item=$this->service->create($data);
         if($request->hasFile('image')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-modules')."/".$item->id."/image",$file_name);
-            ManagerFile::delete($item->name_image,config('ressources-file.ressources-modules')."/".$item->id."/image");
+            $folderName=config('ressources-file.modules')."/$item->categorie_id/module/$item->id";
+            $file_name=ManagerFile::upload($data['image'],$folderName,$file_name);
+            ManagerFile::deleteWithUrl($item->url_file);
             $item->url_file=$file_name['url'];
             $item->name_file=$file_name['name'];
+            $item->folder_name=$folderName;
             $item->save();
         }
         return response($item,201);
@@ -86,16 +87,21 @@ class ModuleController extends Controller
          $item=$this->service->update($id,$data);
          if($request->hasFile('image')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-modules')."/".$item->id."/image",$file_name);
-            ManagerFile::delete($item->name_file,config('ressources-file.ressources-modules')."/".$item->id."/image");
+            $folderName=config('ressources-file.modules')."/$item->categorie_id/module/$item->id";
+            $file_name=ManagerFile::upload($data['image'],$folderName,$file_name);
+            ManagerFile::deleteWithUrl($item->url_file);
             $item->url_file=$file_name['url'];
             $item->name_file=$file_name['name'];
+            $item->folder_name=$folderName;
             $item->save();
         }
         return response($item,200);
     }
-
     public function destroy($id){
+        $item=$this->service->repos->find($id);
+        if($item && $item->folder_name){
+            ManagerFile::deleteDirectory($item->folder_name);
+        }
         return $this->service->delete($id);
     }
 }

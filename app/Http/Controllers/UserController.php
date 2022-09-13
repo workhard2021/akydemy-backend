@@ -122,12 +122,18 @@ class UserController extends Controller
         return response($this->service->repos->currentUser($request->user()->id),200);
     }
     public function deleteCurrentUser(Request $request)
-    {
+    {   if(auth()->user->id && auth()->user->url_file){
+            ManagerFile::deleteWithUrl(auth()->user->url_file);
+        }
         return response($this->service->delete($request->user()->id),204);
     }
  
     public function destroy($id)
     {   
+        $item=$this->service->repos->find($id);
+        if($item && $item->url_file){
+            ManagerFile::deleteWithUrl($item->url_file);
+        }
         return response($this->service->delete($id),204);
     }
     

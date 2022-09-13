@@ -37,17 +37,19 @@ class RessourcesModuleController extends Controller
         // return $request->video->getClientOriginalName();
         $item=$this->service->create($data);
         if($request->hasFile('video')){
+            $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['video'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos',$file_name);
-            ManagerFile::delete($item->name_movie,config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos');
+            $file_name=ManagerFile::upload($data['video'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video",$file_name);
+            ManagerFile::deleteWithUrl($item->url_movie);
             $item->url_movie=$file_name['url'];
             $item->name_movie=$file_name['name'];
             $item->save();
         }
         if($request->hasFile('fichier')){
+            $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf',$file_name);
-            ManagerFile::delete($item->name_pdf,config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf');
+            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/pdf",$file_name);
+            ManagerFile::deleteWithUrl($item->url_pdf);
             $item->url_pdf=$file_name['url'];
             $item->name_pdf=$file_name['name'];
             $item->save();
@@ -70,25 +72,40 @@ class RessourcesModuleController extends Controller
         ]);
         $item=$this->service->update($id,$data);
         if($request->hasFile('video')){
+            $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['video'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos',$file_name);
-            ManagerFile::delete($item->name_movie,config('ressources-file.ressources-modules').'/'.$item->module_id.'/videos');
+            $file_name=ManagerFile::upload($data['video'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video",$file_name);
+            ManagerFile::deleteWithUrl($item->url_movie);
+            ManagerFile::deleteWithUrl($item->url_pdf);
             $item->url_movie=$file_name['url'];
             $item->name_movie=$file_name['name'];
+            $item->url_pdf="";
+            $item->name_pdf="";
             $item->save();
         }
         if($request->hasFile('fichier')){
+            $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf',$file_name);
-            ManagerFile::delete($item->name_pdf,config('ressources-file.ressources-modules').'/'.$item->module_id.'/pdf');
+            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/pdf",$file_name);
+            ManagerFile::deleteWithUrl($item->url_pdf);
+            ManagerFile::deleteWithUrl($item->url_movie);
             $item->url_pdf=$file_name['url'];
             $item->name_pdf=$file_name['name'];
+            $item->url_movie="";
+            $item->name_movie="";
             $item->save();
         }
         return response($item,200);
     }
 
     public function destroy($id){
+        $item=$this->service->repos->find($id);
+        if($item && $item->url_pdf){
+            ManagerFile::deleteWithUrl($item->url_pdf);
+        }
+        if($item && $item->url_movie){
+            ManagerFile::deleteWithUrl($item->url_movie);
+        }
         return $this->service->delete($id);
     }
 }

@@ -21,6 +21,11 @@ class Programme extends Model
         // return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
         return ucfirst(Carbon::parse($value,'UTC')->format('Y-m-d H:i:s'));
     }
+    
+    public function module(){
+        return $this->hasOne(Module::class,'id','module_id');
+    }
+
     public function toSearchableArray()
     {
         return [

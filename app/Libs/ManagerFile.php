@@ -33,6 +33,45 @@ class ManagerFile {
       return null;
    }
    
+   public static function  deleteDirectory($directory){
+      $count=0;
+      if($directory && is_array($directory)){
+         foreach ($directory as $value) {
+            $count++;
+            if($directory && Storage::disk(config('ressources-file.disk'))->exists($value)){
+               Storage::deleteDirectory($value);
+            }
+         }
+         return $count;
+      }
+   
+      if($directory && Storage::disk(config('ressources-file.disk'))->exists($directory)){
+         Storage::deleteDirectory($directory);
+      }
+      return null;
+   }
+
+   public static function  deleteWithUrl($file_names){
+      $paths=[];$count=0;
+     
+      if($file_names && is_array($file_names)){
+         foreach ($file_names as $value) {
+            $path=$value;
+            if (Storage::disk(config('ressources-file.disk'))->exists($path)) {
+               $paths[]=$path;
+            }
+            $count++;
+         }
+         Storage::disk(config('ressources-file.disk'))->delete($paths);
+         return $count;
+      }
+      $path=$file_names;
+      if($path && Storage::disk(config('ressources-file.disk'))->exists($path)){
+         return Storage::disk(config('ressources-file.disk'))->delete($path);
+      }
+      return null;
+   }
+   
    public static function getFile($file_name){
       if(Storage::disk(config('ressources-file.disk'))->exists($file_name)){
         return Storage::disk(config('ressources-file.disk'))->download($file_name);

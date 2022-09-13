@@ -31,17 +31,19 @@ class ProgrammeController extends Controller
         ]);
         $item=$this->service->create($data);
         if($request->hasFile('image')){
+            $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-programmes').'/'.$item->id,$file_name);
-            ManagerFile::delete($item->name_file,config('ressources-file.ressources-programmes').'/'.$item->id);
+            $file_name=ManagerFile::upload($data['image'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/programme",$file_name);
+            ManagerFile::deleteWithUrl($item->url_file);
             $item->url_file=$file_name['url'];
             $item->name_file=$file_name['name'];
             $item->save();
         }
         if($request->hasFile('file_dowload')){
+            $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['file_dowload'],config('ressources-file.ressources-programmes').'/'.$item->id,$file_name);
-            ManagerFile::delete($item->name_file_dowload,config('ressources-file.ressources-programmes').'/'.$item->id);
+            $file_name=ManagerFile::upload($data['file_dowload'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/programme",$file_name);
+            ManagerFile::deleteWithUrl($item->url_file_dowload);
             $item->url_file_dowload=$file_name['url'];
             $item->name_file_dowload=$file_name['name'];
             $item->save();
@@ -71,17 +73,19 @@ class ProgrammeController extends Controller
         }
         $item=$this->service->update($id,$data);
         if($request->hasFile('image')){
+            $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['image'],config('ressources-file.ressources-programmes').'/'.$item->id,$file_name);
-            ManagerFile::delete($item->name_file,config('ressources-file.ressources-programmes').'/'.$item->id);
+            $file_name=ManagerFile::upload($data['image'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/programme",$file_name);
+            ManagerFile::deleteWithUrl($item->url_file);
             $item->url_file=$file_name['url'];
             $item->name_file=$file_name['name'];
             $item->save();
         }
         if($request->hasFile('file_dowload')){
+            $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['file_dowload'],config('ressources-file.ressources-programmes').'/'.$item->id,$file_name);
-            ManagerFile::delete($item->name_file_dowload,config('ressources-file.ressources-programmes').'/'.$item->id);
+            $file_name=ManagerFile::upload($data['file_dowload'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/programme",$file_name);
+            ManagerFile::deleteWithUrl($item->url_file_dowload);
             $item->url_file_dowload=$file_name['url'];
             $item->name_file_dowload=$file_name['name'];
             $item->save();
@@ -89,6 +93,13 @@ class ProgrammeController extends Controller
         return response($item,201);
     }
     public function destroy($id){
+        $item=$this->service->repos->find($id);
+        if($item && $item->url_file){
+            ManagerFile::deleteWithUrl($item->url_file);
+        }
+        if($item && $item->url_file_dowload){
+            ManagerFile::deleteWithUrl($item->url_file_dowload);
+        }
         return $this->service->delete($id);
     }
 }
