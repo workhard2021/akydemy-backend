@@ -50,7 +50,7 @@ return [
             'port' =>  array_key_exists('DB_PORT',$_SERVER) ? $_SERVER['DB_PORT']:env('DB_PORT','3306'),
             'database' =>  array_key_exists('DB_DATABASE',$_SERVER) ? $_SERVER['DB_DATABASE']:env('DB_DATABASE','akydemy'),
             'username' =>  array_key_exists('DB_USERNAME',$_SERVER) ? $_SERVER['DB_USERNAME']:env('DB_USERNAME','akydemy'),
-            'password' =>  array_key_exists('DB_USERNAME',$_SERVER) ? $_SERVER['DB_PASSWORD']:env('DB_PASSWORD','akydemy123'),
+            'password' =>  array_key_exists('DB_PASSWORD',$_SERVER) ? $_SERVER['DB_PASSWORD']:env('DB_PASSWORD','akydemy123'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
