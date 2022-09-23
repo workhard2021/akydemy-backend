@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('/v0.1')->group(function(){
          //NOT AUTH
          Route::get('/test',function(){
+               return 'test';
                Mail::to("patronp60@gmail.com")->send(new UserMail("Bonjour a tous"));
                return "email envoyé";
          });
