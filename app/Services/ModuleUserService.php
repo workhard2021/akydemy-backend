@@ -2,7 +2,10 @@
 namespace App\Services;
 
 use App\Contracts\ServiceBase;
+use App\Mail\UserNotificationSubscriptionMail;
+use App\Models\User;
 use App\Repositories\ModuleUserRepository;
+use Illuminate\Support\Facades\Mail;
 
  class ModuleUserService extends ServiceBase{
 
@@ -26,6 +29,8 @@ use App\Repositories\ModuleUserRepository;
         }else{
            $item->create($notif);
         }
+        $exp_studiant=User::find($notif['user_id']);
+        Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($notif));
         return $item;     
     }
     public function createNoticationForTeacherAndStudiant($data){
@@ -46,24 +51,27 @@ use App\Repositories\ModuleUserRepository;
         $msgInactive['teacher_id']=$data->owner_id;
         $msgInactive['title']=__('subscription.invalide-title');
         $msgInactive['description']=__('subscription.studiant-invalide-message',['title'=>$data->title]);
-    
+        $exp_studiant=User::find($msgInactive['user_id']);
+        $exp_techer=User::find($msgInactive['teacher_id']);
         $item=$this->notifService->getModel()
             ->where('event_id',$data->module_id)
             ->where('user_id',$data->user_id)
             ->where('type',$msgActive['type'])
             ->where('is_teacher','!=',true);
         if($data->is_valide){
-            $item->create($msgActive);
+             $item->create($msgActive);
+             Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($msgActive));
         }else if($data->is_valide!=true){
              $item->create($msgInactive); 
+             Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($msgInactive));
         }
         //Message d'activation teacter  
         $msgActive['is_teacher']=true;
         $msgActive['description']=__('subscription.teacher-valide-message',
-        ['studiant_mail'=>'camara@gmail.com','title'=>$data->title]);
+        ['studiant_mail'=>$exp_studiant->email,'title'=>$data->title]);
         //Message de la désactivation teacter
         $msgInactive['is_teacher']=true;
-        $msgInactive['description']=__('subscription.teacher-invalide-message',['studiant_mail'=>'camara@gmail.com','title'=>$data->title]);
+        $msgInactive['description']=__('subscription.teacher-invalide-message',['studiant_mail'=>$exp_studiant->email,'title'=>$data->title]);
         $item=$this->notifService->getModel()
              ->where('event_id',$data->module_id)
              ->where('user_id',$data->user_id)
@@ -72,8 +80,10 @@ use App\Repositories\ModuleUserRepository;
              ->where('is_teacher',true);
          if($data->is_valide){
              $item->create($msgActive);
+             Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgActive));
          }else if($data->is_valide!=true){
              $item->create($msgInactive); 
+             Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgInactive));
          }
          return true;     
     }

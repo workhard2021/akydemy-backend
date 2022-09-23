@@ -58,6 +58,7 @@ class ModuleUserController extends Controller
          $id=auth()->user()->id;
         return response($this->service->repos->attestationUser($id),200);
     }
+    
     public function update(Request $request,$id){
         $data=$request->validate([
             'title'=>'required|string',
@@ -75,6 +76,38 @@ class ModuleUserController extends Controller
             return response(['errors'=>["error"=>"Utilisateur et module non trouvés"]],422);
         }
 
+        $module=$this->service->repos->findModule($data["module_id"]);
+        if(!$module){
+            return response(['errors'=>['error'=>'Ressource existe pas']],404);
+        }
+        $item= $this->service->update($id,$data);
+        if($request->hasFile('fichier')){
+            $file_name=ManagerFile::genererChaineAleatoire(2).'-'.Carbon::now()->format('Y-m-d').'-'.str_replace(['ô','Ô','é'],['o','o','e','É'],strtolower($item->type));
+            $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.users').'/'.$item->user_id.'/attestations',$file_name);
+            ManagerFile::delete($item->name_file,config('ressources-file.users').'/'.$item->user_id.'/attestations');
+            $item->url_attestation=$file_name['url'];
+            $item->name_attestation=$file_name['name'];
+            $item->save();
+        }
+        return response($item,200);
+    }
+
+    public function enableOrDesableModuleForUser(Request $request,$id){
+        $data=$request->validate([
+            'title'=>'required|string',
+            'somme'=>'nullable|numeric',
+            'type'=>'required|string|'.Rule::in(eTypeCertificate::getValues()),
+            'status_attestation'=>'required|string|'.Rule::in(eStatusAttestation::getValues()),
+            'is_valide'=>'nullable|boolean',
+            'fichier' => 'nullable|mimes:'.implode(',',eTypeFile::getValues()),
+            'description'=>'nullable|string',
+            'module_id'=>'required|numeric',
+            'user_id'=>'required|numeric',
+        ]);
+
+        if(!$this->service->repos->moduelAndUserExist($data['user_id'],$data['module_id'])){
+            return response(['errors'=>["error"=>"Utilisateur et module non trouvés"]],422);
+        }
         $module=$this->service->repos->findModule($data["module_id"]);
         if(!$module){
             return response(['errors'=>['error'=>'Ressource existe pas']],404);

@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class UserMail extends Mailable
+class UserNotificationSubscriptionMail extends Mailable
 {
     use Queueable, SerializesModels;
     /**
@@ -16,9 +16,7 @@ class UserMail extends Mailable
      * @return void
      */
     public function __construct(public  $message)
-    {
-        // $this->message=$message;
-    }
+    {}
 
     /**
      * Build the message.
@@ -27,6 +25,6 @@ class UserMail extends Mailable
      */
     public function build()
     {
-        return $this->view('email.message')->with(['msg'=>$this->message]);
+        return $this->subject($this->message['title'])->view('email.message-notification-subscription')->with(['msg'=>$this->message]);
     }
 }
