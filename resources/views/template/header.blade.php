@@ -34,6 +34,14 @@
           display: inline-block;
           margin-right:8px;
       }
+      #consulter_compte{
+          display: block;
+          text-align: center;
+          padding-top:4px;
+          padding-bottom:4px;
+          font-size:18px;
+          background:rgb(71 118 205);
+      }
    </style>
 </head>
 <body>

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\EvaluationController;
@@ -17,7 +19,7 @@ use App\Http\Controllers\RessourcesModuleController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserNotificationController;
-use App\Mail\UserMail;
+use App\Mail\UserNotificationSubscriptionMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -35,13 +37,15 @@ use Illuminate\Support\Facades\Route;
 // PUBLIC ROUTES
 Route::prefix('/v0.1')->group(function(){
          //NOT AUTH
+         Route::post('/forgot-password',[PasswordResetLinkController::class, 'store'])
+                ->middleware('guest')
+                ->name('password.email');
+         Route::post('/reset-password',[NewPasswordController::class, 'store'])
+                ->middleware('guest')
+                ->name('password.update');
          Route::get('/test',function(){
-<<<<<<< HEAD
-               return 'test';
-=======
->>>>>>> 4d84968 (send upd email)
-               Mail::to("patronp60@gmail.com")->send(new UserMail("Bonjour a tous"));
-               return "email envoyé";
+               //Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'="test title","description"=>""]));
+               return "test";
          });
          Route::prefix(config('app.name'))->group(function(){
             
@@ -82,7 +86,7 @@ Route::prefix('/v0.1')->group(function(){
         Route::prefix('/auth')->middleware(['auth:sanctum'])->group(function(){
             // Route::post('/send-mail', function (Request $request) {
             //      $msg=$request->input('message');
-            //      Mail::to($request->user())->send(new UserMail($msg));
+            //      Mail::to($request->user())->send(new UserNotificationSubscriptionMail($msg));
             //      return "mail sended";
             // });
             Route::prefix('notifs')->group(function(){
@@ -129,6 +133,7 @@ Route::prefix('/v0.1')->group(function(){
             Route::prefix('subscriptions')->group(function(){
                 Route::get('/{search?}',[ModuleUserController::class,'index'])->name('index-module-user');
                 Route::post('',[ModuleUserController::class,'create'])->name('create-module-user');
+                Route::post('/enable-desable-module-user/{id}',[ModuleUserController::class,'enableOrDesableModuleForUser'])->name('enableOrDesableModuleForUser-module-user');
                 Route::post('{id}',[ModuleUserController::class,'update'])->name('update-module-user');
                 Route::delete('{id}',[ModuleUserController::class,'destroy'])->name('destroy-module-user');
             });
