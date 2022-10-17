@@ -38,12 +38,12 @@ class EvaluationController extends Controller
         if($this->service->repos->existModule($data['module_id'],$data['type'],$data['visibility_date_limit'])){
              return response(['errors'=>['error'=>'Vous avez déja programmé : '.$data['type']. ' pour le ' .$data['visibility_date_limit']]],422);
         }
-        $data['title']=$module->title;
+        // $data['title']=$module->title;
         $item= $this->service->create($data);
         if($request->hasFile('fichier')){
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
             $file_name=ManagerFile::upload($data['fichier'],
-            config('ressources-file.ressources-modules').'/'.$data['module_id'].'/'.$data['type'].'/'.$data['visibility_date_limit'],$file_name);
+            config('ressources-file.examens-evalutions').'/'.$data['type'].'/'.$data['visibility_date_limit'],$file_name);
             $item->url_file=$file_name['url'];
             $item->name_file=$file_name['name'];
             $item->save();
@@ -65,7 +65,12 @@ class EvaluationController extends Controller
         $item= $this->service->update($id,$data);
         return response($item,200);
     }
+    
     public function destroy($id){
+        $item=$this->service->repos->find($id);
+        if($item && $item->url_file){
+           ManagerFile::deleteWithUrl($item->url_file);
+        }
         return response($this->service->delete($id),204);
     }
 }

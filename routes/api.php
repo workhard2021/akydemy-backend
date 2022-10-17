@@ -23,6 +23,7 @@ use App\Mail\UserNotificationSubscriptionMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,13 +44,22 @@ Route::prefix('/v0.1')->group(function(){
          Route::post('/reset-password',[NewPasswordController::class, 'store'])
                 ->middleware('guest')
                 ->name('password.update');
+        // Route::post('test-video',function(Request $request){
+        //       $data=$request->validate(['fichier'=>'nullable']);
+        //     //   return $data;
+        //         $name='test.'.$data['fichier']->getClientOriginalExtension();
+        //         // return $name;
+        //         $data=$data['fichier']?->storeAs('test',$name,'s3');
+        //         $data=Storage::disk('s3')->url('akydemy/categories/2/module/2/video/26SqxInywo.mp4');
+        //         return $data;    
+        // });
          Route::get('/test',function(){
                //Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'="test title","description"=>""]));
                return "test";
          });
          Route::prefix(config('app.name'))->group(function(){
-            
-               Route::get('/ressources/modules/{Id}/EVALUATION/{Date}/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('examens-evalutions/{Id}/{Date}/{url_file}',[ManagerFileController::class,'download']);
+               // Route::get('/ressources/modules/{Id}/EVALUATION/{Date}/{url_file}',[ManagerFileController::class,'download']);
                Route::get('public/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/categories/{Id}/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/categories/{Id_categorie}/module/{Id}/programme/{url_file}',[ManagerFileController::class,'download']);

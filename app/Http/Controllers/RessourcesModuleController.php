@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\eTypeFile;
+use App\Events\EventSendFile;
 use App\Libs\ManagerFile;
 use App\Services\RessourceModuleService;
 use Illuminate\Http\Request;
@@ -38,13 +39,10 @@ class RessourcesModuleController extends Controller
         $item=$this->service->create($data);
         if($request->hasFile('video')){
             $module=$item->module;
-            $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['video'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video",$file_name);
-            ManagerFile::deleteWithUrl($item->url_movie);
-            $item->url_movie=$file_name['url'];
-            $item->name_movie=$file_name['name'];
-            $item->save();
+            $path=config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video";
+            EventSendFile::dispatch($item,$path);
         }
+
         if($request->hasFile('fichier')){
             $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
@@ -70,18 +68,12 @@ class RessourcesModuleController extends Controller
             'is_public'=>'nullable|boolean',
             'description'=>'nullable|string'
         ]);
+        
         $item=$this->service->update($id,$data);
         if($request->hasFile('video')){
             $module=$item->module;
-            $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-            $file_name=ManagerFile::upload($data['video'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video",$file_name);
-            ManagerFile::deleteWithUrl($item->url_movie);
-            ManagerFile::deleteWithUrl($item->url_pdf);
-            $item->url_movie=$file_name['url'];
-            $item->name_movie=$file_name['name'];
-            $item->url_pdf="";
-            $item->name_pdf="";
-            $item->save();
+            $path=config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video";
+            EventSendFile::dispatch($item,$path,true);
         }
         if($request->hasFile('fichier')){
             $module=$item->module;
