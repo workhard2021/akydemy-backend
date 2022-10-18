@@ -4,6 +4,7 @@ return [
    'log' => 'public/logo.png',
    'icon'=>'public/icon.png',
    'users'=>env('APP_NAME','akydemy').'/users',
+   'examens-evalutions'=>env('APP_NAME','akydemy').'/examens-evalutions',
    'publicites'=>env('APP_NAME','akydemy').'/publicites',
    'modules' => env('APP_NAME','akydemy').'/categories',
    'programmes' => env('APP_NAME','akydemy').'/categories/modules',

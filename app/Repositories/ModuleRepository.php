@@ -19,7 +19,9 @@ class ModuleRepository extends RepositoryBase{
     public function showModuleRessource($id){
         return $this->model->where($this->model->getKeyName(),$id)
          ->with(['ressourceModdules'=>function($q){
-           return $q->where('url_pdf',null)->oldest('created_at');
+           return $q->where('url_pdf',null)
+            ->orWhere('url_pdf','null')
+            ->orWhere('url_pdf','')->oldest('created_at');
          }])->first();
     }
     public function moduleforExams($search){

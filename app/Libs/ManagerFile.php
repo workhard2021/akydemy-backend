@@ -1,12 +1,11 @@
 <?php
 namespace App\Libs;
 use Illuminate\Support\Facades\Storage;
-
 class ManagerFile {
    public static function upload($arrayFileName,$folder,$file_name=null){
       $folder = $folder . DIRECTORY_SEPARATOR;
       //$identify=$identify?$identify: self::genererChaineAleatoire();
-      //$name =  $identify . '_' . $arrayFileName->getClientOriginalName();
+      // $name =  $identify . '_' . $arrayFileName->getClientOriginalName();
       $name = $file_name .'.'. $arrayFileName->getClientOriginalExtension();
       $name= self::removeSpeciauxCaractere($name);
       $arrayFileName->storeAs($folder,$name,config('ressources-file.disk'));
