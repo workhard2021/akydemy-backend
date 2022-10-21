@@ -17,7 +17,7 @@ return [
     'message' => 'Bonjour, Votre demande d’abonnement est en cours de Traitement. L’équipe '.config('app.name').' vous contactera très rapidement pour finaliser le processus',
 
     'valide-title' => 'Activation du module',
-    'studiant-valide-message' => 'Bonjour, Nous vous informons de la confirmation de votre abonnement au Module :title . L’équipe '.config('app.name').' vous remercie de votre Confiance. « Avec '.config('app.name').' Apprenez en toute simplicité et perfectionnez votre niveau.',
+    'studiant-valide-message' => 'Bonjour, Nous vous informons de la confirmation de votre abonnement au Module :title . L’équipe '.config('app.name').' vous remercie de votre Confiance. Avec '.config('app.name').' Apprenez en toute simplicité et perfectionnez votre niveau.',
     'teacher-valide-message' => 'Bonjour Cher Formateur, Nous vous informons de l’abonnement du compte :studiant_mail au Module :title . L’équipe '.config('app.name').' vous remercie de votre professionnalisme',
 
     'invalide-title' => 'Désactivation du module',
