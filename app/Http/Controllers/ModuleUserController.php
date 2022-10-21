@@ -46,10 +46,11 @@ class ModuleUserController extends Controller
         $data["module_id"]=$module->id;
         $data["somme"]=$module->promo_price?$module->promo_price:$module->price;
         $data["title"]=$module->title;
+        $data['view_notif']=false;
         // NOTIFICATION
         $item=$this->service->create($data);
         $this->service->createNotication($item);
-        return response("Votre demande a été envoyée, l’équipe AKYDEMY vous contactera !",201);
+        return response("Votre demande a été envoyée, l’équipe AKYDEMY vous contactera !",200);
     }
     public function show($id){
         return response($this->service->repos->find($id,['*']),200);
