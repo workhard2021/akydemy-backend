@@ -102,6 +102,7 @@ Route::prefix(config('app.version'))->group(function(){
             Route::prefix('notifs')->group(function(){
                 Route::get('current/user',[UserNotificationController::class,'currentUserNotif'])->name('currentUserNotif');
                 Route::get('current/teacher',[UserNotificationController::class,'currentTecherNotif'])->name('currentTecherNotif');
+                Route::get('current/user/not/read',[UserNotificationController::class,'currentUserNoteNotRead'])->name('currentUserNoteNotRead');
                 Route::put('current/user/{id}',[UserNotificationController::class,'update'])->name('currentUserNotif-update');
             });
             Route::get('current-users/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-module');

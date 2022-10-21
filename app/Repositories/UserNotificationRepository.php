@@ -19,4 +19,14 @@ class UserNotificationRepository extends RepositoryBase{
              ['is_teacher',1],
           ])->latest('created_at')->paginate(12);
     }
+    public function currentUserNoteNotRead($view_notif=false){
+        $userId=auth()->user()->id;
+        return $this->model->where([ 
+                ['user_id',$userId],
+                ['view_notif',$view_notif]
+             ])->orWhere([
+                ['teacher_id',$userId],
+                ['view_notif',$view_notif]
+             ])->count();
+     }  
 }
