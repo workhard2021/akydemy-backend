@@ -50,7 +50,7 @@ class ModuleUserController extends Controller
         // NOTIFICATION
         $item=$this->service->create($data);
         $this->service->createNotication($item);
-        return response("Votre demande a été envoyée, l’équipe AKYDEMY vous contactera !",200);
+        return response("Votre demande a été envoyée, l’équipe AKYDEMY vous contactera !",201);
     }
     public function show($id){
         return response($this->service->repos->find($id,['*']),200);
