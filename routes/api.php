@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 // PUBLIC ROUTES
-Route::prefix('/v0.1')->group(function(){
+Route::prefix(config('app.version'))->group(function(){
          //NOT AUTH
          Route::post('/forgot-password',[PasswordResetLinkController::class, 'store'])
                 ->middleware('guest')
@@ -53,10 +53,10 @@ Route::prefix('/v0.1')->group(function(){
         //         $data=Storage::disk('s3')->url('akydemy/categories/2/module/2/video/26SqxInywo.mp4');
         //         return $data;    
         // });
-         Route::get('/test',function(){
-               //Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'="test title","description"=>""]));
-               return "test";
-         });
+        //  Route::get('/test',function(){
+        //        //Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'="test title","description"=>""]));
+        //        return "test";
+        //  });
          Route::prefix(config('app.name'))->group(function(){
                Route::get('examens-evalutions/{Id}/{Date}/{url_file}',[ManagerFileController::class,'download']);
                // Route::get('/ressources/modules/{Id}/EVALUATION/{Date}/{url_file}',[ManagerFileController::class,'download']);

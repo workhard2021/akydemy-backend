@@ -16,7 +16,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'akydemy'),
-
+    'version'=> env('VERSION','v0.1'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
