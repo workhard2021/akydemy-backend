@@ -23,7 +23,8 @@ class UserNotificationRepository extends RepositoryBase{
         $userId=auth()->user()->id;
         return $this->model->where([ 
                 ['user_id',$userId],
-                ['view_notif',$view_notif]
+                ['view_notif',$view_notif],
+                ['is_teacher',false]
              ])->orWhere([
                 ['teacher_id',$userId],
                 ['view_notif',$view_notif]

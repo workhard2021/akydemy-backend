@@ -54,7 +54,7 @@ Route::prefix(config('app.version'))->group(function(){
         //         return $data;    
         // });
         //  Route::get('/test',function(){
-        //        //Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'="test title","description"=>""]));
+        //        Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>""]));
         //        return "test";
         //  });
          Route::prefix(config('app.name'))->group(function(){

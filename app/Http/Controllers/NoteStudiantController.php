@@ -6,8 +6,6 @@ use App\Enums\eTypeFile;
 use App\Libs\ManagerFile;
 use App\Services\NoteStudiantService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-
 class NoteStudiantController extends Controller
 {
     public function __construct(private NoteStudiantService $service)

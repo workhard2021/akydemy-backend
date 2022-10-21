@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Mail;
         if($item->exists()){
           $item->update($notif);
         }else{
+           $notif['view_notif']=false;
            $item->create($notif);
         }
         $exp_studiant=User::find($notif['user_id']);
@@ -59,9 +60,11 @@ use Illuminate\Support\Facades\Mail;
             ->where('type',$msgActive['type'])
             ->where('is_teacher','!=',true);
         if($data->is_valide){
+             $msgActive['view_notif']=false;
              $item->create($msgActive);
              Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($msgActive));
         }else if($data->is_valide!=true){
+             $msgInactive['view_notif']=false;
              $item->create($msgInactive); 
              Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($msgInactive));
         }
@@ -79,9 +82,11 @@ use Illuminate\Support\Facades\Mail;
              ->where('type',$msgInactive['type'])
              ->where('is_teacher',true);
          if($data->is_valide){
+             $msgActive['view_notif']=false;
              $item->create($msgActive);
              Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgActive));
          }else if($data->is_valide!=true){
+             $msgInactive['view_notif']=false;
              $item->create($msgInactive); 
              Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgInactive));
          }
