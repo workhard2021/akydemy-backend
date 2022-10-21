@@ -2,7 +2,6 @@
 namespace App\Services;
 
 use App\Contracts\ServiceBase;
-use App\Repositories\RessourceModuleRepository;
 use App\Repositories\UserNotificationRepository;
 
  class UserNotificationService extends ServiceBase{

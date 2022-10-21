@@ -45,6 +45,7 @@ class NoteStudiantController extends Controller
         $data['module_id']=$module->id;
         $data['title']=$module->title;
         $data['teacher_id']=$module->owner_id;
+        $data['view_notif']=false;
         if($note_etudiant && $evaluation->is_closed){
             return response(['errors'=>['error'=>"L'examen est terminé, veuillez contacter l'equipe config('app.name') pour plus d'info"]],422);
         }else if($note_etudiant){
