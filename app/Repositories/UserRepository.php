@@ -65,8 +65,11 @@ class UserRepository extends RepositoryBase{
                 $query->where('is_active',1)->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
                 ->with(['ressourceModdules'=>function($q){
                       return $q->
-                       where('url_movie','!=',null)
-                       ->where('url_pdf','=',null);
+                       where([
+                          ['url_movie','!=',null],
+                          ['url_movie','!=',''],
+                          ['url_movie','!=','null'],
+                       ]);
                 }]);
             }]);
          }])?->first();
