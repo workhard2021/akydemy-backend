@@ -71,7 +71,10 @@ class ManagerFile {
       return null;
    }
    
-   public static function getFile($file_name){
+   public static function getFile($file_name,$getUrlS3=false){
+      if($getUrlS3){
+         return Storage::disk(config('ressources-file.disk'))->url($file_name);
+      }
       if(Storage::disk(config('ressources-file.disk'))->exists($file_name)){
         return Storage::disk(config('ressources-file.disk'))->download($file_name);
       }

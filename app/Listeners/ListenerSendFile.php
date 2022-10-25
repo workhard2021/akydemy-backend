@@ -39,7 +39,7 @@ class ListenerSendFile
                 $item->url_pdf="";
                 $item->name_pdf="";
             }
-            $item->url_movie=$file_name['url'];
+            $item->url_movie=ManagerFile::getFile($file_name['url'],true);
             $item->name_movie=$file_name['name'];
             $item->save();
         }
