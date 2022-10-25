@@ -19,7 +19,7 @@ class ModuleController extends Controller
     public function index($search=''){
         return $this->service->repos->searchText($search);
     }
-    public function indexPublic($search=''){
+    public function indexPublic($search='default'){
         return $this->service->repos->allPublic($search);
     }
 
