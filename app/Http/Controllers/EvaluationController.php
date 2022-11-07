@@ -6,12 +6,13 @@ use App\Enums\eTypeEvaluation;
 use App\Enums\eTypeFile;
 use App\Libs\ManagerFile;
 use App\Services\EvaluationService;
+use App\Services\NoteStudiantService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class EvaluationController extends Controller
 {
-    public function __construct(private EvaluationService $service)
+    public function __construct(private EvaluationService $service,private NoteStudiantService $serviceNoteStudiant)
     {}
     public function lists(){
         return $this->service->repos->listNotPaginate();
@@ -19,7 +20,7 @@ class EvaluationController extends Controller
     public function index($search=''){
         return $this->service->repos->searchText($search);
     }
-
+    
     public function getEvaluationForModuleId($moduleId=''){
       return response($this->service->repos->findManyByColumn($moduleId,'module_id'));
     }
@@ -29,7 +30,7 @@ class EvaluationController extends Controller
             'title'=>'required|string|max:200',
             'type'=>'required|string|'.Rule::in(eTypeEvaluation::getValues()),
             'visibility_date_limit'=>'required|date',
-            'fichier'=>'nullable|mimes:'.implode(",",eTypeFile::getValues())
+            'fichier'=>'required|mimes:'.implode(",",eTypeFile::getValues())
         ]);
         $module=$this->service->repos->findModule($data['module_id']);
         if(!$module){
@@ -62,7 +63,13 @@ class EvaluationController extends Controller
             'published'=>'required|boolean',
             'is_closed'=>'required|boolean'
         ]);
+        // return $data;
         $item= $this->service->update($id,$data);
+        if($item->is_closed){
+          $this->serviceNoteStudiant->updateNoteWithEvaluation($item->id,['is_closed'=>true]);
+        }else{
+            $this->serviceNoteStudiant->updateNoteWithEvaluation($item->id,['is_closed'=>false]);
+        }
         return response($item,200);
     }
     

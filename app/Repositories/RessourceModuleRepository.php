@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 use App\Contracts\RepositoryBase;
+use App\Enums\eStatus;
 use App\Models\RessourcesModule;
 
 class RessourceModuleRepository extends RepositoryBase{
@@ -19,18 +20,47 @@ class RessourceModuleRepository extends RepositoryBase{
         })->paginate($this->nbr);
     }
     public function searchResourceModuleAdmin($search){
-        return $this->model
-        ->when($search,function($query)use($search){
+        $user=auth()->user();
+        $userId=$user->id;
+      if($user->status==eStatus::PROFESSEUR->value){
+        $data= $this->model
+        ->when($search,function($query)use($search,$userId){
             return $query->where([
                ['modules.title','like','%'.$search.'%'],
                ['modules.is_active','=',true],
                ['ressources_modules.name_movie','=',null],
                ['ressources_modules.name_pdf','!=',null],
+               ['modules.owner_id','=',$userId]
             ])->orWhere([
                ['ressources_modules.title','like','%'.$search.'%'],
                ['modules.is_active','=',true],
                ['ressources_modules.name_movie','=',null],
                ['ressources_modules.name_pdf','!=',null],
+               ['modules.owner_id','=',$userId]
+            ]);
+        })->when(!$search,function($query)use($userId){
+            $query->where([
+                ['ressources_modules.name_movie','=',null],
+                ['modules.is_active','=',true],
+                ['ressources_modules.name_pdf','!=',null],
+                ['modules.owner_id','=',$userId]
+            ]);
+        });
+
+      }else if($user->status==eStatus::ADMIN->value||$user->status==eStatus::SUPER_ADMIN->value){
+     
+        $data= $this->model
+        ->when($search,function($query)use($search){
+            return $query->where([
+               ['modules.title','like','%'.$search.'%'],
+               ['modules.is_active','=',true],
+               ['ressources_modules.name_movie','=',null],
+               ['ressources_modules.name_pdf','!=',null]
+            ])->orWhere([
+               ['ressources_modules.title','like','%'.$search.'%'],
+               ['modules.is_active','=',true],
+               ['ressources_modules.name_movie','=',null],
+               ['ressources_modules.name_pdf','!=',null]
             ]);
         })->when(!$search,function($query){
             $query->where([
@@ -38,13 +68,15 @@ class RessourceModuleRepository extends RepositoryBase{
                 ['modules.is_active','=',true],
                 ['ressources_modules.name_pdf','!=',null],
             ]);
-        })
-        ->join('modules','modules.id','=','ressources_modules.module_id')
+        });
+      }
+
+      return $data->join('modules','modules.id','=','ressources_modules.module_id')
         ->select('ressources_modules.id as id','ressources_modules.title',
-           'ressources_modules.url_pdf','ressources_modules.name_pdf',
-           'ressources_modules.is_public','ressources_modules.is_default',
-           'ressources_modules.module_id','modules.title as module_title',
-           'ressources_modules.created_at','ressources_modules.updated_at')
+         'ressources_modules.url_pdf','ressources_modules.name_pdf',
+         'ressources_modules.is_public','ressources_modules.is_default',
+         'ressources_modules.module_id','modules.title as module_title',
+         'ressources_modules.created_at','ressources_modules.updated_at')
         ->oldest('ressources_modules.updated_at','ressources_modules.created_at')->paginate($this->nbr);
     }
 

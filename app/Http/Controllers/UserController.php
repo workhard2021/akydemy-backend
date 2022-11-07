@@ -6,7 +6,6 @@ use App\Enums\eStatus;
 use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\UserService;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;

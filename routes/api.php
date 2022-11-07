@@ -45,12 +45,13 @@ Route::prefix(config('app.version'))->group(function(){
                 ->middleware('guest')
                 ->name('password.update');
         // Route::post('test-video',function(Request $request){
-        //       $data=$request->validate(['fichier'=>'nullable']);
-        //     //   return $data;
-        //         $name='test.'.$data['fichier']->getClientOriginalExtension();
-        //         // return $name;
+        //         $data=$request->validate(['fichier'=>'nullable']);
+        //     //    return $data;
+        //         $name= today()->format('Y-m-d').'_'.$data['fichier']->getClientOriginalName();
+        //         $name= substr($name,-30);
+        //         return $name;
         //         $data=$data['fichier']?->storeAs('test',$name,'s3');
-        //         $data=Storage::disk('s3')->url('akydemy/categories/2/module/2/video/26SqxInywo.mp4');
+        //         //$data=Storage::disk('s3')->url('akydemy/categories/2/module/2/video/26SqxInywo.mp4');
         //         return $data;    
         // });
         //  Route::get('/test',function(){
@@ -222,7 +223,6 @@ Route::prefix(config('app.version'))->group(function(){
                 Route::put('{id}',[EvaluationController::class,'update'])->name('update-evaluation');
                 Route::delete('{id}',[EvaluationController::class,'destroy'])->name('destroy-evaluation');
             });
-
             
             Route::prefix('note-studiants')->group(function(){
                 Route::get('result/{search?}/{dateBegin?}/{dateEnd?}',[NoteStudiantController::class,'noteStudiantWithInfo'])->name('noteStudiantWithInfo-search-studiant');

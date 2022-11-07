@@ -8,13 +8,14 @@ use App\Enums\eTypeCertificate;
 use App\Enums\eTypeFile;
 use App\Libs\ManagerFile;
 use App\Services\ModuleUserService;
+use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ModuleUserController extends Controller
 {
-    public function __construct(private ModuleUserService $service)
+    public function __construct(private ModuleUserService $service,public UserService $userService)
     {}
     public function index(){
         return $this->service->repos->searchText();
@@ -27,7 +28,7 @@ class ModuleUserController extends Controller
         $user=auth()->user();
         $data['user_id']=$user->id;
         if($user->status==eStatus::ADMIN->value || $user->status==eStatus::SUPER_ADMIN->value || $user->status==eStatus::PROFESSEUR->value){
-            return response(['errors'=>['error'=>"Vous ne pouvez pas effectuer cet opération, veuillez contacter administrateur de site. Merci !"]],422);
+            return response(['errors'=>['error'=>"Vous ne pouvez pas effectuer cette opération, veuillez contacter l'administrateur du site. Merci !"]],422);
         }
         $module=$this->service->repos->findModule($data["module_id"]);
         if($this->service->repos->subscriber($data['user_id'],$data['module_id'])){
@@ -37,23 +38,26 @@ class ModuleUserController extends Controller
             return response(['errors'=>['error'=>'Vous êtes déja abonné(e) à ce module. Merci !']],422);
         }
         if($this->service->repos->moduelExistForUserCancel($data['user_id'],$data['module_id'])){
-            return response(['errors'=>['error'=>"Votre abonnement a été annulé, veuillez contacter l'administrateur de site. Merci !"]],422);
+            return response(['errors'=>['error'=>"Votre abonnement a été annulé, veuillez contacter l'administrateur du site. Merci !"]],422);
         }
         if(!$module){
-            return response(['errors'=>['error'=>'Ressource existe pas']],422);
+            return response(['errors'=>['error'=>"Ressource existe pas"]],422);
         }
         $module=$this->service->repos->findModule($data["module_id"]);
         $data["module_id"]=$module->id;
         $data["somme"]=$module->promo_price?$module->promo_price:$module->price;
         $data["title"]=$module->title;
         // NOTIFICATION
+        $this->userService->update($data['user_id'],['status'=>eStatus::ETUDIANT->value]);
         $item=$this->service->create($data);
         $this->service->createNotication($item);
         return response("Votre demande a été envoyée, l’équipe AKYDEMY vous contactera !",201);
     }
+
     public function show($id){
         return response($this->service->repos->find($id,['*']),200);
     }
+    
     public function attestationsUser(){
          $id=auth()->user()->id;
         return response($this->service->repos->attestationUser($id),200);
@@ -112,6 +116,7 @@ class ModuleUserController extends Controller
         if(!$module){
             return response(['errors'=>['error'=>'Ressource existe pas']],404);
         }
+
         $item= $this->service->update($id,$data);
         if($request->hasFile('fichier')){
             $file_name=ManagerFile::genererChaineAleatoire(2).'-'.Carbon::now()->format('Y-m-d').'-'.str_replace(['ô','Ô','é'],['o','o','e','É'],strtolower($item->type));
@@ -121,12 +126,17 @@ class ModuleUserController extends Controller
             $item->name_attestation=$file_name['name'];
             $item->save();
         }
+
         $item->owner_id=$module->owner_id;
         $this->service->createNoticationForTeacherAndStudiant($item);
         return response($item,200);
     }
     
     public function destroy($id){
+        $item=$this->service->repos->find($id);
+        if($item && $item->url_attestation){
+            ManagerFile::deleteWithUrl($item->url_attestation);
+        }
         return response($this->service->delete($id),204);
     }
 }

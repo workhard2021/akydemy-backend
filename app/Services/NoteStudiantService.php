@@ -14,4 +14,10 @@ class NoteStudiantService extends ServiceBase{
           $item?->update($data);
           return $item;
      }
+     public function updateNoteWithEvaluation($evaluation_id,$data){
+          $item=$this->repos->model
+          ->where('evaluation_id',$evaluation_id);
+          $item?->update($data);
+          return $item;
+     }
 }

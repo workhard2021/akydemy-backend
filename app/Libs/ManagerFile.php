@@ -4,9 +4,8 @@ use Illuminate\Support\Facades\Storage;
 class ManagerFile {
    public static function upload($arrayFileName,$folder,$file_name=null){
       $folder = $folder . DIRECTORY_SEPARATOR;
-      //$identify=$identify?$identify: self::genererChaineAleatoire();
-      // $name =  $identify . '_' . $arrayFileName->getClientOriginalName();
-      $name = $file_name .'.'. $arrayFileName->getClientOriginalExtension();
+      $name= substr($arrayFileName->getClientOriginalName(),-50);
+      $name= today()->format('Y-m-d').'_'.$name;
       $name= self::removeSpeciauxCaractere($name);
       $arrayFileName->storeAs($folder,$name,config('ressources-file.disk'));
       return ['url'=>$folder.$name,'name'=>$name];

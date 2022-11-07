@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Libs\ManagerFile;
-use App\Services\CategorieService;
-use Illuminate\Http\Request;
-
 class ManagerFileController extends Controller
 {
     public function __construct(){}

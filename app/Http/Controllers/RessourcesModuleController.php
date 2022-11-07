@@ -83,8 +83,8 @@ class RessourcesModuleController extends Controller
             ManagerFile::deleteWithUrl($item->url_movie);
             $item->url_pdf=$file_name['url'];
             $item->name_pdf=$file_name['name'];
-            $item->url_movie="";
-            $item->name_movie="";
+            $item->url_movie=null;
+            $item->name_movie=null;
             $item->save();
         }
         return response($item,200);

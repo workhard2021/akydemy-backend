@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 use App\Contracts\RepositoryBase;
+use App\Enums\eStatus;
 use App\Models\UserNotification;
 
 class UserNotificationRepository extends RepositoryBase{
@@ -20,14 +21,18 @@ class UserNotificationRepository extends RepositoryBase{
           ])->latest('created_at')->paginate(12);
     }
     public function currentUserNoteNotRead($view_notif=false){
-        $userId=auth()->user()->id;
-        return $this->model->where([ 
-                ['user_id',$userId],
-                ['view_notif',$view_notif],
-                ['is_teacher',false]
-             ])->orWhere([
-                ['teacher_id',$userId],
-                ['view_notif',$view_notif]
-             ])->count();
+        $user=auth()->user();
+        if( $user && $user->status==eStatus::PROFESSEUR->value){
+            return $this->model->where([ 
+            ['teacher_id',$user->id],
+            ['view_notif',$view_notif],
+            ['is_teacher',true]
+            ])->count();
+        }
+        return $this->model->where([
+             ['is_teacher',false],
+             ['user_id',$user->id],
+             ['view_notif',$view_notif]
+         ])->count();      
      }  
 }

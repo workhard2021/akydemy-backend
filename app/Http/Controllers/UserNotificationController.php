@@ -33,7 +33,6 @@ class UserNotificationController extends Controller
          $data=$request->validate([
              'event_id'=>'required|numeric'
          ]);
-         $data['user_id']=auth()->user()->id;
          return response($this->service->update($id,$data));
     }
     public function destroy($id){
