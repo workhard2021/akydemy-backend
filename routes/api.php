@@ -44,7 +44,7 @@ Route::prefix(config('app.version'))->group(function(){
          Route::post('/reset-password',[NewPasswordController::class, 'store'])
                 ->middleware('guest')
                 ->name('password.update');
-        Route::post('test-video',function(Request $request){
+        Route::get('test-video',function(Request $request){
                 // $data=$request->validate(['fichier'=>'nullable']);
                 // $name= today()->format('Y-m-d').'_'.$data['fichier']->getClientOriginalName();
                 // $name= substr($name,-30);
