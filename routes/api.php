@@ -44,16 +44,13 @@ Route::prefix(config('app.version'))->group(function(){
          Route::post('/reset-password',[NewPasswordController::class, 'store'])
                 ->middleware('guest')
                 ->name('password.update');
-        // Route::post('test-video',function(Request $request){
-        //         $data=$request->validate(['fichier'=>'nullable']);
-        //     //    return $data;
-        //         $name= today()->format('Y-m-d').'_'.$data['fichier']->getClientOriginalName();
-        //         $name= substr($name,-30);
-        //         return $name;
-        //         $data=$data['fichier']?->storeAs('test',$name,'s3');
-        //         //$data=Storage::disk('s3')->url('akydemy/categories/2/module/2/video/26SqxInywo.mp4');
-        //         return $data;    
-        // });
+        Route::post('test-video',function(Request $request){
+                // $data=$request->validate(['fichier'=>'nullable']);
+                // $name= today()->format('Y-m-d').'_'.$data['fichier']->getClientOriginalName();
+                // $name= substr($name,-30);
+                return 'test-video';
+                // return $name;    
+        });
         //  Route::get('/test',function(){
         //        Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>""]));
         //        return "test";
