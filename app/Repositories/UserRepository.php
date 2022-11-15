@@ -27,9 +27,7 @@ class UserRepository extends RepositoryBase{
         })->join('module_users','module_users.user_id','=','users.id')
         ->join('modules','module_users.module_id','=','modules.id')
         ->join('categories','categories.id','=','modules.categorie_id')
-        // ->leftJoin('evaluations','evaluations.module_id','=','modules.id')
-        ->leftJoin('note_studiants','note_studiants.user_id','=','users.id')
-        ->select('users.*','note_studiants.is_closed','note_studiants.type as type_note_studiants','note_studiants.note_teacher','module_users.id as subscription_id','module_users.title','somme','module_users.type','status_attestation','module_users.is_valide','module_users.url_attestation','module_users.name_attestation','module_users.description as description','module_users.user_id as user_id','module_users.module_id as module_id','module_users.id as module_users_id',
+        ->select('users.*','module_users.id as subscription_id','module_users.title','somme','module_users.type','status_attestation','module_users.is_valide','module_users.url_attestation','module_users.name_attestation','module_users.description as description','module_users.user_id as user_id','module_users.module_id as module_id','module_users.id as module_users_id',
           'module_users.created_at as subscription_created_at','module_users.updated_at as subscription_updated_at','module_users.tel as subscription_tel',
           'modules.id as module_id','modules.title as module_title','categories.name as categorie_name','categories.id as categorie_id')
         ->when($categorieId!='default',function($query)use($categorieId){
@@ -134,4 +132,28 @@ class UserRepository extends RepositoryBase{
     //           }]);
     //     }])->first();
     // }
+    public function noteStudiants($search,$country,$moduleId,$date,$type){
+        return $this->model->when($search!='default',function($query)use($search){
+                 $query->where(function($q)use($search){
+                    $q->where('email','like','%'.$search.'%')
+                    ->orWhere('first_name','like','%'.$search.'%')
+                    ->orWhere('last_name','like','%'.$search.'%');
+                });
+        })->when($country!='default',function($query)use($country){
+            $query->where('users.country',$country);
+        })->when($type!='default',function($query)use($type){
+            $query->where('evals.type',$type);
+        })->join('note_studiants as noteStds','noteStds.user_id','=','users.id')
+        ->join('modules as mod','mod.id','=','noteStds.module_id')
+        ->join('evaluations as evals','evals.id','=','noteStds.evaluation_id')
+        ->select('users.*','noteStds.note_teacher','mod.title as title_module','noteStds.module_id',
+          'evals.id as evaluations_id','evals.title as evaluation_title','evals.is_closed as is_closed','evals.type as type','evals.visibility_date_limit')
+       ->when($moduleId!='default',function($query)use($moduleId){
+            $query->where('mod.id',$moduleId);
+        })->when(($date!='default'),function($query)use($date){
+            $query->whereDate('evals.visibility_date_limit','=',$date);
+        })->where('users.email','!=','akydemy@gmail.com')
+        ->whereIn('users.status',[eStatus::ETUDIANT->value,eStatus::AUTRE->value])
+        ->latest('noteStds.created_at','first_name','last_name')->paginate($this->nbr);
+    }
 }

@@ -117,6 +117,7 @@ Route::prefix(config('app.version'))->group(function(){
                 Route::delete('current-users',[UserController::class,'deleteCurrentUser'])->name('delete-current-users');       
                 Route::get('logout/{id}',[UserController::class,'logout'])->name('logout-users');
                 Route::get('all/{search?}/{country?}/{dateBegin?}/{dateEnd?}',[UserController::class,'allUsers'])->name('allUsers-users');
+                Route::get('users-notes-etudiants/{search?}/{country?}/{moduleId?}/{date?}/{type?}',[UserController::class,'noteStudiants'])->name('users-notes-etudiants');
                 Route::get('{search?}/{country?}/{categorieId?}/{moduleId?}/{is_valide?}/{dateBegin?}/{dateEnd?}',[UserController::class,'index'])->name('index-users');
             });
             Route::prefix('categories')->group(function(){

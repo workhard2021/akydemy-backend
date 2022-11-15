@@ -18,6 +18,10 @@ class UserController extends Controller
     public function index($search='',$country='',$categorieId='',$moduleId='',$is_valide='',$dateBegin='',$dateEnd=''){
         return $this->service->repos->searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd);
     }
+    public function noteStudiants($search='',$country='',$moduleId='',$date='',$type=''){
+        return $this->service->repos->noteStudiants($search,$country,$moduleId,$date,$type);
+    }
+    
     public function currentUserEvaluationModule(){
         return $this->service->repos->currentUserEvaluationModule();
     }
