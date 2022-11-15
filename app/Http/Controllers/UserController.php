@@ -16,9 +16,15 @@ class UserController extends Controller
     public function __construct(private UserService $service){}
     
     public function index($search='',$country='',$categorieId='',$moduleId='',$is_valide='',$dateBegin='',$dateEnd=''){
+        if(auth()->user()->status!=eStatus::ADMIN->value && auth()->user()->status!=eStatus::SUPER_ADMIN->value){
+           return response('Non autorisé',403);
+        }
         return $this->service->repos->searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd);
     }
     public function noteStudiants($search='',$country='',$moduleId='',$date='',$type=''){
+        if(auth()->user()->status!=eStatus::ADMIN->value && auth()->user()->status!=eStatus::SUPER_ADMIN->value){
+            return response('Non autorisé',403);
+        }
         return $this->service->repos->noteStudiants($search,$country,$moduleId,$date,$type);
     }
     
