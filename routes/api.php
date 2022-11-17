@@ -37,9 +37,10 @@ use Illuminate\Support\Facades\Storage;
 */
 // PUBLIC ROUTES
 Route::get('/test',function(){
-    Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>"bsdsd"]));
+    Mail::to("Abdoulayekarembe18@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>"bONJOUR KARAMBE"]));
     return "test";
 });
+
 Route::prefix(config('app.version'))->group(function(){
          //NOT AUTH
          Route::post('/forgot-password',[PasswordResetLinkController::class, 'store'])
