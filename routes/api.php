@@ -36,6 +36,10 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 // PUBLIC ROUTES
+Route::get('/test',function(){
+    Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>"bsdsd"]));
+    return "test";
+});
 Route::prefix(config('app.version'))->group(function(){
          //NOT AUTH
          Route::post('/forgot-password',[PasswordResetLinkController::class, 'store'])
@@ -51,10 +55,7 @@ Route::prefix(config('app.version'))->group(function(){
                 return 'test-video';
                 // return $name;    
         });
-        //  Route::get('/test',function(){
-        //        Mail::to("patronp60@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>""]));
-        //        return "test";
-        //  });
+         
          Route::prefix(config('app.name'))->group(function(){
                Route::get('examens-evalutions/{Id}/{Date}/{url_file}',[ManagerFileController::class,'download']);
                // Route::get('/ressources/modules/{Id}/EVALUATION/{Date}/{url_file}',[ManagerFileController::class,'download']);

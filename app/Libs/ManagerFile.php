@@ -146,8 +146,8 @@ class ManagerFile {
       return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',ceil($longueur / strlen($x)))), 1, $longueur);
    }
    public static function removeSpeciauxCaractere($text=''){
-       $search=array(' ','\/','!','@','%', '$', '{', '}', '(',')','Ø','[',']','^','', '~', '*', '<', '>', '?', ':', '|', '\\');
+       $search=array(' ','\/','#','â','Â','é','É','è','È','Ô','ô','Û','û','ù','!','@','%', '$', '{', '}', '(',')','Ø','[',']','^','', '~', '*', '<', '>', '?', ':', '|', '\\');
        $text = strlen($text) > 70 ? substr($text,-70) : $text;
-       return str_replace($search,'',$text);
+       return str_replace($search,array('-','-','-','-','a','A','e','E','e','E','O','o','U','u','u','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'),$text);
    }
 }

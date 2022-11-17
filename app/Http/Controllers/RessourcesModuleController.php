@@ -40,7 +40,16 @@ class RessourcesModuleController extends Controller
         if($request->hasFile('video')){
             $module=$item->module;
             $path=config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video";
-            EventSendFile::dispatch($item,$path);
+            $file_name=''; //$item->id.ManagerFile::genererChaineAleatoire(8);
+            $file_name=ManagerFile::upload(request()->file('video'),$path,$file_name);
+            ManagerFile::deleteWithUrl($item->url_movie_remove);
+            ManagerFile::deleteWithUrl($item->url_pdf);
+            $item->url_pdf="";
+            $item->name_pdf="";
+            $item->url_movie=ManagerFile::getFile($file_name['url'],true);
+            $item->url_movie_remove=$file_name['url'];
+            $item->name_movie=$file_name['name'];
+            $item->save();
         }
 
         if($request->hasFile('fichier')){
@@ -73,17 +82,28 @@ class RessourcesModuleController extends Controller
         if($request->hasFile('video')){
             $module=$item->module;
             $path=config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video";
-            EventSendFile::dispatch($item,$path,true);
+            $file_name=''; //$item->id.ManagerFile::genererChaineAleatoire(8);
+            $file_name=ManagerFile::upload(request()->file('video'),$path,$file_name);
+            ManagerFile::deleteWithUrl($item->url_movie_remove);
+            ManagerFile::deleteWithUrl($item->url_pdf);
+            $item->url_pdf="";
+            $item->name_pdf="";
+            $item->url_movie=ManagerFile::getFile($file_name['url'],true);
+            $item->url_movie_remove=$file_name['url'];
+            $item->name_movie=$file_name['name'];
+            $item->save();
         }
+        
         if($request->hasFile('fichier')){
             $module=$item->module;
             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
             $file_name=ManagerFile::upload($data['fichier'],config('ressources-file.modules')."/$module->categorie_id/module/$module->id/pdf",$file_name);
             ManagerFile::deleteWithUrl($item->url_pdf);
-            ManagerFile::deleteWithUrl($item->url_movie);
+            ManagerFile::deleteWithUrl($item->url_movie_remove);
             $item->url_pdf=$file_name['url'];
             $item->name_pdf=$file_name['name'];
             $item->url_movie=null;
+            $item->url_movie_remove=null;
             $item->name_movie=null;
             $item->save();
         }
@@ -95,8 +115,8 @@ class RessourcesModuleController extends Controller
         if($item && $item->url_pdf){
             ManagerFile::deleteWithUrl($item->url_pdf);
         }
-        if($item && $item->url_movie){
-            ManagerFile::deleteWithUrl($item->url_movie);
+        if($item && $item->url_movie_remove){
+            ManagerFile::deleteWithUrl($item->url_movie_remove);
         }
         return $this->service->delete($id);
     }
