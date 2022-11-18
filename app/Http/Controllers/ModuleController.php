@@ -28,7 +28,7 @@ class ModuleController extends Controller
     }
     public function create(Request $request){
         $data=$request->validate([
-            'title' => 'required|string|max:50|unique:modules',
+            'title' => 'required|string|max:250|unique:modules',
             'sub_title' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'promo_price' => 'nullable|numeric',
@@ -69,7 +69,7 @@ class ModuleController extends Controller
     }
     public function update(Request $request,$id){
          $data=$request->validate([
-            'title' => 'required|string|max:50',
+            'title' => 'required|string|max:250',
             'sub_title' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'promo_price' => 'nullable|numeric',

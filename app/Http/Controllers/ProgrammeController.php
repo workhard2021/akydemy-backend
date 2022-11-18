@@ -59,7 +59,7 @@ class ProgrammeController extends Controller
     }
     public function update(Request $request,$id){
         $data=$request->validate([
-            'title'=>'required|string',
+            'title'=>'required|string|max:250',
             'sub_title'=>'required|string|max:250',
             'is_active'=>'nullable|boolean',
             'module_id'=>'required',

@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Storage;
 class ManagerFile {
    public static function upload($arrayFileName,$folder,$file_name=null){
       $folder = $folder . DIRECTORY_SEPARATOR;
-      $name= substr($arrayFileName->getClientOriginalName(),-50);
-      $name= today()->format('Y-m-d').'_'.$name;
+      $name= $arrayFileName->getClientOriginalName();
+      $name= today()->format('Y-m-d').'-'.$name;
       $name= self::removeSpeciauxCaractere($name);
       $arrayFileName->storeAs($folder,$name,config('ressources-file.disk'));
       return ['url'=>$folder.$name,'name'=>$name];
@@ -147,7 +147,7 @@ class ManagerFile {
    }
    public static function removeSpeciauxCaractere($text=''){
        $search=array(' ','\/','#','â','Â','é','É','è','È','Ô','ô','Û','û','ù','!','@','%', '$', '{', '}', '(',')','Ø','[',']','^','', '~', '*', '<', '>', '?', ':', '|', '\\');
-       $text = strlen($text) > 70 ? substr($text,-70) : $text;
+      //  $text = strlen($text) > 70 ? substr($text,-70) : $text;
        return str_replace($search,array('-','-','-','-','a','A','e','E','e','E','O','o','U','u','u','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'),$text);
    }
 }
