@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call([
                 CategoriesSeeder::class,
-                CountrySeeder::class
+                CountrySeeder::class,
+                RoleSeeder::class
         ]);
     }
 }

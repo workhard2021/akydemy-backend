@@ -2,20 +2,18 @@
 namespace App\Repositories;
 use App\Contracts\RepositoryBase;
 use App\Enums\eStatus;
+use App\Models\Evaluation;
 use App\Models\User;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository extends RepositoryBase{
     public function __construct(public User $model)
     {}
-    public function  currentUser($id){
-        return $this->model->where('users.id',$id)->first();
+    public function  currentUser(){
+        return request()->user()->with('roles:id,name')->first();
     }
-    public function userByStatusForProf($status){
-        return $this->model->where('status',$status)->select('id','first_name','last_name','profession','description','url_file')
-         ->oldest('first_name','last_name')->get(); 
-    }
-    public function searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd){
+    public function searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$ownerId,$dateBegin,$dateEnd){
         return $this->model->when($search!='default',function($query)use($search){
                  $query->where(function($q)use($search){
                     $q->where('email','like','%'.$search.'%')
@@ -36,11 +34,37 @@ class UserRepository extends RepositoryBase{
             $query->where('modules.id',$moduleId);
         })->when($is_valide!='default',function($query)use($is_valide){
             $query->where('module_users.is_valide',$is_valide);
+        })->when($ownerId!='default',function($query)use($ownerId){
+            $query->where('modules.owner_id',$ownerId);
         })->when(($dateEnd!='default' || $dateBegin!='default'),function($query)use($dateEnd,$dateBegin){
             $query->whereDate('module_users.created_at','<=',$dateEnd)
             ->whereDate('module_users.created_at','>=',$dateBegin);
-        })->where('users.email','!=','akydemy@gmail.com')
-        ->whereIn('users.status',[eStatus::ETUDIANT->value,eStatus::AUTRE->value])->latest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
+        })->latest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
+    }
+
+    public function  studiantForTeacher($search,$moduleId,$is_valide,$dateBegin,$dateEnd){
+        return $this->model->when($search!='default',function($query)use($search){
+            $query->where(function($q)use($search){
+               $q->where('email','like','%'.$search.'%')
+               ->orWhere('first_name','like','%'.$search.'%')
+               ->orWhere('last_name','like','%'.$search.'%');
+            });
+   })
+   ->join('module_users','module_users.user_id','=','users.id')
+   ->join('modules','module_users.module_id','=','modules.id')
+   ->join('categories','categories.id','=','modules.categorie_id')
+   ->select('users.*','module_users.id as subscription_id','module_users.title','somme','module_users.type','status_attestation','module_users.is_valide','module_users.url_attestation','module_users.name_attestation','module_users.description as description','module_users.user_id as user_id','module_users.module_id as module_id','module_users.id as module_users_id',
+     'module_users.created_at as subscription_created_at','module_users.updated_at as subscription_updated_at','module_users.tel as subscription_tel',
+     'modules.id as module_id','modules.title as module_title','categories.name as categorie_name','categories.id as categorie_id')
+    ->where('modules.owner_id',auth()->user()->id)
+    ->when($moduleId!='default',function($query)use($moduleId){
+       $query->where('modules.id',$moduleId);
+   })->when($is_valide!='default',function($query)use($is_valide){
+       $query->where('module_users.is_valide',$is_valide);
+   })->when(($dateEnd!='default' || $dateBegin!='default'),function($query)use($dateEnd,$dateBegin){
+       $query->whereDate('module_users.created_at','<=',$dateEnd)
+       ->whereDate('module_users.created_at','>=',$dateBegin);
+   })->latest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
     }
 
     public function searchAllUser($search,$country,$dateBegin,$dateEnd){
@@ -56,12 +80,45 @@ class UserRepository extends RepositoryBase{
         })->when(($dateEnd!='default' || $dateBegin!='default'),function($query)use($dateEnd,$dateBegin){
             $query->whereDate('created_at','<=',$dateEnd)
             ->whereDate('created_at','>=',$dateBegin);
-        })->where('users.email','!=','akydemy@gmail.com')->latest('created_at','fist_name','last_name','updated_at')->paginate($this->nbr); 
+        })->where('users.email','!=','akydemy@gmail.com')
+        ->with(["roles"])->latest('created_at','fist_name','last_name','updated_at')->paginate($this->nbr); 
     }
     public function currentUserModules(){
-        return $this->model->where('id',auth()->user()->id)
-         ->with(['subscriptions'=>function($query){
+        $data= $this->model->where('id',auth()->user()->id)
+            ->with(['subscriptions'=>function($query){
             $query->where('is_valide',1)
+            ->with(['modules'=>function($query){
+                $query->where('is_active',1)
+                ->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
+                ->with(['ressourceModdules'=>function($q){
+                       return $q->
+                       where([
+                          ['url_movie','!=',null],
+                          ['url_movie','!=',''],
+                          ['url_movie','!=','null'],
+                       ]);
+                }]);
+            },'modules.ask_evaluations']);
+         }])->first(['id','created_at','updated_at']);
+         $modules=$data->subscriptions->map(function($value){
+              if(!$value->modules){
+                 return $value;
+              }
+              $value->modules->module_id=$value->modules->id;
+              $value->modules->ask=$value->modules->ask_evaluations?->ask;
+              $value->modules->accepted=$value->modules->ask_evaluations?->accepted;
+              $value->modules->created_at_ask_evaluation=$value->modules->ask_evaluations?->created_at;
+              $value->modules->makeHidden('ask_evaluations');
+              return $value->modules;
+         });
+         return $modules;
+    }
+
+    public function teacherModules(){
+        $userId=auth()->user()->id;
+        return $this->model->where('id',$userId)
+         ->with(['subscriptions'=>function($query)use($userId){
+            $query->where('user_id',$userId)
             ->with(['modules'=>function($query){
                 $query->where('is_active',1)->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
                 ->with(['ressourceModdules'=>function($q){
@@ -74,8 +131,7 @@ class UserRepository extends RepositoryBase{
                 }]);
             }]);
          }])?->first();
-    }
-    
+    }    
     public  function currentUserEvaluationModule(){
         // RETURN MODULE FOR EVALUATION ACTIVE 
         return $this->model->
@@ -87,6 +143,7 @@ class UserRepository extends RepositoryBase{
         ->paginate($this->nbr);
     }
     public  function currentUserEvaluations($moduleId){
+        $evaluation=Evaluation::where('module_id',$moduleId)?->first();
         return $this->model->
          where('users.id',auth()->user()->id)
         ->where('modules.id',$moduleId)
@@ -95,14 +152,16 @@ class UserRepository extends RepositoryBase{
         ->join('module_users','module_users.user_id','=','users.id')
         ->join('modules','modules.id','=','module_users.module_id')
         ->join('evaluations','evaluations.module_id','=','modules.id')
+        ->join('ask_evaluations','ask_evaluations.module_id','=','modules.id')
         ->leftJoin('note_studiants','note_studiants.evaluation_id','=','evaluations.id')
         ->select('evaluations.*',
         'note_studiants.id as note_studiant_id',
-        // 'note','note_teacher',
         'note_studiants.url_file as note_studiant_url_file',
         'note_studiants.name_file as note_studiant_name_file',
-        'evaluations.module_id as note_studiant_module_id'
-        )
+        'evaluations.module_id as note_studiant_module_id',
+        'ask_evaluations.created_at'
+        )->where('ask_evaluations.accepted',true)
+        ->where('ask_evaluations.created_at','>=',now()->diffInDays($evaluation->created_at))
         ->latest('evaluations.created_at')->paginate($this->nbr);
     }
 
@@ -152,8 +211,6 @@ class UserRepository extends RepositoryBase{
             $query->where('mod.id',$moduleId);
         })->when(($date!='default'),function($query)use($date){
             $query->whereDate('evals.visibility_date_limit','=',$date);
-        })->where('users.email','!=','akydemy@gmail.com')
-        ->whereIn('users.status',[eStatus::ETUDIANT->value,eStatus::AUTRE->value])
-        ->latest('noteStds.created_at','first_name','last_name')->paginate($this->nbr);
+        })->latest('noteStds.created_at','first_name','last_name')->paginate($this->nbr);
     }
 }

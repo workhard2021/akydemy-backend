@@ -13,18 +13,22 @@ class ModuleController extends Controller
     {}
     
     public function moduleforExams($search=''){
-        return $this->service->repos->moduleforExams($search);
+        return response($this->service->repos->moduleforExams($search),200);
     }
-    
+
     public function index($search=''){
-        return $this->service->repos->searchText($search);
+        return response($this->service->repos->searchText($search),200);
     }
+
     public function indexPublic($search='default'){
-        return $this->service->repos->allPublic($search);
+        return response($this->service->repos->allPublic($search),200);
     }
 
     public function listNotPaginate(){
-        return $this->service->repos->listNotPaginate();
+        return response($this->service->repos->listNotPaginate(),200);
+    }
+    public function listNotPaginatePublic(){
+        return response($this->service->repos->listNotPaginatePublic(),200);
     }
     public function create(Request $request){
         $data=$request->validate([
@@ -103,5 +107,8 @@ class ModuleController extends Controller
             ManagerFile::deleteDirectory($item->folder_name);
         }
         return $this->service->delete($id);
+    }
+    public function adminModulesVideo(){
+        return $this->service->repos->adminModulesVideo();
     }
 }

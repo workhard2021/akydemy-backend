@@ -13,7 +13,7 @@
        <img src="images/facebook.png"  alt="..."/>
     </a>
   </div>
-  <p class="nom-site">&copy; <a href="{{config('app.frontend_url')}}">{{config('app.name')}}</a> - 2022</p>
+  <p class="nom-site">&copy; <a href="{{config('app.frontend_url')}}">{{config('app.name')}}</a> - {{now()->format('Y')}} </p>
 </footer>
 </body>
 </html>

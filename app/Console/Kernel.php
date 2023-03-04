@@ -2,8 +2,11 @@
 
 namespace App\Console;
 
+use App\Libs\ManagerFile;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,7 +18,17 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        //$schedule->command('inspire')->hourly();
+        $schedule->call(function (){
+            Log::info("remove folder : export-file");
+            ManagerFile::removeFolderLocal('export-file','export');
+        })->dailyAt('5:00');
+        $schedule->call(function (){
+            Log::info("remove file : log.log");
+           if(Storage::disk('log')->exists('logs/laravel.log')){
+                 return  Storage::disk('log')->delete('logs/laravel.log');
+            }
+        })->saturdays();
     }
 
     /**

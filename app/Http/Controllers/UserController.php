@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\eStatus;
 use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
+use App\Models\Role;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,19 +16,19 @@ class UserController extends Controller
 {
     public function __construct(private UserService $service){}
     
-    public function index($search='',$country='',$categorieId='',$moduleId='',$is_valide='',$dateBegin='',$dateEnd=''){
-        if(auth()->user()->status!=eStatus::ADMIN->value && auth()->user()->status!=eStatus::SUPER_ADMIN->value){
-           return response('Non autorisé',403);
-        }
-        return $this->service->repos->searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$dateBegin,$dateEnd);
+    public function index($search='',$country='',$categorieId='',$moduleId='',$is_valide='',$ownerId='',$dateBegin='',$dateEnd=''){
+        return $this->service->repos->searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$ownerId,$dateBegin,$dateEnd);
     }
+    public function studiantForTeacher($search='',$moduleId='',$is_valide='',$dateBegin='',$dateEnd=''){
+          return $this->service->repos->studiantForTeacher($search,$moduleId,$is_valide,$dateBegin,$dateEnd);
+    }
+
     public function noteStudiants($search='',$country='',$moduleId='',$date='',$type=''){
         if(auth()->user()->status!=eStatus::ADMIN->value && auth()->user()->status!=eStatus::SUPER_ADMIN->value){
             return response('Non autorisé',403);
         }
         return $this->service->repos->noteStudiants($search,$country,$moduleId,$date,$type);
     }
-    
     public function currentUserEvaluationModule(){
         return $this->service->repos->currentUserEvaluationModule();
     }
@@ -40,9 +41,6 @@ class UserController extends Controller
     
     public function allUsers($search='',$country='',$dateBegin='',$dateEnd=''){
         return $this->service->repos->searchAllUser($search,$country,$dateBegin,$dateEnd);
-    }
-    public function userByStatusProf(){
-        return $this->service->repos->userByStatusForProf(eStatus::PROFESSEUR->value);
     }
     public function show($id)
     {   $user=$this->service->repos->find($id);
@@ -74,13 +72,11 @@ class UserController extends Controller
                 $item->save();
             }
             if($data['email']=='akydemy@gmail.com'){
-                  $item->status=eStatus::SUPER_ADMIN->value;
-                  $item->save();
+                $roles=Role::get(['id'])->map(function($role){
+                    return $role->id;
+                });
+                $item->roles()->sync($roles);
             }
-            // if($request->has('action') && $request->action==eStatus::SUPER_ADMIN->value){
-            //     return response($item,201);
-            // }
-            // event(new Registered($item));
             return response($user,201);
     }
 
@@ -96,9 +92,9 @@ class UserController extends Controller
            return response($this->service->update($id,$data),200);
     }
 
-    public function updateCurrentUser(Request $request,$id)
+    public function updateCurrentUser(Request $request)
     {    
-           $data = $request->validate([
+            $data = $request->validate([
                "email"=> "required|email|max:100",
                "tel"=> "nullable|string|max:15",
                "first_name"=>"required|string|max:30",
@@ -106,29 +102,29 @@ class UserController extends Controller
                "password"=> "nullable|string|min:3",
                "country"=> "nullable|string|max:50",
                'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
-           ]);
-           $id=$request->user()->id;
-           $data['email']=strtolower($data["email"]);
-           if($this->service->repos->exists("email",$data['email'],'id',$id)){
+            ]);
+            $id=$request->user()->id;
+            $data['email']=strtolower($data["email"]);
+            if($this->service->repos->exists("email",$data['email'],'id',$id)){
               return response(['errors'=>['email'=>['Email existe déja'] ]],422);
-           } 
-           if(!empty($data['password'])){
-             $data['password']=Hash::make($data['password']);
-           }
-           $item= $this->service->update($id,$data);
-           if($request->hasFile('image')){
-             $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
-             $file_name=ManagerFile::upload($data['image'],config('ressources-file.users').'/'.$item->id.'/profile',$file_name);
-             ManagerFile::delete($item->name_file,config('ressources-file.users').'/'.$item->id.'/profile');
-             $item->url_file=$file_name['url'];
-             $item->name_file=$file_name['name'];
-             $item->save();
-           }
-           return response($item,200);
+            } 
+            if(!empty($data['password'])){
+              $data['password']=Hash::make($data['password']);
+            }
+            $item= $this->service->update($id,$data);
+            if($request->hasFile('image')){
+              $file_name=$item->id.ManagerFile::genererChaineAleatoire(8);
+              $file_name=ManagerFile::upload($data['image'],config('ressources-file.users').'/'.$item->id.'/profile',$file_name);
+              ManagerFile::delete($item->name_file,config('ressources-file.users').'/'.$item->id.'/profile');
+              $item->url_file=$file_name['url'];
+              $item->name_file=$file_name['name'];
+              $item->save();
+            }
+           return response($this->service->repos->currentUser(),200);
     }
-    public function currentUser(Request $request,$id)
+    public function currentUser()
     {  
-        return response($this->service->repos->currentUser($request->user()->id),200);
+        return response($this->service->repos->currentUser(),200);
     }
     public function deleteCurrentUser(Request $request)
     {   if(auth()->user->id && auth()->user->url_file){
@@ -185,7 +181,7 @@ class UserController extends Controller
     }
     
 
-    public function logout(Request $request,$id)
+    public function logout(Request $request)
     {
         return response($request->user()->tokens()->delete(),204);
     }
@@ -221,5 +217,8 @@ class UserController extends Controller
     }
     public function currentUserModule(){
          return response($this->service->repos->currentUserModules(),200);
+    }
+    public function teacherModules(){
+        return response($this->service->repos->teacherModules(),200);
     }
 }

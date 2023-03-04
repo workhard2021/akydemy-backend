@@ -2,10 +2,13 @@
 namespace App\Services;
 
 use App\Contracts\ServiceBase;
+use App\Enums\eRole;
+use App\Events\FeedbackEvent;
 use App\Mail\UserNotificationSubscriptionMail;
 use App\Models\User;
 use App\Repositories\ModuleUserRepository;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\TextUI\XmlConfiguration\Group;
 
  class ModuleUserService extends ServiceBase{
 
@@ -31,6 +34,19 @@ use Illuminate\Support\Facades\Mail;
            $item->create($notif);
         }
         $exp_studiant=User::find($notif['user_id']);
+        $user=User::get();
+        $mailAdmin=[];
+        foreach($user as $admin){
+            if(!in_array($admin->email,$mailAdmin)){
+                if(in_array(eRole::ADMIN_ABONNEMENT->value,$admin->roles()->pluck('name')->toArray()) || in_array(eRole::SUPER_ADMIN->value,$admin->roles()->pluck('name')->toArray())){
+                    $mailAdmin=[...$mailAdmin,$admin->email];
+                    $name=ucfirst(strtolower($admin->first_name." ".$admin->last_name));
+                    $notif['title']=__('subscription.title_admin',['title'=>$data->title]);
+                    $notif['description']=__('subscription.message_admin',['name'=>$name]);
+                    Mail::to($admin)->send(new UserNotificationSubscriptionMail($notif));
+                }
+            }
+        }
         Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($notif));
         return $item;     
     }
@@ -91,5 +107,16 @@ use Illuminate\Support\Facades\Mail;
              Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgInactive));
          }
          return true;     
+    }
+    public function emailSuscription($data){
+        if(request()->has('emails')){
+            $data["emails"]=explode(',',request()->emails);
+         }elseif(request()->has('all_user') && request()->all_user){
+            $data['emails']=$this->repos->model->where("is_valide",true)
+            ->distinct("email")->join('users','users.id','=','module_users.user_id')->get(['email'])->toArray();
+         }else{
+            $data['emails']=[];
+         }
+         FeedbackEvent::dispatch($data);
     }
  }

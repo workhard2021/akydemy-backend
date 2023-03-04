@@ -14,10 +14,7 @@ class ProgrammeController extends Controller
     public function __construct(private ProgrammeService $service)
     {}
     public function index($search=''){
-        return $this->service->repos->searchText($search);
-    }
-    public function indexPublic($search='default'){
-        return $this->service->repos->allPublic($search);
+        return response($this->service->repos->searchText($search),200);
     }
     public function create(Request $request){
         $data=$request->validate([

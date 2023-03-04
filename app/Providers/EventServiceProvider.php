@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Events\EventSendFile;
+use App\Events\FeedbackEvent;
+use App\Listeners\FeedbackListener;
 use App\Listeners\ListenerSendFile;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         EventSendFile::class=>[
             ListenerSendFile::class
+        ],
+        FeedbackEvent::class => [
+            FeedbackListener::class
         ]
     ];
 

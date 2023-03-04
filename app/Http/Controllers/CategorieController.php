@@ -14,13 +14,16 @@ class CategorieController extends Controller
     public function listNotPaginate(){
         return $this->service->repos->listNotPaginate();
     }
+    public function listNotPaginatePublic(){
+        return $this->service->repos->listNotPaginatePublic();
+    }
     public function index($search=''){
         return $this->service->repos->searchText($search);
     }
     public function create(Request $request){
         $data=$request->validate([
             'name'=>'required|string|unique:categories',
-            'title'=>'nullable|string|max:250',
+            'title'=>'nullable|string|max:450',
             'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
         ]);
         $item= $this->service->create($data);
@@ -45,7 +48,7 @@ class CategorieController extends Controller
     public function update(Request $request,$id){
         $data=$request->validate([
             'name'=>'required|string',
-            'title'=>'nullable|string|max:250',
+            'title'=>'nullable|string|max:450',
             'image' => 'nullable|max:300000|mimes:'.implode(',',eTypeImage::getValues()),
         ]);
         if($this->service->repos->exists('name',$data['name'],'id',$id)){

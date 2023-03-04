@@ -14,8 +14,17 @@ class ProgrammeRepository extends RepositoryBase{
           ->orWhere([['sub_title','like','%'.strtoupper($search).'%'],['is_active',true]]);
         })->paginate($this->nbr);
     }
+
+    public function searchText($search){
+      return $this->model ->when($search,function($query)use($search){
+        $query->where([['title','like','%'.$search.'%']]
+        )->orWhere([['sub_title','like','%'.$search.'%']])
+        ->orWhere([['title','like','%'.strtoupper($search).'%']])
+        ->orWhere([['sub_title','like','%'.strtoupper($search).'%']]);
+      })->paginate($this->nbr);
+    }
     public function findProgrammeWithProf($id){
-         return $this->model->where('programmes.id',$id)
+         return $this->model->where('programmes.module_id',$id)
          ->join('modules','modules.id','=','programmes.module_id')
          ->join('users','users.id','=','modules.owner_id')
          ->select(

@@ -12,9 +12,11 @@ return [
     | these language lines according to your application's requirements.
     |
     */
+    'title_admin'=> "Nouveau abonnement au module :title",
+    'message_admin' => "Bonjour :name, un utilisateur s'est abonné un module, veuillez vérifier votre espace",
     'type' => ':type',
     'title'=> "Processus d'abonnement au module :title",
-    'message' => 'Bonjour, Votre demande d’abonnement est en cours de Traitement. L’équipe '.config('app.name').' vous contactera très rapidement pour finaliser le processus',
+    'message' => 'Bonjour, votre demande d’abonnement est en cours de Traitement. L’équipe '.config('app.name').' vous contactera très rapidement pour finaliser le processus',
 
     'valide-title' => 'Activation du module',
     'studiant-valide-message' => 'Bonjour, Nous vous informons de la confirmation de votre abonnement au Module :title . L’équipe '.config('app.name').' vous remercie de votre Confiance. Avec '.config('app.name').' Apprenez en toute simplicité et perfectionnez votre niveau.',

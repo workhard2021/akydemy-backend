@@ -12,15 +12,15 @@ use App\Repositories\UserNotificationRepository;
      }
      
     public function update($id,$data,$view_notif=true){
-        
-        if(auth()->user()->status==eStatus::ETUDIANT->value){
-            return $this->repos->model->where($this->repos->model->getKeyName(),$id)
-            ->when()->where('user_id',auth()->user()->id)
+    
+        $this->repos->model->where($this->repos->model->getKeyName(),$id)
+        ->where('is_teacher',false)->where('user_id',auth()->user()->id)
             ->where('event_id',$data['event_id'])
             ->update(['view_notif'=>$view_notif]);
-        }
-        return $this->repos->model->where($this->repos->model->getKeyName(),$id)
-            ->when()->where('teacher_id',auth()->user()->id)
+
+        $this->repos->model->where($this->repos->model->getKeyName(),$id)
+            ->where('is_teacher',true)
+            ->where('teacher_id',auth()->user()->id)
             ->where('event_id',$data['event_id'])
             ->update(['view_notif'=>$view_notif]);
     }

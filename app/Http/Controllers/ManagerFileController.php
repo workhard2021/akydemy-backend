@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Libs\ManagerFile;
+
 class ManagerFileController extends Controller
 {
     public function __construct(){}
@@ -12,5 +13,9 @@ class ManagerFileController extends Controller
            return ManagerFile::getFile($url_file);
         }
         return '';
+    }
+    public function generateZip(){
+        $files=request()->all();
+        return ManagerFile::generateZip($files);
     }
 }

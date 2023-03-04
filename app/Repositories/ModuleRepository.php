@@ -14,7 +14,9 @@ class ModuleRepository extends RepositoryBase{
          )->orWhere([['sub_title','like','%'.$search.'%'],['is_active',true]])
           ->orWhere([['title','like','%'.strtoupper($search).'%'],['is_active',true]])
           ->orWhere([['sub_title','like','%'.strtoupper($search).'%'],['is_active',true]]);
-      })->paginate($this->nbr);
+      })->join('users as teacher','teacher.id','=','modules.owner_id')
+      ->select('modules.id','modules.title','modules.sub_title','modules.url_file as image_module','teacher.first_name','teacher.last_name','teacher.url_file as image_teacher')
+      ->paginate($this->nbr);
     }
 
     public function showModuleRessource($id){
@@ -34,5 +36,24 @@ class ModuleRepository extends RepositoryBase{
                  ->orWhere('sub_title','like','%'.strtoupper($search).'%');
             })->paginate($this->nbr);
     }
-    
+
+    public function listNotPaginate(){
+      return $this->model->select('id','title')->orderBy('created_at','asc')->get();
+    }
+
+    public function listNotPaginatePublic(){
+      return $this->model->select('id','title')->where('is_active',true)->orderBy('created_at','asc')->get();
+    }  
+
+    public function adminModulesVideo(){
+        return $this->model->where('is_active',1)
+            ->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
+            ->with(['ressourceModdules'=>function($q){
+              return $q->where([
+                 ['url_movie','!=',null],
+                 ['url_movie','!=',''],
+                 ['url_movie','!=','null'],
+              ]);
+       }])->get();
+    }    
 }

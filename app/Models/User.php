@@ -12,7 +12,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
-{
+{   
+    protected $table="users";
     use HasApiTokens, HasFactory, Notifiable,Searchable;//SoftDeletes
 
     /**
@@ -53,6 +54,9 @@ class User extends Authenticatable
     public function subscriptions() {
         return $this->hasMany(ModuleUser::class);
     }
+    public function ask_evaluations(){
+        return $this->hasMany(AskEvaluation::class);
+    }
 
     public function cours(){
         return $this->belongsToMany(Module::class,'module_users');
@@ -80,5 +84,18 @@ class User extends Authenticatable
         'last_name' => $this->last_name,
         'email' => $this->email,
        ];
+    }
+    
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRoles(array $roles){
+        return $this->roles()->whereIn('name',$roles)->exists();
+    }
+
+    public function is_admin($role){
+        return $this->hasRoles($role);
     }
 }

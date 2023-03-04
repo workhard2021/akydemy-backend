@@ -1,11 +1,15 @@
 <?php
 namespace App\Libs;
+
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use ZipArchive;
+
 class ManagerFile {
    public static function upload($arrayFileName,$folder,$file_name=null){
       $folder = $folder . DIRECTORY_SEPARATOR;
       $name= $arrayFileName->getClientOriginalName();
-      $name= today()->format('Y-m-d').'-'.$name;
+      $name= time().'-'.$name;
       $name= self::removeSpeciauxCaractere($name);
       $arrayFileName->storeAs($folder,$name,config('ressources-file.disk'));
       return ['url'=>$folder.$name,'name'=>$name];
@@ -121,7 +125,7 @@ class ManagerFile {
    public static function exist($filenames,$folder)
    {
       $newArray = [];
-      $path = config("ressources-file.$folder") . DIRECTORY_SEPARATOR;
+      $path = config("ressources-file.$folder").DIRECTORY_SEPARATOR;
       if (!is_array($filenames)) {
          $filenames=[$filenames];
       }
@@ -150,4 +154,33 @@ class ManagerFile {
       //  $text = strlen($text) > 70 ? substr($text,-70) : $text;
        return str_replace($search,array('-','-','-','-','a','A','e','E','e','E','O','o','U','u','u','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'),$text);
    }
+
+   public static function GenerateZip($data)
+   {     
+         $zip=new ZipArchive();              
+         $fileName = str_replace(' ',"-",$data['name']).'.zip';
+        if ($zip->open(public_path("export-file/".$fileName), ZipArchive::CREATE) === TRUE)
+        {   
+            $files=array();
+             foreach($data['fileIds'] as $value){
+               $path=str_replace('storage/','',$value);
+               if(Storage::disk(config('ressources-file.disk'))->exists($path)){
+                  $path=storage_path().DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.$value;
+                  $files= array(...$files,$path);
+               }
+            }
+            foreach ($files as $key => $value) {
+                $file = basename($value);
+                $zip->addFile($value, $file);
+            }
+            $zip->close();
+         }
+         return $fileName;
+    }
+    public static function removeFolderLocal($name='export-file',$disk='export'){
+      if($name){
+         Storage::disk($disk)->deleteDirectory($name);
+      }
+      Storage::disk($disk)->makeDirectory($name);
+    }
 }

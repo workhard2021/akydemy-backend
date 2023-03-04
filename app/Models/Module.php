@@ -16,11 +16,18 @@ class Module extends Model
     public function users(){
         return $this->belongsToMany(User::class,'module_users');
     }
+    
+    public function categorie(){
+        return $this->belongsTo(Module::class);
+    }
+    public function ask_evaluations(){
+        return $this->hasOne(AskEvaluation::class);
+    }
     public function subscriptions() {
         return $this->hasMany(ModuleUser::class);
     }
     public function topics() {
-        return $this->hsMany(Topic::class);
+        return $this->hasMany(Topic::class);
     }
     public function ressourceModdules(){
         return $this->hasMany(RessourcesModule::class);

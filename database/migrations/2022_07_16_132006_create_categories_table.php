@@ -16,10 +16,10 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('title')->nullable();
-            $table->string('url_file',200)->nullable();
-            $table->string('name_file',200)->nullable();
-            $table->string('folder_name',200)->nullable();
+            $table->text('title')->nullable();
+            $table->string('url_file',250)->nullable();
+            $table->string('name_file',250)->nullable();
+            $table->string('folder_name',250)->nullable();
             $table->timestamps();
         });
     }

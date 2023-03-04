@@ -35,7 +35,16 @@ return [
             'root' => storage_path('app'),
             'throw' => false,
         ],
-
+        'export' => [
+            'driver' => 'local',
+            'root' => public_path(),
+            'throw' => false,
+        ],
+        'log' => [
+            'driver' => 'local',
+            'root' => storage_path(),
+            'throw' => false,
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

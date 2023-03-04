@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\AskEvaluationController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\AvisController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\EvaluationController;
+use App\Http\Controllers\FastExcelController;
 use App\Http\Controllers\ManagerFileController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\ModuleController;
@@ -13,17 +16,15 @@ use App\Http\Controllers\NoteStudiantController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProgrammeController;
 use App\Http\Controllers\PubliciteController;
-use App\Http\Controllers\QuizController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\RessourcesModuleController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RoleUserController;
+use App\Http\Controllers\SendMessageController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserNotificationController;
-use App\Mail\UserNotificationSubscriptionMail;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,28 +37,25 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 // PUBLIC ROUTES
+
+
+
 Route::get('/test',function(){
-    Mail::to("Abdoulayekarembe18@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>"bONJOUR KARAMBE"]));
+    //Mail::to("Abdoulayekarembe18@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>"bONJOUR KARAMBE"]));
+    return config('app.version');
     return "test";
 });
 
 Route::prefix(config('app.version'))->group(function(){
-         //NOT AUTH
-         Route::post('/forgot-password',[PasswordResetLinkController::class, 'store'])
+        //NOT AUTH  
+        Route::post('/generateZip',[ManagerFileController::class,'generateZip']);
+        Route::post('/forgot-password',[PasswordResetLinkController::class, 'store'])
                 ->middleware('guest')
                 ->name('password.email');
          Route::post('/reset-password',[NewPasswordController::class, 'store'])
                 ->middleware('guest')
                 ->name('password.update');
-        Route::get('test-video',function(Request $request){
-                // $data=$request->validate(['fichier'=>'nullable']);
-                // $name= today()->format('Y-m-d').'_'.$data['fichier']->getClientOriginalName();
-                // $name= substr($name,-30);
-                return 'test-video';
-                // return $name;    
-        });
-         
-         Route::prefix(config('app.name'))->group(function(){
+        Route::prefix(config('app.name'))->group(function(){
                Route::get('examens-evalutions/{Id}/{Date}/{url_file}',[ManagerFileController::class,'download']);
                // Route::get('/ressources/modules/{Id}/EVALUATION/{Date}/{url_file}',[ManagerFileController::class,'download']);
                Route::get('public/{url_file}',[ManagerFileController::class,'download']);
@@ -72,7 +70,6 @@ Route::prefix(config('app.version'))->group(function(){
                Route::get('/users/{Id}/{moduleId}/{type}/{date}/{url_file}',[ManagerFileController::class,'download']);
         });
         Route::prefix('users')->group(function(){
-            Route::get('/status/professeur',[UserController::class,'userByStatusProf'])->name('userByStatusProf-users');
             Route::post('',[UserController::class,'create'])->name('create-users');
             Route::post('login',[UserController::class,'login'])->name('login-users');
             Route::post('reset-password',[UserController::class,'resetPassword'])->name('reset-password-users');
@@ -81,110 +78,155 @@ Route::prefix(config('app.version'))->group(function(){
         });
         Route::get('topics/module/{moduleId?}/{search?}',[TopicController::class,'topicsModule'])->name('topicsModule-public-modules');
         Route::get('/messages/topic/{topicId}',[MessagesController::class,'messagesTopic'])->name('messagesTopic-public-modules');
-        Route::get('topics/{id}',[TopicController::class,'show'])->name('show-public-topics');
-        
-        Route::get('modules',[ModuleController::class,'listNotPaginate'])->name('listNotPaginate-modules');
+        Route::get('/topics/{id}',[TopicController::class,'show'])->name('show-public-topics');
+        Route::get('modules/list-public',[ModuleController::class,'listNotPaginatePublic'])->name('listNotPaginatePublic-modules');
         Route::get('modules/public/{search?}',[ModuleController::class,'indexPublic'])->name('indexPublic-modules');
         Route::get('modules/{id}',[ModuleController::class,'show'])->name('show-public-modules');
         Route::get('modules/{id}/ressources',[ModuleController::class,'showModuleRessource'])->name('showModuleRessource-modules');
-        Route::get('programmes/public/{search?}',[ProgrammeController::class,'indexPublic'])->name('indexPublic-programmes');
-        Route::get('programmes/{id}',[ProgrammeController::class,'show'])->name('showPublic-programmes');
+        Route::get('programmes/module/{id}',[ProgrammeController::class,'show'])->name('showPublic-programmes');
         Route::get('pays',[CountryController::class,'indexPublic'])->name('indexPublic-pays');
-        Route::get('/pages/name/{name}',[PageController::class,'showPublic'])->name('showPublic-pages');
-        Route::get('publicites',[PubliciteController::class,'lists'])->name('lists-public-publicites');
-       
-        Route::prefix('/auth')->middleware(['auth:sanctum'])->group(function(){
-            // Route::post('/send-mail', function (Request $request) {
-            //      $msg=$request->input('message');
-            //      Mail::to($request->user())->send(new UserNotificationSubscriptionMail($msg));
-            //      return "mail sended";
-            // });
-            Route::prefix('notifs')->group(function(){
-                Route::get('current/user',[UserNotificationController::class,'currentUserNotif'])->name('currentUserNotif');
-                Route::get('current/teacher',[UserNotificationController::class,'currentTecherNotif'])->name('currentTecherNotif');
-                Route::get('current/user/not/read',[UserNotificationController::class,'currentUserNoteNotRead'])->name('currentUserNoteNotRead');
-                Route::put('current/user/{id}',[UserNotificationController::class,'update'])->name('currentUserNotif-update');
+        Route::get('pages/name/{name}',[PageController::class,'showPublic'])->name('showPublic-pages');
+        Route::get('publicite-list',[PubliciteController::class,'lists'])->name('lists-public-publicites');
+        Route::get('categories-list',[CategorieController::class,'listNotPaginatePublic'])->name('categories-listNotPaginatePublic');
+        Route::post('avis',[AvisController::class,'store'])->name("avis-store");
+        Route::post('contact-nous',[AvisController::class,'ContactUs'])->name('feedback-ContactUs');
+        //auth 
+        Route::middleware(['auth:sanctum'])->group(function(){
+            Route::middleware('can:super_admin,App\Models\User')->group(function(){
+                Route::post('send-messages',[SendMessageController::class,"sendMessageWhatsApp"])->name('message-whatsapp');
+                Route::resource('roles',RoleController::class)->only(['index','show', "store",'update','destroy']);
+                Route::get('professeurs',[RoleController::class,'getUserRoleProf'])->name('professeurs');
+                Route::get('avis/{text?}',[AvisController::class,'index'])->name('index-avis');
+                Route::delete('avis/{id}',[AvisController::class,'destroy'])->name('destroy-avis');
+                Route::put('avis/{id}',[AvisController::class,'update'])->name('destroy-avis');
+                Route::post('email/avis',[AvisController::class,'feedback'])->name('feedback-avis');
+                Route::prefix('export')->group(function(){
+                    Route::post("subscription",[FastExcelController::class,'subscription'])->name("export_subscription");
+                   //  Route::get("/",[FastExcelController::class,'all'])->name('export_all');
+               });
+                Route::resource('user-roles',RoleUserController::class)->only(["store"]);
+                Route::prefix('publicites')->group(function(){
+                    Route::get('/{search?}',[PubliciteController::class,'index'])->name('index-publicite');
+                    Route::post('',[PubliciteController::class,'create'])->name('create-publicite');
+                    Route::post('{id}',[PubliciteController::class,'update'])->name('update-publicite');
+                    Route::delete('{id}',[PubliciteController::class,'destroy'])->name('destroy-publicite');
+                });
+                Route::prefix('categories')->group(function(){
+                    Route::get('list',[CategorieController::class,'listNotPaginate'])->name('categories-listNotPaginate');
+                    Route::get('/{search?}',[CategorieController::class,'index'])->name('index-categorie');
+                    Route::get('{id}',[CategorieController::class,'show'])->name('show-categorie');
+                    Route::post('',[CategorieController::class,'create'])->name('create-categorie');
+                    Route::post('{id}',[CategorieController::class,'update'])->name('update-categorie');
+                    Route::delete('{id}',[CategorieController::class,'destroy'])->name('destroy-categorie');
+                });
+                // module as cours
+                Route::prefix('cours')->group(function(){
+                    Route::get('/videos/admin',[ModuleController::class,'adminModulesVideo'])->name('adminModulesVideo-admin');
+                    Route::get('list',[ModuleController::class,'listNotPaginate'])->name('modules-listNotPaginates');
+                    Route::get('for/examens/{search?}',[ModuleController::class,'moduleforExams'])->name('moduleforExams-index');
+                    Route::get('{search?}',[ModuleController::class,'index'])->name('index-modules');
+                    Route::get('{id}',[ModuleController::class,'show'])->name('show-modules');
+                    Route::post('',[ModuleController::class,'create'])->name('create-modules');
+                    Route::post('{id}',[ModuleController::class,'update'])->name('update-modules');
+                    Route::delete('{id}',[ModuleController::class,'destroy'])->name('destroy-modules');
+                });
+                Route::prefix('ressources')->group(function(){
+                    Route::get('admin/{search?}',[RessourcesModuleController::class,'searchResourceModuleAdmin'])->name('searchResourceModuleAdmin-ressources');
+                    Route::get('{id}',[RessourcesModuleController::class,'show'])->name('show-module-ressources');
+                    Route::post('',[RessourcesModuleController::class,'create'])->name('create-module-ressources');
+                    Route::post('{id}',[RessourcesModuleController::class,'update'])->name('update-module-ressources');
+                    Route::delete('{id}',[RessourcesModuleController::class,'destroy'])->name('destroy-module-ressources');
+                    Route::get('/{id?}/module/{search?}',[RessourcesModuleController::class,'ressourceFormModule'])->name('ressourceFormModule-ressources-admin');
+                });
+                Route::prefix('programmes')->group(function(){
+                    // Route::get('{id}',[ProgrammeController::class,'show'])->name('show-programmes');
+                    Route::post('',[ProgrammeController::class,'create'])->name('create-programmes');
+                    Route::post('{id}',[ProgrammeController::class,'update'])->name('update-programmes');
+                    Route::delete('{id}',[ProgrammeController::class,'destroy'])->name('destroy-programmes');
+                    Route::get('{search?}',[ProgrammeController::class,'index'])->name('index-programmes-admin');
+                });
+                Route::prefix('pages')->group(function(){
+                    Route::get('{search?}',[PageController::class,'index'])->name('index-pages');
+                    Route::get('{id}',[PageController::class,'show'])->name('show-pages');
+                    Route::post('',[PageController::class,'create'])->name('create-pages');
+                    Route::put('{id}',[PageController::class,'update'])->name('update-pages');
+                    Route::delete('{id}',[PageController::class,'destroy'])->name('destroy-pages');
+                });
+                Route::prefix('evaluations')->group(function(){
+                    Route::get('cours/{moduleId}',[EvaluationController::class,'getEvaluationForModuleId'])->name('moduleforExams-index-evaluation');
+                    Route::get('{search?}',[EvaluationController::class,'index'])->name('index-evaluation');
+                    Route::get('/show/{id}',[EvaluationController::class,'show'])->name('show-evaluation');
+                    Route::post('',[EvaluationController::class,'create'])->name('create-evaluation');
+                    Route::put('{id}',[EvaluationController::class,'update'])->name('update-evaluation');
+                    Route::delete('{id}',[EvaluationController::class,'destroy'])->name('destroy-evaluation');
+                });
+                Route::post('email/users/subscriptions',[ModuleUserController::class,'emailSuscription'])->name('emailSuscription-user');
+                Route::prefix('subscriptions')->group(function(){
+                    Route::get('{search?}',[ModuleUserController::class,'index'])->name('index-module-user');
+                    Route::post('enable-desable-module-user/{id}',[ModuleUserController::class,'enableOrDesableModuleForUser'])->name('enableOrDesableModuleForUser-module-user');
+                    Route::post('{id}',[ModuleUserController::class,'update'])->name('update-module-user');
+                    Route::delete('{id}',[ModuleUserController::class,'destroy'])->name('destroy-module-user');
+                });
+                Route::get('/ask-evaluation/{text?}/{moduleId?}/{dateBegin?}/{dateEnd?}',[AskEvaluationController::class,'index'])->name('index-ask-evaluation');
+                Route::put('/ask-evaluation/{id}',[AskEvaluationController::class,'acceptedEvaluation'])->name('acceptedEvaluation');
+                Route::delete('/ask-evaluation/{id}',[AskEvaluationController::class,'destroy'])->name('destroy-ask-evaluation');
             });
-            Route::get('current-users/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-module');
-            Route::get('current-users/evaluations/{moduleId}',[UserController::class,'currentUserEvaluations'])->name('currentUserEvaluations-evaluation');
-            Route::get('current-users/notes',[UserController::class,'currentUserNotes'])->name('currentUserNotes-notes');
-            
+            //currentUser
+            Route::prefix('current-user')->group(function(){
+                Route::get('/',[UserController::class,'currentUser'])->name('show-current-users');
+                Route::post('',[UserController::class,'updateCurrentUser'])->name('update-current-users');
+                Route::delete('',[UserController::class,'deleteCurrentUser'])->name('delete-current-users');  
+                Route::prefix('notifs')->group(function(){
+                    Route::get('/',[UserNotificationController::class,'currentUserNotif'])->name('currentUserNotif');
+                    Route::get('not/read',[UserNotificationController::class,'currentUserNoteNotRead'])->name('currentUserNoteNotRead');
+                    Route::put('{id}',[UserNotificationController::class,'update'])->name('currentUserNotif-update');
+                    Route::delete('{id}',[UserNotificationController::class,'destroy'])->name('currentUserNotif-delete');
+                });
+                Route::get('logout',[UserController::class,'logout'])->name('logout-users');
+                Route::get('/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-module');
+                Route::get('/evaluations/{moduleId}',[UserController::class,'currentUserEvaluations'])->name('currentUserEvaluations-evaluation');
+                Route::get('/notes',[UserController::class,'currentUserNotes'])->name('currentUserNotes-notes');
+                Route::get('/modules',[UserController::class,'currentUserModule'])->name('currentUserModules');
+                Route::prefix('/attestations')->group(function(){
+                    Route::get('/',[ModuleUserController::class,'attestationsUser'])->name('attestationsUser-module-user');
+                    Route::get('{id}',[ModuleUserController::class,'show'])->name('show-module-user');
+                });
+                Route::get('note-studiants/{moduleId}',[NoteStudiantController::class,'currentUserNote'])->name('currentUserNote-studiant');
+                Route::prefix('ressources')->group(function(){
+                    Route::get('/studiant/{search?}',[RessourcesModuleController::class,'searchResourceModuleStudiant'])->name('searchResourceModuleStudiant-ressources');
+                    Route::get('/{id?}/module/{search?}',[RessourcesModuleController::class,'ressourceFormModule'])->name('ressourceFormModule-ressources');
+                });
+                Route::post('/ask-evaluation',[AskEvaluationController::class,'askEvaluation'])->name('askEvaluation');
+            });
+            Route::middleware('can:professeur,App\Models\User')->group(function(){
+                Route::get('/teacher/ressources/{search?}',[RessourcesModuleController::class,'searchResourceModuleTeacher'])->name('searchResourceModuleTeacher-ressources');
+                Route::get('/teacher/notifs',[UserNotificationController::class,'currentTecherNotif'])->name('currentTecherNotif');
+                Route::get('/teacher/modules',[UserController::class,'teacherModules'])->name('currentUserModules');
+                Route::get('/teacher/studiant/{search?}/{moduleId?}/{is_valide?}/{dateBegin?}/{dateEnd?}',[UserController::class,'studiantForTeacher'])->name('studiantForTeacher');
+                Route::prefix('/teacher/note-studiants')->group(function(){
+                    Route::get('result/{search?}/{dateBegin?}/{dateEnd?}',[NoteStudiantController::class,'noteStudiantWithInfo'])->name('noteStudiantWithInfo-search-studiant');
+                    Route::get('',[NoteStudiantController::class,'index'])->name('index-notes-studiant');
+                    Route::get('{id}',[NoteStudiantController::class,'show'])->name('show-notes-studiant');
+                    Route::post('',[NoteStudiantController::class,'create'])->name('create-notes-studiant');
+                    Route::put('{id}',[NoteStudiantController::class,'update'])->name('update-notes-studiant');
+                    Route::delete('{id}',[NoteStudiantController::class,'destroy'])->name('destroy-notes-studiant');
+                });
+                //Route::get('studiant/{search?}',[RessourcesModuleController::class,'searchResourceModuleStudiant'])->name('searchResourceModuleStudiant-ressources');
+           });
+            Route::post('subscriptions',[ModuleUserController::class,'create'])->name('create-module-user');
             Route::prefix('users')->group(function(){
                 Route::get('{id}',[UserController::class,'show'])->name('show-users');
-                Route::get('current/users/module',[UserController::class,'currentUserModule'])->name('currentUserModules');
-                Route::get('current-users/{id}',[UserController::class,'currentUser'])->name('show-current-users');
-                Route::put('{id}',[UserController::class,'update'])->name('update-users');
-                Route::post('current-users/{id}',[UserController::class,'updateCurrentUser'])->name('update-current-users');
+                Route::put('{id}',[UserController::class,'update'])->name('update-users');     
                 Route::delete('{id}',[UserController::class,'destroy'])->name('destroy-users');
-                Route::delete('current-users',[UserController::class,'deleteCurrentUser'])->name('delete-current-users');       
-                Route::get('logout/{id}',[UserController::class,'logout'])->name('logout-users');
-                Route::get('all/{search?}/{country?}/{dateBegin?}/{dateEnd?}',[UserController::class,'allUsers'])->name('allUsers-users');
-                Route::get('users-notes-etudiants/{search?}/{country?}/{moduleId?}/{date?}/{type?}',[UserController::class,'noteStudiants'])->name('users-notes-etudiants');
-                Route::get('{search?}/{country?}/{categorieId?}/{moduleId?}/{is_valide?}/{dateBegin?}/{dateEnd?}',[UserController::class,'index'])->name('index-users');
-            });
-            Route::prefix('categories')->group(function(){
-                Route::get('list/no-paginate',[CategorieController::class,'listNotPaginate'])->name('categories-listNotPaginate');
-                Route::get('/{search?}',[CategorieController::class,'index'])->name('index-categorie');
-                Route::get('{id}',[CategorieController::class,'show'])->name('show-categorie');
-                Route::post('',[CategorieController::class,'create'])->name('create-categorie');
-                Route::post('{id}',[CategorieController::class,'update'])->name('update-categorie');
-                Route::delete('{id}',[CategorieController::class,'destroy'])->name('destroy-categorie');
-            });
-            Route::prefix('publicites')->group(function(){
-                // Route::get('{id}',[PubliciteController::class,'show'])->name('show-publicite');
-                Route::post('',[PubliciteController::class,'create'])->name('create-publicite');
-                Route::post('{id}',[PubliciteController::class,'update'])->name('update-publicite');
-                Route::delete('{id}',[PubliciteController::class,'destroy'])->name('destroy-publicite');
-                Route::get('/{search?}',[PubliciteController::class,'index'])->name('index-publicite');
-            });
-            Route::prefix('attestations')->group(function(){
-                Route::get('{id}',[ModuleUserController::class,'show'])->name('show-module-user');
-                Route::get('current/user',[ModuleUserController::class,'attestationsUser'])->name('attestationsUser-module-user');
-            });
-            
-            Route::prefix('subscriptions')->group(function(){
-                Route::get('/{search?}',[ModuleUserController::class,'index'])->name('index-module-user');
-                Route::post('',[ModuleUserController::class,'create'])->name('create-module-user');
-                Route::post('/enable-desable-module-user/{id}',[ModuleUserController::class,'enableOrDesableModuleForUser'])->name('enableOrDesableModuleForUser-module-user');
-                Route::post('{id}',[ModuleUserController::class,'update'])->name('update-module-user');
-                Route::delete('{id}',[ModuleUserController::class,'destroy'])->name('destroy-module-user');
-            });
-            Route::prefix('modules')->group(function(){
-                Route::get('list-no-paginate',[ModuleController::class,'listNotPaginate'])->name('modules-listNotPaginate');
-                Route::get('for/examens/{search?}',[ModuleController::class,'moduleforExams'])->name('moduleforExams-index');
-                Route::get('{search?}',[ModuleController::class,'index'])->name('index-modules');
-                Route::get('{id}',[ModuleController::class,'show'])->name('show-modules');
-                Route::post('',[ModuleController::class,'create'])->name('create-modules');
-                Route::post('{id}',[ModuleController::class,'update'])->name('update-modules');
-                Route::delete('{id}',[ModuleController::class,'destroy'])->name('destroy-modules');
-            });
-            Route::get('ressources/studiant/{search?}',[RessourcesModuleController::class,'searchResourceModuleStudiant'])->name('searchResourceModuleStudiant-ressources');
-            Route::get('ressources/{id?}/module/{search?}',[RessourcesModuleController::class,'ressourceFormModule'])->name('ressourceFormModule-ressources');
-            Route::prefix('ressources')->group(function(){
-                Route::get('admin/{search?}',[RessourcesModuleController::class,'searchResourceModuleAdmin'])->name('searchResourceModuleAdmin-ressources');
-                Route::get('{search?}',[RessourcesModuleController::class,'index'])->name('index-ressources');
-                Route::get('{id}',[RessourcesModuleController::class,'show'])->name('show-module-ressources');
-                Route::post('',[RessourcesModuleController::class,'create'])->name('create-module-ressources');
-                Route::post('{id}',[RessourcesModuleController::class,'update'])->name('update-module-ressources');
-                Route::delete('{id}',[RessourcesModuleController::class,'destroy'])->name('destroy-module-ressources');
-            });
-            Route::prefix('programmes')->group(function(){
-                Route::get('{search?}',[ProgrammeController::class,'index'])->name('index-programmes');
-                Route::get('{id}',[ProgrammeController::class,'show'])->name('show-programmes');
-                Route::post('',[ProgrammeController::class,'create'])->name('create-programmes');
-                Route::post('{id}',[ProgrammeController::class,'update'])->name('update-programmes');
-                Route::delete('{id}',[ProgrammeController::class,'destroy'])->name('destroy-programmes');
-            });
-            Route::prefix('pages')->group(function(){
-                Route::get('{search?}',[PageController::class,'index'])->name('index-pages');
-                Route::get('{id}',[PageController::class,'show'])->name('show-pages');
-                Route::post('',[PageController::class,'create'])->name('create-pages');
-                Route::put('{id}',[PageController::class,'update'])->name('update-pages');
-                Route::delete('{id}',[PageController::class,'destroy'])->name('destroy-pages');
+                Route::middleware('can:super_admin,App\Models\User')->group(function(){
+                    Route::get('all/{search?}/{country?}/{dateBegin?}/{dateEnd?}',[UserController::class,'allUsers'])->name('allUsers-users');
+                    Route::get('notes-etudiant/{search?}/{country?}/{moduleId?}/{date?}/{type?}',[UserController::class,'noteStudiants'])->name('users-notes-etudiants');
+                    Route::get('{search?}/{country?}/{categorieId?}/{moduleId?}/{is_valide?}/{ownerId?}/{dateBegin?}/{dateEnd?}',[UserController::class,'index'])->name('index-users');
+                });
             });
             Route::prefix('topics')->group(function(){
                 Route::get('',[TopicController::class,'index'])->name('index-topics');
-                Route::get('{id}',[TopicController::class,'show'])->name('show-topics');
+                //Route::get('{id}',[TopicController::class,'show'])->name('show-topics');
                 Route::post('',[TopicController::class,'create'])->name('create-topics');
                 Route::post('{id}',[TopicController::class,'update'])->name('update-topics');
                 Route::delete('{id}',[TopicController::class,'destroy'])->name('destroy-topics');
@@ -203,35 +245,6 @@ Route::prefix(config('app.version'))->group(function(){
                 Route::post('',[ReplyController::class,'create'])->name('create-replies');
                 Route::post('{id}',[ReplyController::class,'update'])->name('update-replies');
                 Route::delete('{id}',[ReplyController::class,'destroy'])->name('destroy-replies');
-            });
-            // Route::prefix('quiz')->group(function(){
-            //     Route::get('studiant',[QuizController::class,'quizzesStudiant'])->name('quizzesStudiant-index');
-            //     Route::get('/module/{id}',[QuizController::class,'quizzesModule'])->name('quizzesModule-index');
-            //     // clear index after
-            //     Route::get('',[QuizController::class,'index'])->name('index');
-            //     Route::get('{id}',[QuizController::class,'show'])->name('show-quiz');
-            //     Route::post('',[QuizController::class,'create'])->name('create-quiz');
-            //     Route::put('{id}',[QuizController::class,'update'])->name('update-quiz');
-            //     Route::delete('module/{id}',[QuizController::class,'deleteQuizModule'])->name('deleteQuizModule');
-            //     Route::delete('{id}',[QuizController::class,'destroy'])->name('destroy-quiz');
-            // });
-            Route::prefix('evaluations')->group(function(){
-                Route::get('module/{moduleId}',[EvaluationController::class,'getEvaluationForModuleId'])->name('moduleforExams-index-evaluation');
-                Route::get('{search?}',[EvaluationController::class,'index'])->name('index-evaluation');
-                Route::get('/show/{id}',[EvaluationController::class,'show'])->name('show-evaluation');
-                Route::post('',[EvaluationController::class,'create'])->name('create-evaluation');
-                Route::put('{id}',[EvaluationController::class,'update'])->name('update-evaluation');
-                Route::delete('{id}',[EvaluationController::class,'destroy'])->name('destroy-evaluation');
-            });
-            
-            Route::prefix('note-studiants')->group(function(){
-                Route::get('result/{search?}/{dateBegin?}/{dateEnd?}',[NoteStudiantController::class,'noteStudiantWithInfo'])->name('noteStudiantWithInfo-search-studiant');
-                Route::get('current/users-notes/{moduleId}',[NoteStudiantController::class,'currentUserNote'])->name('currentUserNote-studiant');
-                Route::get('',[NoteStudiantController::class,'index'])->name('index-notes-studiant');
-                Route::get('{id}',[NoteStudiantController::class,'show'])->name('show-notes-studiant');
-                Route::post('',[NoteStudiantController::class,'create'])->name('create-notes-studiant');
-                Route::put('{id}',[NoteStudiantController::class,'update'])->name('update-notes-studiant');
-                Route::delete('{id}',[NoteStudiantController::class,'destroy'])->name('destroy-notes-studiant');
             });
         });
 });
