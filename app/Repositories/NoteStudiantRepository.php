@@ -7,12 +7,10 @@ use App\Models\NoteStudiant;
 class NoteStudiantRepository extends RepositoryBase{
     public function __construct(public NoteStudiant $model,private ModuleRepository $reposModule,private EvaluationRepository $reposEvaluation)
     {}
-
     public function exist($evaluationId,$userId){
        return $this->model->where('evaluation_id',$evaluationId)
          ->where('user_id',$userId)->first();
     }
-
     public function findEvaluation($evaluationId){
        return $this->reposEvaluation->findOneByColumn('id',$evaluationId);
     }
@@ -37,7 +35,7 @@ class NoteStudiantRepository extends RepositoryBase{
                   $query->whereDate('evaluations.created_at','<=',$dateEnd)
                    ->whereDate('evaluations.created_at','>=',$dateBegin);
                 });
-              })->when($user->status==eStatus::PROFESSEUR->value,function($query)use($user){
+              })->when(in_array(eStatus::PROFESSEUR->value,$user->roles->pluck('name')->toArray()),function($query)use($user){
                  $query->where('note_studiants.teacher_id','=',$user->id);
               })->select('note_studiants.*','users.id as user_id','users.first_name','users.last_name',
               'users.url_file as user_url_file','users.tel','users.email','teacher.id as teacher_id',

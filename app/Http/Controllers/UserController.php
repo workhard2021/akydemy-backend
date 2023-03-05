@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Enums\eStatus;
 use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Models\Role;
@@ -24,9 +22,6 @@ class UserController extends Controller
     }
 
     public function noteStudiants($search='',$country='',$moduleId='',$date='',$type=''){
-        if(auth()->user()->status!=eStatus::ADMIN->value && auth()->user()->status!=eStatus::SUPER_ADMIN->value){
-            return response('Non autorisé',403);
-        }
         return $this->service->repos->noteStudiants($search,$country,$moduleId,$date,$type);
     }
     public function currentUserEvaluationModule(){
@@ -84,7 +79,6 @@ class UserController extends Controller
     {     
             $data = $request->validate([
                'active' => 'boolean',
-               'status' => 'string|'.Rule::in(eStatus::getValues()),
                'profession' => 'nullable|string|max:250',
                'description'=>'nullable|string|max:250'
             ]);

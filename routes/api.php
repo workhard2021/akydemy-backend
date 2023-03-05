@@ -40,10 +40,9 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/test',function(){
+Route::get('/version',function(){
     //Mail::to("Abdoulayekarembe18@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>"bONJOUR KARAMBE"]));
     return config('app.version');
-    return "test";
 });
 
 Route::prefix(config('app.version'))->group(function(){

@@ -1,12 +1,8 @@
 <?php
 namespace App\Repositories;
 use App\Contracts\RepositoryBase;
-use App\Enums\eStatus;
 use App\Models\Evaluation;
 use App\Models\User;
-use DateTime;
-use Illuminate\Support\Facades\DB;
-
 class UserRepository extends RepositoryBase{
     public function __construct(public User $model)
     {}

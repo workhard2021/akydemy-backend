@@ -23,7 +23,7 @@ class User extends Authenticatable
      */
     protected $fillable =[
         'email','first_name','last_name','tel',
-        'image_url','status','active','country','profession','description','password',
+        'image_url','active','country','profession','description','password',
     ];
 
     /**
@@ -60,8 +60,6 @@ class User extends Authenticatable
 
     public function cours(){
         return $this->belongsToMany(Module::class,'module_users');
-        // ->as('subscriptions');
-        // ->withPivot(['id','title','country','somme','type','status_attestation','is_valide','url_attestation','name_attestation'])
     }
 
     public function topics(){
@@ -70,11 +68,9 @@ class User extends Authenticatable
     public function getUpdatedAtAttribute($value)
     {
         return ucfirst(Carbon::parse($value,'UTC')->format('Y-m-d H:i:s'));
-       // return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
     }
     public function getCreatedAtAttribute($value)
     {
-        // return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
         return ucfirst(Carbon::parse($value,'UTC')->format('Y-m-d H:i:s'));
     }
     public function toSearchableArray()

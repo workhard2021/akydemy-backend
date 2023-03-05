@@ -12,7 +12,7 @@ use PHPUnit\TextUI\XmlConfiguration\Group;
 
  class ModuleUserService extends ServiceBase{
 
-     public function __construct(public ModuleUserRepository $repos,private UserNotificationService $notifService){}
+     public function __construct(public ModuleUserRepository $repos,private UserNotificationService $notifService,private UserService $userService){}
      public function getModel(){
          return $this->repos->model;
      }
@@ -53,61 +53,43 @@ use PHPUnit\TextUI\XmlConfiguration\Group;
     public function createNoticationForTeacherAndStudiant($data){
         //Message d'activation statudiant  
         $msgActive=[];
-        $msgActive['event_id']=$data->module_id;
-        $msgActive['user_id']=$data->user_id;
-        $msgActive['teacher_id']=$data->owner_id;
         $msgActive['type']=__('subscription.type',['type'=>'Abonnement']);
-
         $msgActive['title']=__('subscription.valide-title');
         $msgActive['description']=__('subscription.studiant-valide-message',['title'=>$data->title]);
         //Message de la desactivation statudiant
         $msgInactive=[];
         $msgInactive['type']=__('subscription.type',['type'=>'Désabonnement']);
-        $msgInactive['event_id']=$data->module_id;
-        $msgInactive['user_id']=$data->user_id;
-        $msgInactive['teacher_id']=$data->owner_id;
         $msgInactive['title']=__('subscription.invalide-title');
         $msgInactive['description']=__('subscription.studiant-invalide-message',['title'=>$data->title]);
-        $exp_studiant=User::find($msgInactive['user_id']);
-        $exp_techer=User::find($msgInactive['teacher_id']);
-        $item=$this->notifService->getModel()
-            ->where('event_id',$data->module_id)
-            ->where('user_id',$data->user_id)
-            ->where('type',$msgActive['type'])
-            ->where('is_teacher','!=',true);
+
+        $exp_studiant=User::find($data->user_id);
+        $exp_techer=User::find($data->owner_id);
+
         if($data->is_valide){
              $msgActive['view_notif']=false;
-             $item->create($msgActive);
+             $this->notifService->create([...$msgActive,'event_id'=>$data->module_id,'user_id'=>$data->user_id]);
              Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($msgActive));
         }else if($data->is_valide!=true){
              $msgInactive['view_notif']=false;
-             $item->create($msgInactive); 
+             $this->notifService->create([...$msgInactive,'event_id'=>$data->module_id,'user_id'=>$data->user_id]);
              Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($msgInactive));
         }
         //Message d'activation teacter  
-        $msgActive['is_teacher']=true;
-        $msgActive['description']=__('subscription.teacher-valide-message',
-        ['studiant_mail'=>$exp_studiant->email,'title'=>$data->title]);
+        $msgActive['description']=__('subscription.teacher-valide-message',['studiant_mail'=>$exp_studiant->email,'title'=>$data->title]);
         //Message de la désactivation teacter
-        $msgInactive['is_teacher']=true;
         $msgInactive['description']=__('subscription.teacher-invalide-message',['studiant_mail'=>$exp_studiant->email,'title'=>$data->title]);
-        $item=$this->notifService->getModel()
-             ->where('event_id',$data->module_id)
-             ->where('user_id',$data->user_id)
-             ->where('teacher_id',$data->owner_id)
-             ->where('type',$msgInactive['type'])
-             ->where('is_teacher',true);
-         if($data->is_valide){
+        if($data->is_valide){
              $msgActive['view_notif']=false;
-             $item->create($msgActive);
+             $this->notifService->create([...$msgActive,'event_id'=>$data->module_id,'user_id'=>$data->owner_id]);
              Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgActive));
          }else if($data->is_valide!=true){
              $msgInactive['view_notif']=false;
-             $item->create($msgInactive); 
+             $this->notifService->create([...$msgInactive,'event_id'=>$data->module_id,'user_id'=>$data->owner_id]);
              Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgInactive));
          }
          return true;     
     }
+    
     public function emailSuscription($data){
         if(request()->has('emails')){
             $data["emails"]=explode(',',request()->emails);
@@ -118,5 +100,35 @@ use PHPUnit\TextUI\XmlConfiguration\Group;
             $data['emails']=[];
          }
          FeedbackEvent::dispatch($data);
+    }
+    public function moduelExistForUserUpdate($data){
+        $item=$this->repos->model->where([
+               ['user_id','=',$data['user_id']],
+               ['module_id','=',$data['module_id']],
+               ['is_valide','=',false]
+        ])->first();
+        if($item){
+            $module=$this->repos->findModule($data['module_id']);
+            $module->module_id=$module->id;
+            $module->owner_id=$module->owner_id;
+            $module->user_id=$data['user_id'];
+            $module->tel=$data['tel'];
+            $module->somme=$module->promo_price?$module->promo_price:$module->price;
+            $module->title=$module->title;
+            $item->save();
+            $this->userService->updateUserRole($data['user_id']);
+            $this->createNotication($module);
+        }
+        return $item;  
+    }
+    public function create($data){
+        $module=$this->repos->findModule($data["module_id"]);
+        $data["module_id"]=$module->id;
+        $data["somme"]=$module->promo_price?$module->promo_price:$module->price;
+        $data["title"]=$module->title;
+        $item=$this->repos->model->create($data);
+        // NOTIFICATION
+        $this->userService->updateUserRole($data['user_id']);
+        $this->createNotication($item);
     }
  }
