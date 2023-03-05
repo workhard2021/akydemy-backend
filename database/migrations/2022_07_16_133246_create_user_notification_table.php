@@ -19,9 +19,7 @@ return new class extends Migration
             $table->string('type');
             $table->text('description');
             $table->boolean('view_notif')->nullable();
-            $table->boolean('is_teacher')->default(false);
             $table->foreignId('user_id')->comment('Identify studiant')->constrained('users')->onDelete('CASCADE');
-            $table->foreignId('teacher_id')->comment('Identify teacher')->nullable()->constrained('users')->onDelete('SET NULL');
             $table->foreignId('event_id')->comment('Identify event :exemple : module')->nullable();
             $table->timestamps();
         });

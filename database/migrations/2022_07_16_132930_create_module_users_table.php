@@ -24,8 +24,8 @@ return new class extends Migration
             $table->boolean('is_valide')->nullable();
             $table->text('description')->nullable();
             $table->string('tel',15)->nullable();
-            $table->string('url_attestation',200)->nullable();
-            $table->string('name_attestation',200)->nullable();
+            $table->string('url_attestation',250)->nullable();
+            $table->string('name_attestation',250)->nullable();
             $table->foreignId('module_id')->constrained('modules')->onDelete('CASCADE');
             $table->foreignId('user_id')->constrained('users')->onDelete('CASCADE');
             $table->timestamps();

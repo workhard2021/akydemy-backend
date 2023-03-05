@@ -17,10 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('name',50);
             $table->string('title',50);
-            $table->string('url',150);
+            $table->string('url',250);
             $table->boolean('is_active')->default(false);
-            $table->string('url_file',100)->nullable();
-            $table->string('name_file',100)->nullable();
+            $table->string('url_file',250)->nullable();
+            $table->string('name_file',250)->nullable();
             $table->timestamps();
         });
     }

@@ -97,7 +97,7 @@ Route::prefix(config('app.version'))->group(function(){
                 Route::get('professeurs',[RoleController::class,'getUserRoleProf'])->name('professeurs');
                 Route::get('avis/{text?}',[AvisController::class,'index'])->name('index-avis');
                 Route::delete('avis/{id}',[AvisController::class,'destroy'])->name('destroy-avis');
-                Route::put('avis/{id}',[AvisController::class,'update'])->name('destroy-avis');
+                Route::put('avis/{id}',[AvisController::class,'update'])->name('update-avis');
                 Route::post('email/avis',[AvisController::class,'feedback'])->name('feedback-avis');
                 Route::prefix('export')->group(function(){
                     Route::post("subscription",[FastExcelController::class,'subscription'])->name("export_subscription");
@@ -185,7 +185,7 @@ Route::prefix(config('app.version'))->group(function(){
                 Route::get('/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-module');
                 Route::get('/evaluations/{moduleId}',[UserController::class,'currentUserEvaluations'])->name('currentUserEvaluations-evaluation');
                 Route::get('/notes',[UserController::class,'currentUserNotes'])->name('currentUserNotes-notes');
-                Route::get('/modules',[UserController::class,'currentUserModule'])->name('currentUserModules');
+                Route::get('/modules',[UserController::class,'currentUserModule'])->name('currentUserModules-user');
                 Route::prefix('/attestations')->group(function(){
                     Route::get('/',[ModuleUserController::class,'attestationsUser'])->name('attestationsUser-module-user');
                     Route::get('{id}',[ModuleUserController::class,'show'])->name('show-module-user');

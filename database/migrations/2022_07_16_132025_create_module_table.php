@@ -20,9 +20,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(false);
             $table->double('price',8,2);
             $table->double('promo_price',8,2)->nullable();
-            $table->string('url_file',200)->nullable();
-            $table->string('name_file',200)->nullable();
-            $table->string('folder_name',200)->nullable();
+            $table->string('url_file',250)->nullable();
+            $table->string('name_file',250)->nullable();
+            $table->string('folder_name',250)->nullable();
             $table->integer('nbr_month')->nullable();
             $table->longText('description')->nullable();
             $table->foreignId('owner_id')->nullable()->constrained('users')->onDelete('SET NULL');
