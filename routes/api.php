@@ -98,7 +98,7 @@ Route::prefix(config('app.version'))->group(function(){
                 Route::get('professeurs',[RoleController::class,'getUserRoleProf'])->name('professeurs');
                 Route::get('avis/{text?}',[AvisController::class,'index'])->name('index-avis');
                 Route::delete('avis/{id}',[AvisController::class,'destroy'])->name('destroy-avis');
-                Route::put('avis/{id}',[AvisController::class,'update'])->name('destroy-avis');
+                Route::put('avis/{id}',[AvisController::class,'update'])->name('update-avis');
                 Route::post('email/avis',[AvisController::class,'feedback'])->name('feedback-avis');
                 Route::prefix('export')->group(function(){
                     Route::post("subscription",[FastExcelController::class,'subscription'])->name("export_subscription");
@@ -201,7 +201,7 @@ Route::prefix(config('app.version'))->group(function(){
             Route::middleware('can:professeur,App\Models\User')->group(function(){
                 Route::get('/teacher/ressources/{search?}',[RessourcesModuleController::class,'searchResourceModuleTeacher'])->name('searchResourceModuleTeacher-ressources');
                 Route::get('/teacher/notifs',[UserNotificationController::class,'currentTecherNotif'])->name('currentTecherNotif');
-                Route::get('/teacher/modules',[UserController::class,'teacherModules'])->name('currentUserModules');
+                Route::get('/teacher/modules',[UserController::class,'teacherModules'])->name('teacherModules-user');
                 Route::get('/teacher/studiant/{search?}/{moduleId?}/{is_valide?}/{dateBegin?}/{dateEnd?}',[UserController::class,'studiantForTeacher'])->name('studiantForTeacher');
                 Route::prefix('/teacher/note-studiants')->group(function(){
                     Route::get('result/{search?}/{dateBegin?}/{dateEnd?}',[NoteStudiantController::class,'noteStudiantWithInfo'])->name('noteStudiantWithInfo-search-studiant');
