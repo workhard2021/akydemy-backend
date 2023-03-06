@@ -15,7 +15,6 @@ class AskEvaluationController extends Controller
     public function askEvaluation(Request $request){
         $data=$request->validate([
             'module_id'=>'required|numeric',
-            'ask'=>'required|boolean'
         ]);
         return response($this->service->create($data),201); 
     }

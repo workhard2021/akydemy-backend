@@ -44,16 +44,16 @@ class ModuleRepository extends RepositoryBase{
     public function listNotPaginatePublic(){
       return $this->model->select('id','title')->where('is_active',true)->orderBy('created_at','asc')->get();
     }  
-
     public function adminModulesVideo(){
         return $this->model->where('is_active',1)
-            ->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
+            ->leftJoin('ask_evaluations','ask_evaluations.module_id','=','modules.id')
+            ->select('modules.id','title','sub_title','url_file','name_file','ask_evaluations.ask','ask_evaluations.accepted','modules.created_at','modules.updated_at')
             ->with(['ressourceModdules'=>function($q){
               return $q->where([
                  ['url_movie','!=',null],
                  ['url_movie','!=',''],
                  ['url_movie','!=','null'],
               ]);
-       }])->get();
+        }])->get();
     }    
 }
