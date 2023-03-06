@@ -7,7 +7,10 @@ class UserRepository extends RepositoryBase{
     public function __construct(public User $model)
     {}
     public function  currentUser(){
-        return request()->user()->with('roles:id,name')->first();
+        $user=request()->user();
+        $roles=$user->roles->makeHidden(['pivot','created_at','updated_at']);;
+        $user->roles=$roles;
+        return $user;
     }
     public function searchUserText($search,$country,$categorieId,$moduleId,$is_valide,$ownerId,$dateBegin,$dateEnd){
         return $this->model->when($search!='default',function($query)use($search){

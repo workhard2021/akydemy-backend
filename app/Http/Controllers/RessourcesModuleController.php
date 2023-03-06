@@ -51,7 +51,7 @@ class RessourcesModuleController extends Controller
             $item->url_pdf=null;
             $item->name_pdf=null;
             if(config('ressources-file.disk')=="s3"){
-                $item->url_movie=Storage::disk('S3')->url($file_name['url']);
+                $item->url_movie=Storage::disk('s3')->url($file_name['url']);
             }else{
                 $item->url_movie=$file_name['url'];
             }
@@ -97,7 +97,7 @@ class RessourcesModuleController extends Controller
             $item->url_pdf=null;
             $item->name_pdf=null;
             if(config('ressources-file.disk')=="s3"){
-                $item->url_movie=Storage::disk('S3')->url($file_name['url']);
+                $item->url_movie=Storage::disk('s3')->url($file_name['url']);
             }else{
                 $item->url_movie=$file_name['url'];
             }

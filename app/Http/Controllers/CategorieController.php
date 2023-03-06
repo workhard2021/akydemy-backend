@@ -67,9 +67,11 @@ class CategorieController extends Controller
         }
         return response($item,200);
     }
-    
     public function destroy($id){
         $item=$this->service->repos->find($id);
+        if($item->count>0){
+            return response(["message"=>["message"=>"NOT AUTORIZED","count"=>$item->count]],403);
+        }
         if($item && $item->folder_name){
             ManagerFile::deleteDirectory($item->folder_name);
         }
