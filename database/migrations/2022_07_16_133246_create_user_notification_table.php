@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('type');
             $table->text('description');
             $table->boolean('view_notif')->nullable();
-            $table->foreignId('user_id')->comment('Identify studiant')->constrained('users')->onDelete('CASCADE');
+            $table->foreignId('user_id')->comment('Identify user')->constrained('users')->onDelete('CASCADE');
             $table->foreignId('event_id')->comment('Identify event :exemple : module')->nullable();
             $table->timestamps();
         });
