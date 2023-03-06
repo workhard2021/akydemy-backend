@@ -92,6 +92,7 @@ Route::prefix(config('app.version'))->group(function(){
         Route::post('contact-nous',[AvisController::class,'ContactUs'])->name('feedback-ContactUs');
         //auth 
         Route::middleware(['auth:sanctum'])->group(function(){
+            Route::get('cours/list',[ModuleController::class,'listNotPaginate'])->name('modules-listNotPaginates');
             Route::middleware('can:super_admin,App\Models\User')->group(function(){
                 Route::post('send-messages',[SendMessageController::class,"sendMessageWhatsApp"])->name('message-whatsapp');
                 Route::resource('roles',RoleController::class)->only(['index','show', "store",'update','destroy']);
@@ -122,7 +123,6 @@ Route::prefix(config('app.version'))->group(function(){
                 // module as cours
                 Route::prefix('cours')->group(function(){
                     Route::get('/videos/admin',[ModuleController::class,'adminModulesVideo'])->name('adminModulesVideo-admin');
-                    Route::get('list',[ModuleController::class,'listNotPaginate'])->name('modules-listNotPaginates');
                     Route::get('for/examens/{search?}',[ModuleController::class,'moduleforExams'])->name('moduleforExams-index');
                     Route::get('{search?}',[ModuleController::class,'index'])->name('index-modules');
                     Route::get('{id}',[ModuleController::class,'show'])->name('show-modules');
