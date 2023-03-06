@@ -6,6 +6,7 @@ use App\Events\EventSendFile;
 use App\Libs\ManagerFile;
 use App\Services\RessourceModuleService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class RessourcesModuleController extends Controller
@@ -39,18 +40,21 @@ class RessourcesModuleController extends Controller
             'is_public'=>'boolean',
             'description'=>'nullable|string'
         ]);
-        // return $request->video->getClientOriginalName();
         $item=$this->service->create($data);
         if($request->hasFile('video')){
             $module=$item->module;
             $path=config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video";
-            $file_name='';//$item->id.ManagerFile::genererChaineAleatoire(8);
+            $file_name='';
             $file_name=ManagerFile::upload(request()->file('video'),$path,$file_name);
             ManagerFile::deleteWithUrl($item->url_movie_remove);
             ManagerFile::deleteWithUrl($item->url_pdf);
             $item->url_pdf=null;
             $item->name_pdf=null;
-            $item->url_movie=$file_name['url'];
+            if(config('ressources-file.disk')=="s3"){
+                $item->url_movie=Storage::disk('s3')->url($file_name['url']);
+            }else{
+                $item->url_movie=$file_name['url'];
+            }
             $item->url_movie_remove=$file_name['url'];
             $item->name_movie=$file_name['name'];
             $item->save();
@@ -86,13 +90,17 @@ class RessourcesModuleController extends Controller
         if($request->hasFile('video')){
             $module=$item->module;
             $path=config('ressources-file.modules')."/$module->categorie_id/module/$module->id/video";
-            $file_name=''; //$item->id.ManagerFile::genererChaineAleatoire(8);
+            $file_name='';
             $file_name=ManagerFile::upload(request()->file('video'),$path,$file_name);
             ManagerFile::deleteWithUrl($item->url_movie_remove);
             ManagerFile::deleteWithUrl($item->url_pdf);
             $item->url_pdf=null;
             $item->name_pdf=null;
-            $item->url_movie=$file_name['url'];
+            if(config('ressources-file.disk')=="s3"){
+                $item->url_movie=Storage::disk('s3')->url($file_name['url']);
+            }else{
+                $item->url_movie=$file_name['url'];
+            }
             $item->url_movie_remove=$file_name['url'];
             $item->name_movie=$file_name['name'];
             $item->save();

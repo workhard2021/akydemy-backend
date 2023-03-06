@@ -21,6 +21,6 @@ class TopicRepository extends RepositoryBase{
     }
     public function findTipic($id){
          return $this->model->where($this->model->getKeyName(),$id)
-             ->with('user:id,first_name,last_name,status,url_file,created_at')?->first();
+             ->with('user:id,first_name,last_name,url_file,created_at')?->first();
     }
 }

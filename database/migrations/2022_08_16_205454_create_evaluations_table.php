@@ -21,8 +21,8 @@ return new class extends Migration
             $table->date('visibility_date_limit');
             $table->boolean('published')->nullable();
             $table->boolean('is_closed')->nullable();
-            $table->string('url_file',200)->nullable();
-            $table->string('name_file',200)->nullable();
+            $table->string('url_file',250)->nullable();
+            $table->string('name_file',250)->nullable();
             $table->foreignId('module_id')->constrained('modules')->onDelete('CASCADE');
             // $table->foreignId('teacher_id')->nullable()->constrained('users')->onDelete('SET NULL');
             $table->timestamps();

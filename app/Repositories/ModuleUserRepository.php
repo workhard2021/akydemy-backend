@@ -26,13 +26,6 @@ class ModuleUserRepository extends RepositoryBase{
                ['module_id','=',$moduleId],
         ])->exists();
     }
-    public function moduelExistForUserCancel($userId,$moduleId){
-        return $this->model->where([
-               ['user_id','=',$userId],
-               ['module_id','=',$moduleId],
-               ['is_valide','=',false]
-        ])->exists();
-    }
     public function subscriber($userId,$moduleId){
         return $this->model->where([
                ['user_id','=',$userId],

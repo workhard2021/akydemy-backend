@@ -25,6 +25,7 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserNotificationController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,10 +41,9 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/test',function(){
+Route::get('/version',function(){
     //Mail::to("Abdoulayekarembe18@gmail.com")->send(new UserNotificationSubscriptionMail(['title'=>"test title","description"=>"bONJOUR KARAMBE"]));
     return config('app.version');
-    return "test";
 });
 
 Route::prefix(config('app.version'))->group(function(){
@@ -186,7 +186,7 @@ Route::prefix(config('app.version'))->group(function(){
                 Route::get('/modules/evaluations',[UserController::class,'currentUserEvaluationModule'])->name('currentUserEvaluationModule-module');
                 Route::get('/evaluations/{moduleId}',[UserController::class,'currentUserEvaluations'])->name('currentUserEvaluations-evaluation');
                 Route::get('/notes',[UserController::class,'currentUserNotes'])->name('currentUserNotes-notes');
-                Route::get('/modules',[UserController::class,'currentUserModule'])->name('currentUserModules');
+                Route::get('/modules',[UserController::class,'currentUserModule'])->name('currentUserModules-user');
                 Route::prefix('/attestations')->group(function(){
                     Route::get('/',[ModuleUserController::class,'attestationsUser'])->name('attestationsUser-module-user');
                     Route::get('{id}',[ModuleUserController::class,'show'])->name('show-module-user');

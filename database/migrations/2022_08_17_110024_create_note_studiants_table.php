@@ -18,8 +18,8 @@ return new class extends Migration
             $table->id();
             $table->string('title',200)->comment('title module');
             $table->enum('type',eTypeEvaluation::getValues());
-            $table->string('url_file',200)->nullable();
-            $table->string('name_file',200)->nullable();
+            $table->string('url_file',250)->nullable();
+            $table->string('name_file',250)->nullable();
             $table->double('note',8,2)->nullable();
             $table->double('note_teacher',8,2)->nullable();
             $table->boolean('is_closed')->nullable();

@@ -10,11 +10,11 @@ class MessageRepository extends RepositoryBase{
          ->with(['replies'=>function($query){
               return $query->with(['user'=>function($query){
                  return $query->where('active',false)
-                 ->select('id','first_name','last_name','status','url_file');
+                 ->select('id','first_name','last_name','url_file');
               }])->latest('created_at');
          },'user'=>function($query){
               return $query->where('active',false)
-              ->select('id','first_name','last_name','status','url_file');
+              ->select('id','first_name','last_name','url_file');
          }])->latest('created_at')->paginate($this->nbr);
     }
 }
