@@ -31,12 +31,16 @@ class RessourceModuleRepository extends RepositoryBase{
                ['ressources_modules.name_movie','=',null],
                ['ressources_modules.name_pdf','!=',null]
             ]);
-        })->when($search,function($query){
-            $query->where([
-                ['ressources_modules.name_movie','=',null],
+        })->when(!$search,function($query){
+            return $query->where([
                 ['modules.is_active','=',true],
-                ['ressources_modules.name_pdf','!=',null],
-            ]);
+                ['ressources_modules.name_movie','=',null],
+                ['ressources_modules.name_pdf','!=',null]
+             ])->orWhere([
+                ['modules.is_active','=',true],
+                ['ressources_modules.name_movie','=',null],
+                ['ressources_modules.name_pdf','!=',null]
+             ]);
         })->join('modules','modules.id','=','ressources_modules.module_id')
         ->select('ressources_modules.id as id','ressources_modules.title',
          'ressources_modules.url_pdf','ressources_modules.name_pdf',
@@ -46,7 +50,6 @@ class RessourceModuleRepository extends RepositoryBase{
         ->oldest('ressources_modules.updated_at','ressources_modules.created_at')->paginate($this->nbr);
     }
 
-    
     public function searchResourceModuleTeacher($search){
         $user=auth()->user();
         $userId=$user->id;
@@ -65,13 +68,18 @@ class RessourceModuleRepository extends RepositoryBase{
                ['ressources_modules.name_pdf','!=',null],
                ['modules.owner_id','=',$userId]
             ]);
-        })->when($search,function($query)use($userId){
-            $query->where([
-                ['ressources_modules.name_movie','=',null],
+        })->when(!$search,function($query)use($userId){
+            return $query->where([
                 ['modules.is_active','=',true],
+                ['ressources_modules.name_movie','=',null],
                 ['ressources_modules.name_pdf','!=',null],
                 ['modules.owner_id','=',$userId]
-            ]);
+             ])->orWhere([
+                ['modules.is_active','=',true],
+                ['ressources_modules.name_movie','=',null],
+                ['ressources_modules.name_pdf','!=',null],
+                ['modules.owner_id','=',$userId]
+             ]);
         })->join('modules','modules.id','=','ressources_modules.module_id')
         ->select('ressources_modules.id as id','ressources_modules.title',
          'ressources_modules.url_pdf','ressources_modules.name_pdf',

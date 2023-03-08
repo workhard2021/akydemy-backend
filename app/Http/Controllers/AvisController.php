@@ -8,22 +8,21 @@ use Illuminate\Http\Request;
 
 class AvisController extends Controller
 {
-
     public function __construct(public AvisService $service)
     {}
-
     public function index($text=''){
         return response($this->service->repos->searchText($text),200); 
     }
     public function show($id){
         return response($this->service->repos->find($id),200); 
     }
-
     public function store(Request $request){
         $data=$request->validate([
             'description'=>'required|max:500',
             'title'=>'required|max:40'
         ]);
+        $data['read']=false;
+        $data['email']="Avis message";
         return response($this->service->create($data),201); 
     }
     public function update($id,Request $request){
@@ -42,6 +41,7 @@ class AvisController extends Controller
             'emails'=>'required|array'
         ]);
         FeedbackEvent::dispatch($data);
+        $data['read']=false;
         $this->service->create($data);
         return response('email envoyé',200);
     }

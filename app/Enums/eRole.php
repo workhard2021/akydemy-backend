@@ -9,7 +9,7 @@ enum eRole: string
    case ADMIN_ABONNEMENT ="ADMIN ABONNEMENT";
    case PROF ='PROFESSEUR';
    case USER ='USER';
-   case STUDIANT ='STUDIANT';
+   case ETUDIANT ='ETUDIANT';
    public static function getValues(): array
    {
       return array_map(function ($val) {

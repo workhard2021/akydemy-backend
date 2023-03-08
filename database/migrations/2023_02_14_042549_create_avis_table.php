@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('avis', function (Blueprint $table) {
             $table->id();
             $table->string('title',200)->default("Aucun title");
-            $table->string('email',80)->default("Aucun email");
+            $table->string('email',80)->default("Message avis");
             $table->boolean('read')->defaul(false);
-            $table->text('Aucun description');
+            $table->text('description');
             $table->timestamps();
         });
     }

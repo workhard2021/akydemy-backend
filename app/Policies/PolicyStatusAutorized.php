@@ -39,7 +39,7 @@ class PolicyStatusAutorized
     {  
 
         Log::info($user->roles()->get());
-        return $user->hasRoles([eRole::STUDIANT->value]);
+        return $user->hasRoles([eRole::ETUDIANT->value]);
     }
     public function user(User $user)
     {

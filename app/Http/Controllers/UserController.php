@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Enums\eRole;
 use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Models\Role;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
 
 class UserController extends Controller
@@ -71,6 +72,17 @@ class UserController extends Controller
                     return $role->id;
                 });
                 $item->roles()->sync($roles);
+            }else{
+                if($item){
+                    $roles=Role::get(['id','name'])->map(function($role){
+                        if(in_array($role->name,[eRole::ETUDIANT->value,eRole::USER->value])){
+                            return $role->id;
+                        }  
+                    })->filter(function($id){
+                         return $id!=null;
+                    });
+                    $item->roles()->sync($roles);
+                }
             }
             return response($user,201);
     }

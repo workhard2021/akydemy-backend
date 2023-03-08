@@ -85,7 +85,7 @@ class UserRepository extends RepositoryBase{
     public function currentUserModules(){
         $data= $this->model->where('id',auth()->user()->id)
             ->with(['subscriptions'=>function($query){
-            $query->where('is_valide',1)
+            $query->where('is_valide',true)
             ->with(['modules'=>function($query){
                 $query->where('is_active',1)
                 ->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
@@ -117,15 +117,12 @@ class UserRepository extends RepositoryBase{
         $userId=auth()->user()->id;
         return $this->model->where('id',$userId)
          ->with(['subscriptions'=>function($query)use($userId){
-            $query->where('user_id',$userId)
-            ->with(['modules'=>function($query){
-                $query->where('is_active',1)->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
+            $query->with(['modules'=>function($query)use($userId){
+                $query->where('modules.owner_id',$userId)->where('is_active',true)->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
                 ->with(['ressourceModdules'=>function($q){
                       return $q->
                        where([
                           ['url_movie','!=',null],
-                          ['url_movie','!=',''],
-                          ['url_movie','!=','null'],
                        ]);
                 }]);
             }]);

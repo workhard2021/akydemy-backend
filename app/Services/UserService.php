@@ -34,7 +34,7 @@ class UserService extends ServiceBase
 
     public function updateUserRole($id){
         $user=$this->repos->find($id);
-        $roleStudiant=Role::where("name",eRole::STUDIANT->value)->first();
+        $roleStudiant=Role::where("name",eRole::ETUDIANT->value)->first();
         if($user){
            $roles=$user->roles()->get()->pluck("id")->toArray();
            if(!in_array($roleStudiant->id,$roles)){
