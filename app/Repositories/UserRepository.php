@@ -87,8 +87,8 @@ class UserRepository extends RepositoryBase{
             ->with(['subscriptions'=>function($query){
             $query->where('is_valide',true)
             ->with(['modules'=>function($query){
-                $query->where('is_active',1)
-                ->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
+                $query->where('is_active',true)
+                ->select('modules.id','title','sub_title','url_file','name_file')
                 ->with(['ressourceModdules'=>function($q){
                        return $q->
                        where([
@@ -112,21 +112,16 @@ class UserRepository extends RepositoryBase{
          });
          return $modules;
     }
-
     public function teacherModules(){
-        $userId=auth()->user()->id;
-        return $this->model->where('id',$userId)
-         ->with(['subscriptions'=>function($query)use($userId){
-            $query->with(['modules'=>function($query)use($userId){
-                $query->where('modules.owner_id',$userId)->where('is_active',true)->select('modules.id','title','sub_title','url_file','name_file','created_at','updated_at')
-                ->with(['ressourceModdules'=>function($q){
+        return $this->model->where('id',auth()->user()->id)
+            ->with(['modulesTeacher'=>function($query){
+                $query->with(['ressourceModdules'=>function($q){
                       return $q->
                        where([
                           ['url_movie','!=',null],
                        ]);
                 }]);
-            }]);
-         }])?->first();
+            }])->first();
     }    
     public  function currentUserEvaluationModule(){
         // RETURN MODULE FOR EVALUATION ACTIVE 
@@ -178,15 +173,7 @@ class UserRepository extends RepositoryBase{
         'note_studiants.note_teacher as note_teacher',
       )->paginate($this->nbr);
     }
-    
-    // public  function currentUserEvaluationModule(){
-    //     return $this->model->where('id',auth()->user()->id)->with(['cours'=>function($query){
-    //          return $query->select('modules.id','modules.title','url_file')
-    //           ->with(['evaluations'=>function($query){
-    //              return $query->where('published',true)->with('noteStudiants');
-    //           }]);
-    //     }])->first();
-    // }
+
     public function noteStudiants($search,$country,$moduleId,$date,$type){
         return $this->model->when($search!='default',function($query)use($search){
                  $query->where(function($q)use($search){

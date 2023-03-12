@@ -157,26 +157,29 @@ class ManagerFile {
 
    public static function GenerateZip($data)
    {     
-         $zip=new ZipArchive();              
+         $zip=new ZipArchive();  
          $fileName = str_replace(' ',"-",$data['name']).'.zip';
-        if ($zip->open(public_path("export-file/".$fileName), ZipArchive::CREATE) === TRUE)
+         $zipfile = Storage::disk('tmp')->url($fileName); 
+         return $zipfile;         
+        if ($zip->open($zipfile, ZipArchive::CREATE) === TRUE)
         {   
-            $files=array();
-             foreach($data['fileIds'] as $value){
-               $path=str_replace('storage/','',$value);
-               if(Storage::disk(config('ressources-file.disk'))->exists($path)){
-                  $path=storage_path().DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.$value;
-                  $files= array(...$files,$path);
+            foreach($data['fileIds'] as $value){
+               if(Storage::disk(config('ressources-file.disk'))->exists($value)){
+                  $file = basename($value);
+                  $zip->addFromString($file,Storage::disk('s3')->get($file));
                }
-            }
-            foreach ($files as $key => $value) {
-                $file = basename($value);
-                $zip->addFile($value, $file);
             }
             $zip->close();
          }
+         Storage::disk('s3')->put("export-file/$fileName", file_get_contents($zipfile));
+         return redirect(Storage::disk('s3')->temporaryUrl(
+            "my-directory/$fileName",
+            now()->addHour(),
+           ['ResponseContentDisposition' => 'attachment']
+         ));
          return $fileName;
     }
+
     public static function removeFolderLocal($name='export-file',$disk='export'){
       if($name){
          Storage::disk($disk)->deleteDirectory($name);

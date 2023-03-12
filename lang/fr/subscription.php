@@ -13,7 +13,7 @@ return [
     |
     */
     'title_admin'=> "Nouveau abonnement au module :title",
-    'message_admin' => "Bonjour :name, un utilisateur s'est abonné un module, veuillez vérifier votre espace",
+    'message_admin' => "Bonjour :name, un utilisateur demande un abonnement, Veuillez vous connecter pour traiter sa demande",
     'type' => ':type',
     'title'=> "Processus d'abonnement au module :title",
     'message' => 'Bonjour, votre demande d’abonnement est en cours de Traitement. L’équipe '.config('app.name').' vous contactera très rapidement pour finaliser le processus',

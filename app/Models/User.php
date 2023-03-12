@@ -50,6 +50,10 @@ class User extends Authenticatable
         ->withPivot(['id','title','country','somme','type','status_attestation','is_valide','url_attestation','name_attestation'])
         ->withTimestamps();
     }
+    public function modulesTeacher(){
+        return $this->hasMany(Module::class,'owner_id')
+        ->select('modules.owner_id','modules.id','title','sub_title','url_file','name_file','created_at','updated_at');
+    }
     
     public function subscriptions() {
         return $this->hasMany(ModuleUser::class);

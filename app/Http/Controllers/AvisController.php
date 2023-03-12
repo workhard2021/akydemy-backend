@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\eTypeFile;
+use App\Enums\eTypeImage;
 use App\Events\FeedbackEvent;
 use App\Services\AvisService;
 use Illuminate\Http\Request;
@@ -38,11 +40,11 @@ class AvisController extends Controller
         $data=$request->validate([
             'description'=>'required|string',
             'title'=>'required|string',
-            'emails'=>'required|array'
+            'emails'=>'required',
+            'fichier' => 'nullable|mimes:'.implode(',',[...eTypeFile::getValues(),...eTypeImage::getValues()]),
         ]);
+        $data['emails']=explode(',',$data['emails']);
         FeedbackEvent::dispatch($data);
-        $data['read']=false;
-        $this->service->create($data);
         return response('email envoyé',200);
     }
     public function ContactUs(Request $request){
@@ -53,6 +55,7 @@ class AvisController extends Controller
             'title'=>'required|string',
             'email'=>'required|email'
         ]);
+        $data['read']=false;
         $this->service->create($data);
         return response('email envoyé',200);
     }
