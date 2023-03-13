@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function (){
             Log::info("remove file : log.log");
             if(Storage::disk('log')->exists('logs/laravel.log')){
-                 return  Storage::disk('log')->delete('logs/laravel.log');
+                Storage::disk('log')->put('logs/laravel.log','');
             }
         })->saturdays();
     }
