@@ -21,11 +21,11 @@ class PolicyStatusAutorized
 
     public function super_admin(User $user)
     {    
-         return $user->hasRoles([eRole::SUPER_ADMIN->value]);
+         return $user->hasRoles([eRole::SUPER_ADMIN->value]) || $this->admin($user);
     }
-    public function admin_prof(User $user)
+    public function admin(User $user)
     {
-        return $user->hasRoles([eRole::ADMIN_PROF->value]);
+        return $user->hasRoles([eRole::ADMIN->value]);
     }
     public function professeur(User $user)
     {

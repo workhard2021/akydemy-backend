@@ -13,11 +13,18 @@ class ModuleUserRepository extends RepositoryBase{
     {
         return $this->model->all();
     }
-    public function moduelExistForUser($userId,$moduleId){
+    public function moduelForUserValide($userId,$moduleId){
         return $this->model->where([
                ['user_id','=',$userId],
                ['module_id','=',$moduleId],
                ['is_valide','=',true],
+        ])->exists();
+    }
+    public function modueleForUserInvalide($userId,$moduleId){
+        return $this->model->where([
+               ['user_id','=',$userId],
+               ['module_id','=',$moduleId],
+               ['is_valide','=',false],
         ])->exists();
     }
     public function moduelAndUserExist($userId,$moduleId){

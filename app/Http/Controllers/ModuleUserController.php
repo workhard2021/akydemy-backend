@@ -35,11 +35,11 @@ class ModuleUserController extends Controller
         if($this->service->repos->subscriber($data['user_id'],$data['module_id'])){
           return response(['errors'=>['error'=>"Votre abonnement est en cours de traitement, on vous contactera très rapidement pour finaliser le processus. Merci !"]],422);
         }
-        if($this->service->repos->moduelExistForUser($data['user_id'],$data['module_id'])){
-            return response(['errors'=>['error'=>"Vous avez déja fait une demandé d'abonnement pour ce module. Merci!"]],422);
+        if($this->service->repos->modueleForUserInvalide($data['user_id'],$data['module_id'])){
+            return response("Vous avez déjà effectué(e) une demande d’abonnement pour ce module. Merci de contacter la plateforme !",200);
         }
-        if($this->service->moduelExistForUserUpdate($data)){
-            return response("Votre abonnement est en cours de traitement, veuillez contacter l'administrateur du site. Merci !",200);
+        if($this->service->repos->moduelForUserValide($data['user_id'],$data['module_id'])){
+            return response(['errors'=>['error'=>" Vous êtes déjà abonné(e) à ce module. Merci d’accéder à votre espace privé !"]],422);
         }
         $this->service->create($data);
         return response("Votre demande a été envoyée, l’équipe AKYDEMY vous contactera !",201);

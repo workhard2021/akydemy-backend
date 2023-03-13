@@ -163,6 +163,16 @@ class UserController extends Controller
             $token= $user->createToken($this->service->tokenName)->plainTextToken;
             return response(['user'=>$user,'token'=>$token],200);
         }
+        if($user){
+            $roles=Role::get(['id','name'])->map(function($role){
+                if(in_array($role->name,[eRole::ETUDIANT->value,eRole::USER->value])){
+                    return $role->id;
+                }  
+            })->filter(function($id){
+                 return $id!=null;
+            });
+            $user->roles()->sync($roles);
+        }
         return  response(['errors'=>['message'=>['Mot de passe ou email est invalide']]],422);
     }
 

@@ -23,10 +23,11 @@ class Kernel extends ConsoleKernel
             Log::info("remove folder : export-file");
             ManagerFile::removeFolderLocal('export-file','export');
             ManagerFile::removeFolderLocal('zip-file','export');
+            ManagerFile::removeFolderLocal(config('ressources-file.export'),'s3');
         })->everySixHours();
         $schedule->call(function (){
             Log::info("remove file : log.log");
-           if(Storage::disk('log')->exists('logs/laravel.log')){
+            if(Storage::disk('log')->exists('logs/laravel.log')){
                  return  Storage::disk('log')->delete('logs/laravel.log');
             }
         })->saturdays();

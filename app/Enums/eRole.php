@@ -5,7 +5,7 @@ namespace App\Enums;
 enum eRole: string
 {
    case SUPER_ADMIN ="SUPER ADMIN";
-   case ADMIN_PROF ='ADMIN PROF';
+   case ADMIN ='ADMIN';
    case ADMIN_ABONNEMENT ="ADMIN ABONNEMENT";
    case PROF ='PROFESSEUR';
    case USER ='USER';

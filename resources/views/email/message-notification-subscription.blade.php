@@ -4,6 +4,6 @@
     <div>
        {{$msg["description"]?? ''}}
     </div>
-    <a id="consulter_compte" href="{{config('app.frontend_url').'/user/profil'}}">Consultez votre compte</a>
+    <a id="consulter_compte" href="{{config('app.frontend_url').'/user/user-index'}}">Votre compte</a>
   </div>
 @include('template.footer')
