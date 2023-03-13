@@ -22,7 +22,8 @@ class Kernel extends ConsoleKernel
         $schedule->call(function (){
             Log::info("remove folder : export-file");
             ManagerFile::removeFolderLocal('export-file','export');
-        })->dailyAt('5:00');
+            ManagerFile::removeFolderLocal('zip-file','export');
+        })->everySixHours();
         $schedule->call(function (){
             Log::info("remove file : log.log");
            if(Storage::disk('log')->exists('logs/laravel.log')){

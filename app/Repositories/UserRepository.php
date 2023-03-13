@@ -63,8 +63,8 @@ class UserRepository extends RepositoryBase{
    })->when(($dateEnd!='default' || $dateBegin!='default'),function($query)use($dateEnd,$dateBegin){
        $query->whereDate('module_users.created_at','<=',$dateEnd)
        ->whereDate('module_users.created_at','>=',$dateBegin);
-   })->latest('module_users.created_at','first_name','last_name')->paginate($this->nbr);
-    }
+   })->where("module_users.is_valide",true)->latest('module_users.updated_at','first_name','last_name')->paginate($this->nbr);
+ }
 
     public function searchAllUser($search,$country,$dateBegin,$dateEnd){
         

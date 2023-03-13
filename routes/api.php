@@ -7,7 +7,7 @@ use App\Http\Controllers\AvisController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\EvaluationController;
-use App\Http\Controllers\FastExcelController;
+use App\Http\Controllers\ExportExcelController;
 use App\Http\Controllers\ManagerFileController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\ModuleController;
@@ -58,6 +58,7 @@ Route::prefix(config('app.version'))->group(function(){
         Route::prefix(config('app.name'))->group(function(){
                Route::get('examens-evalutions/{Id}/{Date}/{url_file}',[ManagerFileController::class,'download']);
                // Route::get('/ressources/modules/{Id}/EVALUATION/{Date}/{url_file}',[ManagerFileController::class,'download']);
+               Route::get('export-file/{url_file}',[ManagerFileController::class,'download']);
                Route::get('public/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/categories/{Id}/{url_file}',[ManagerFileController::class,'download']);
                Route::get('/categories/{Id_categorie}/module/{Id}/programme/{url_file}',[ManagerFileController::class,'download']);
@@ -102,9 +103,8 @@ Route::prefix(config('app.version'))->group(function(){
                 Route::put('avis/{id}',[AvisController::class,'update'])->name('update-avis');
                 Route::post('email/avis',[AvisController::class,'feedback'])->name('feedback-avis');
                 Route::prefix('export')->group(function(){
-                    Route::post("subscription",[FastExcelController::class,'subscription'])->name("export_subscription");
-                   //  Route::get("/",[FastExcelController::class,'all'])->name('export_all');
-               });
+                    Route::post("subscription",[ExportExcelController::class,'subscription'])->name("export_subscription");
+                });
                 Route::resource('user-roles',RoleUserController::class)->only(["store"]);
                 Route::prefix('publicites')->group(function(){
                     Route::get('/{search?}',[PubliciteController::class,'index'])->name('index-publicite');

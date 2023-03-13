@@ -3,6 +3,7 @@ return [
    'disk'=> env('DISK','local'),
    'log' => 'public/logo.png',
    'icon'=>'public/icon.png',
+   'export'=>env('APP_NAME','akydemy').'/export-file',
    'users'=>env('APP_NAME','akydemy').'/users',
    'examens-evalutions'=>env('APP_NAME','akydemy').'/examens-evalutions',
    'publicites'=>env('APP_NAME','akydemy').'/publicites',

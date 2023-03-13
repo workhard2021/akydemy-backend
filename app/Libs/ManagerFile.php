@@ -1,7 +1,5 @@
 <?php
 namespace App\Libs;
-
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
@@ -157,29 +155,35 @@ class ManagerFile {
 
    public static function GenerateZip($data)
    {     
-         $zip=new ZipArchive();  
-         $fileName = str_replace(' ',"-",$data['name']).'.zip';
-         $zipfile = Storage::disk('tmp')->url($fileName); 
-         return $zipfile;         
-        if ($zip->open($zipfile, ZipArchive::CREATE) === TRUE)
-        {   
-            foreach($data['fileIds'] as $value){
-               if(Storage::disk(config('ressources-file.disk'))->exists($value)){
-                  $file = basename($value);
-                  $zip->addFromString($file,Storage::disk('s3')->get($file));
-               }
+      $zip=new ZipArchive(); 
+      $fileName =str_replace(' ',"-",$data['name']).'-'.time().'.zip';
+      if ($zip->open(public_path("export-file/".$fileName), ZipArchive::CREATE) === TRUE)
+      {   
+         $files=$data['fileIds'];
+         foreach ($files as $value) {
+            
+            $content=$content=Storage::disk('local')->url($value);
+            if(config('ressources-file.disk')=="s3"){
+               $content=Storage::disk('s3')->url($value);
             }
-            $zip->close();
+            $file = basename($value);
+            $filepath="zip-file/$file";
+            Storage::disk('export')->put($filepath,$content);
+            $filepath=public_path($filepath);
+            $file=explode('-',$file);
+            array_shift($file);
+            $file=implode(" ",$file);
+            $zip->addFile($filepath,$file);
          }
-         Storage::disk('s3')->put("export-file/$fileName", file_get_contents($zipfile));
-         return redirect(Storage::disk('s3')->temporaryUrl(
-            "my-directory/$fileName",
-            now()->addHour(),
-           ['ResponseContentDisposition' => 'attachment']
-         ));
-         return $fileName;
+         $zip->close();
+       }
+       $contentPath="export-file/$fileName";
+       $fileName=config('ressources-file.export')."/".$fileName;
+       if(config('ressources-file.disk')=="s3"){
+           Storage::disk('s3')->put($fileName,$contentPath);
+       }
+       return $contentPath;
     }
-
     public static function removeFolderLocal($name='export-file',$disk='export'){
       if($name){
          Storage::disk($disk)->deleteDirectory($name);

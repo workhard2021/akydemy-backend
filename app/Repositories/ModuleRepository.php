@@ -15,7 +15,7 @@ class ModuleRepository extends RepositoryBase{
           ->orWhere([['title','like','%'.strtoupper($search).'%'],['is_active',true]])
           ->orWhere([['sub_title','like','%'.strtoupper($search).'%'],['is_active',true]]);
       })->join('users as teacher','teacher.id','=','modules.owner_id')
-      ->select('modules.id','modules.title','modules.sub_title','modules.url_file as image_module','teacher.first_name','teacher.last_name','teacher.url_file as image_teacher')
+      ->orderBy('modules.updated_at','desc')->select('modules.id','modules.title','modules.sub_title','modules.url_file as image_module','teacher.first_name','teacher.last_name','teacher.url_file as image_teacher')
       ->paginate($this->nbr);
     }
 
