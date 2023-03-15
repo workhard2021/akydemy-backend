@@ -157,7 +157,8 @@ class ManagerFile {
    {     
       $zip=new ZipArchive(); 
       $fileName =str_replace(' ',"-",$data['name']).'-'.time().'.zip';
-      if ($zip->open(public_path("export-file/".$fileName), ZipArchive::CREATE) === TRUE)
+      $fileNameZip="export-file/".time()."/".$fileName;
+      if ($zip->open(public_path("export-file/".$fileNameZip), ZipArchive::CREATE) === TRUE)
       {   
          $files=$data['fileIds'];
          foreach ($files as $value) {
@@ -177,7 +178,7 @@ class ManagerFile {
          }
          $zip->close();
        }
-       $contentPath="export-file/$fileName";
+       $contentPath=$fileNameZip;
        $fileName=config('ressources-file.export')."/".$fileName;
        if(config('ressources-file.disk')=="s3"){
            Storage::disk('s3')->put($fileName,$contentPath);
