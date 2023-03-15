@@ -158,7 +158,7 @@ class ManagerFile {
       $zip=new ZipArchive(); 
       $fileName =str_replace(' ',"-",$data['name']).'-'.time().'.zip';
       $folder=time();
-      Storage::makeDirectory("export-file/".$folder);
+      Storage::disk('export')->makeDirectory("export-file/".$folder);
       $fileNameZip="export-file/".$folder."/".$fileName;
       if ($zip->open(public_path($fileNameZip), ZipArchive::CREATE) === TRUE)
       {   
