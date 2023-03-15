@@ -160,7 +160,7 @@ class ManagerFile {
       $folder=time();
       Storage::makeDirectory("export-file/".$folder);
       $fileNameZip="export-file/".$folder."/".$fileName;
-      if ($zip->open(public_path("export-file/".$fileNameZip), ZipArchive::CREATE) === TRUE)
+      if ($zip->open(public_path($fileNameZip), ZipArchive::CREATE) === TRUE)
       {   
          $files=$data['fileIds'];
          foreach ($files as $value) {
