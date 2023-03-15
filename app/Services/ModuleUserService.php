@@ -8,7 +8,6 @@ use App\Mail\UserNotificationSubscriptionMail;
 use App\Models\User;
 use App\Repositories\ModuleUserRepository;
 use Illuminate\Support\Facades\Mail;
-use PHPUnit\TextUI\XmlConfiguration\Group;
 
  class ModuleUserService extends ServiceBase{
 
@@ -19,21 +18,10 @@ use PHPUnit\TextUI\XmlConfiguration\Group;
      public function createNotication($data){
         $notif=[];
         $notif['event_id']=$data->module_id;
+        $exp_studiant=User::find($data->user_id);
+        $name_studiant=ucfirst(strtolower($exp_studiant->first_name." ".$exp_studiant->last_name));
         $notif['user_id']=$data->user_id;
         $notif['type']=__('subscription.type',['type'=>'Abonnement']);
-        $notif['title']=__('subscription.title',['title'=>$data->title]);
-        $notif['description']=__('subscription.message');
-        $item=$this->notifService->getModel()
-            ->where('event_id',$data->module_id)
-            ->where('user_id',$data->user_id)
-            ->where('type',$data['type']);
-        if($item->exists()){
-          $item->update($notif);
-        }else{
-           $notif['view_notif']=false;
-           $item->create($notif);
-        }
-        $exp_studiant=User::find($notif['user_id']);
         $user=User::get();
         $mailAdmin=[];
         foreach($user as $admin){
@@ -43,27 +31,50 @@ use PHPUnit\TextUI\XmlConfiguration\Group;
                     $name=ucfirst(strtolower($admin->first_name." ".$admin->last_name));
                     $notif['title']=__('subscription.title_admin',['title'=>$data->title]);
                     $notif['description']=__('subscription.message_admin',['name'=>$name]);
+                    $item=$this->notifService->getModel()
+                       ->where('event_id',$data->module_id)
+                       ->where('user_id',$admin->id)
+                        ->where('type',$data['type']);
+                     if($item->exists()){
+                         $item->update($notif);
+                     }else{
+                         $notif['view_notif']=false;
+                         $item->create($notif);
+                    }
                     Mail::to($admin)->send(new UserNotificationSubscriptionMail($notif));
                 }
             }
+        }
+        $notif['title']=__('subscription.title',['title'=>$data->title]);
+        $notif['description']=__('subscription.message',['name'=>$name_studiant]);
+        $item=$this->notifService->getModel()
+        ->where('event_id',$data->module_id)
+        ->where('user_id',$data->user_id)
+        ->where('type',$data['type']);
+        if($item->exists()){
+           $item->update($notif);
+        }else{
+            $notif['view_notif']=false;
+            $item->create($notif);
         }
         Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($notif));
         return $item;     
     }
     public function createNoticationForTeacherAndStudiant($data){
+        $exp_studiant=User::find($data->user_id);
+        $exp_teacher=User::find($data->owner_id);
+        $name_studiant=ucfirst(strtolower($exp_studiant->first_name." ".$exp_studiant->last_name));
+        $name_teacher=ucfirst(strtolower($exp_teacher->first_name." ".$exp_teacher->last_name));
         //Message d'activation statudiant  
         $msgActive=[];
         $msgActive['type']=__('subscription.type',['type'=>'Abonnement']);
         $msgActive['title']=__('subscription.valide-title');
-        $msgActive['description']=__('subscription.studiant-valide-message',['title'=>$data->title]);
+        $msgActive['description']=__('subscription.studiant-valide-message',['title'=>$data->title,'name'=>$name_studiant]);
         //Message de la desactivation statudiant
         $msgInactive=[];
         $msgInactive['type']=__('subscription.type',['type'=>'Désabonnement']);
         $msgInactive['title']=__('subscription.invalide-title');
-        $msgInactive['description']=__('subscription.studiant-invalide-message',['title'=>$data->title]);
-
-        $exp_studiant=User::find($data->user_id);
-        $exp_techer=User::find($data->owner_id);
+        $msgInactive['description']=__('subscription.studiant-invalide-message',['title'=>$data->title,'name'=>$name_studiant]);
 
         if($data->is_valide){
              $msgActive['view_notif']=false;
@@ -75,17 +86,17 @@ use PHPUnit\TextUI\XmlConfiguration\Group;
              Mail::to($exp_studiant)->send(new UserNotificationSubscriptionMail($msgInactive));
         }
         //Message d'activation teacter  
-        $msgActive['description']=__('subscription.teacher-valide-message',['studiant_mail'=>$exp_studiant->email,'title'=>$data->title]);
+        $msgActive['description']=__('subscription.teacher-valide-message',['studiant_mail'=>$exp_studiant->email,'title'=>$data->title,'name'=>$name_teacher]);
         //Message de la désactivation teacter
-        $msgInactive['description']=__('subscription.teacher-invalide-message',['studiant_mail'=>$exp_studiant->email,'title'=>$data->title]);
+        $msgInactive['description']=__('subscription.teacher-invalide-message',['studiant_mail'=>$exp_studiant->email,'title'=>$data->title,'name'=>$name_teacher]);
         if($data->is_valide){
              $msgActive['view_notif']=false;
              $this->notifService->create([...$msgActive,'event_id'=>$data->module_id,'user_id'=>$data->owner_id]);
-             Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgActive));
+             Mail::to($exp_teacher)->send(new UserNotificationSubscriptionMail($msgActive));
          }else if($data->is_valide!=true){
              $msgInactive['view_notif']=false;
              $this->notifService->create([...$msgInactive,'event_id'=>$data->module_id,'user_id'=>$data->owner_id]);
-             Mail::to($exp_techer)->send(new UserNotificationSubscriptionMail($msgInactive));
+             Mail::to($exp_teacher)->send(new UserNotificationSubscriptionMail($msgInactive));
          }
          return true;     
     }
@@ -129,6 +140,7 @@ use PHPUnit\TextUI\XmlConfiguration\Group;
         $item=$this->repos->model->create($data);
         // NOTIFICATION
         $this->userService->updateUserRole($data['user_id']);
+        $item->user_id=$data['user_id'];
         $this->createNotication($item);
     }
  }

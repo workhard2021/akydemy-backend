@@ -8,10 +8,8 @@ use App\Enums\eTypeFile;
 use App\Enums\eTypeImage;
 use App\Libs\ManagerFile;
 use App\Services\ModuleUserService;
-use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ModuleUserController extends Controller
@@ -114,6 +112,7 @@ class ModuleUserController extends Controller
             $item->save();
         }
         $item->owner_id=$module->owner_id;
+        $item->user_id=$data['user_id'];
         $this->service->createNoticationForTeacherAndStudiant($item);
         return response($item,200);
     }

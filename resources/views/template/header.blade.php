@@ -39,7 +39,7 @@
           text-align: center;
           padding-top:4px;
           padding-bottom:4px;
-          font-size:18px;
+          font-size:19px;
           background:rgb(71 118 205);
       }
    </style>

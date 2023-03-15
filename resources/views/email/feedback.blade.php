@@ -8,5 +8,5 @@
    <div>
       {!! $data['description']?? '' !!}
    </div>
-</div>
+</div><br/>
 @include('template.footer')
