@@ -25,7 +25,6 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserNotificationController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------

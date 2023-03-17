@@ -2,7 +2,11 @@
 namespace App\Libs;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
-
+ini_set('post_max_size', '1G');
+ini_set('upload_max_filesize', '1G');
+ini_set('memory_limit', '2048M');
+ini_set('max_input_time', '300');
+ini_set('max_execution_time', '300');
 class ManagerFile {
    public static function upload($arrayFileName,$folder,$file_name=null){
       $folder = $folder . DIRECTORY_SEPARATOR;
@@ -164,28 +168,16 @@ class ManagerFile {
       {   
          $files=$data['fileIds'];
          foreach ($files as $value) {
-            
             $content=$content=Storage::disk('local')->url($value);
             if(config('ressources-file.disk')=="s3"){
                $content=Storage::disk('s3')->url($value);
             }
-            $file = basename($value);
-            $filepath="zip-file/$file";
-            Storage::disk('export')->put($filepath,$content);
-            $filepath=public_path($filepath);
-            $file=explode('-',$file);
-            array_shift($file);
-            $file=implode(" ",$file);
-            $zip->addFile($filepath,$file);
+            $file = basename($value); 
+            $zip->addFromString($file,file_get_contents($content));
          }
          $zip->close();
        }
-       $contentPath=$fileNameZip;
-       $fileName=config('ressources-file.export')."/".$fileName;
-       if(config('ressources-file.disk')=="s3"){
-           Storage::disk('s3')->put($fileName,$contentPath);
-       }
-       return $contentPath;
+       return $fileNameZip;
     }
     public static function removeFolderLocal($name='export-file',$disk='export'){
       if($name){
