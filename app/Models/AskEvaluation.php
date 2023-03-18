@@ -22,6 +22,6 @@ class AskEvaluation extends Model
     }
     public function getCreatedAtAttribute($value)
     {
-        return  $this->updated_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
+        return  $this->created_at_format=Carbon::parse($value)->locale(config('app.locale'))->calendar();
     }
 }

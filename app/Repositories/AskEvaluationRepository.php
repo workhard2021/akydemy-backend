@@ -19,6 +19,7 @@ class AskEvaluationRepository extends RepositoryBase{
             $query->whereDate('ask_evaluations.created_at','<=',$dateEnd)
             ->whereDate('ask_evaluations.created_at','>=',$dateBegin);
           })->where('modules.is_active',true)
+          ->where('ask_evaluations.ask',true)
           ->select('ask_evaluations.id as ask_evaluations_id','ask_evaluations.accepted','ask_evaluations.created_at','users.id as user_id','users.first_name','users.last_name','users.email','users.url_file','modules.title')->paginate($this->nbr);
     }
 }
