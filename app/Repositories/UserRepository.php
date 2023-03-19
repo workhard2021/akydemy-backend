@@ -97,7 +97,9 @@ class UserRepository extends RepositoryBase{
                           ['url_movie','!=','null'],
                        ]);
                 }]);
-            },'modules.ask_evaluations']);
+            },'modules.ask_evaluations'=>function($query){
+               return $query->where('ask_evaluations.user_id',auth()->user()->id);
+            }]);
          }])->first(['id','created_at','updated_at']);
          $modules=$data->subscriptions->map(function($value){
               if(!$value->modules){
