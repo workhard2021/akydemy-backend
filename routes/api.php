@@ -191,6 +191,7 @@ Route::prefix(config('app.version'))->group(function(){
                     Route::get('{id}',[ModuleUserController::class,'show'])->name('show-module-user');
                 });
                 Route::get('note-studiants/{moduleId}',[NoteStudiantController::class,'currentUserNote'])->name('currentUserNote-studiant');
+                Route::post('note-studiants',[NoteStudiantController::class,'create'])->name('create-notes-studiant-current-user');
                 Route::prefix('ressources')->group(function(){
                     Route::get('/studiant/{search?}',[RessourcesModuleController::class,'searchResourceModuleStudiant'])->name('searchResourceModuleStudiant-ressources');
                     Route::get('/{id?}/module/{search?}',[RessourcesModuleController::class,'ressourceFormModule'])->name('ressourceFormModule-ressources');
@@ -206,7 +207,7 @@ Route::prefix(config('app.version'))->group(function(){
                     Route::get('result/{search?}/{dateBegin?}/{dateEnd?}',[NoteStudiantController::class,'noteStudiantWithInfo'])->name('noteStudiantWithInfo-search-studiant');
                     Route::get('',[NoteStudiantController::class,'index'])->name('index-notes-studiant');
                     Route::get('{id}',[NoteStudiantController::class,'show'])->name('show-notes-studiant');
-                    Route::post('',[NoteStudiantController::class,'create'])->name('create-notes-studiant');
+                    // Route::post('',[NoteStudiantController::class,'create'])->name('create-notes-studiant');
                     Route::put('{id}',[NoteStudiantController::class,'update'])->name('update-notes-studiant');
                     Route::delete('{id}',[NoteStudiantController::class,'destroy'])->name('destroy-notes-studiant');
                 });

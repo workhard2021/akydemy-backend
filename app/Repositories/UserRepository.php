@@ -129,23 +129,22 @@ class UserRepository extends RepositoryBase{
         // RETURN MODULE FOR EVALUATION ACTIVE 
         return $this->model->
          where('users.id',auth()->user()->id)
-        ->where('module_users.is_valide',1)
-        ->join('module_users','module_users.user_id','=','users.id')
-        ->join('modules','modules.id','=','module_users.module_id')
+        ->where('ask_evaluations.accepted',1)
+        ->join('ask_evaluations','ask_evaluations.user_id','=','users.id')
+        ->join('modules','modules.id','=','ask_evaluations.module_id')
         ->select('modules.id','modules.title','modules.url_file')
         ->paginate($this->nbr);
     }
     public  function currentUserEvaluations($moduleId){
-        $evaluation=Evaluation::where('module_id',$moduleId)?->first();
+        // $evaluation=Evaluation::where('module_id',$moduleId)?->first();
         return $this->model->
          where('users.id',auth()->user()->id)
-        ->where('modules.id',$moduleId)
-        ->where('module_users.is_valide',1)
+        ->where('ask_evaluations.module_id',$moduleId)
+        ->where('ask_evaluations.accepted',1)
         ->where('evaluations.published',1)
         ->join('module_users','module_users.user_id','=','users.id')
-        ->join('modules','modules.id','=','module_users.module_id')
-        ->join('evaluations','evaluations.module_id','=','modules.id')
-        ->join('ask_evaluations','ask_evaluations.module_id','=','modules.id')
+        ->join('ask_evaluations','ask_evaluations.module_id','=','module_users.module_id')
+        ->join('evaluations','evaluations.module_id','=','ask_evaluations.module_id')
         ->leftJoin('note_studiants','note_studiants.evaluation_id','=','evaluations.id')
         ->select('evaluations.*',
         'note_studiants.id as note_studiant_id',
@@ -153,8 +152,8 @@ class UserRepository extends RepositoryBase{
         'note_studiants.name_file as note_studiant_name_file',
         'evaluations.module_id as note_studiant_module_id',
         'ask_evaluations.created_at'
-        )->where('ask_evaluations.accepted',true)
-        ->where('ask_evaluations.created_at','>=',now()->diffInDays($evaluation->created_at))
+        )
+        // ->where('ask_evaluations.created_at','>=',now()->diffInDays($evaluation->created_at))
         ->latest('evaluations.created_at')->paginate($this->nbr);
     }
 
