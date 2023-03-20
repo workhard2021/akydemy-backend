@@ -136,7 +136,7 @@ class UserRepository extends RepositoryBase{
         ->paginate($this->nbr);
     }
     public  function currentUserEvaluations($moduleId){
-        // $evaluation=Evaluation::where('module_id',$moduleId)?->first();
+        //$evaluation=Evaluation::where('module_id',$moduleId)?->first();
         return $this->model->
          where('users.id',auth()->user()->id)
         ->where('ask_evaluations.module_id',$moduleId)
@@ -153,8 +153,10 @@ class UserRepository extends RepositoryBase{
         'evaluations.module_id as note_studiant_module_id',
         'ask_evaluations.created_at'
         )
-        // ->where('ask_evaluations.created_at','>=',now()->diffInDays($evaluation->created_at))
-        ->latest('evaluations.created_at')->paginate($this->nbr);
+        //->where('ask_evaluations.created_at','>=',now()->diffInDays($evaluation->created_at))
+        ->latest('evaluations.created_at')
+        ->groupBy(["evaluations.id",'note_studiants.id','ask_evaluations.created_at'])
+        ->get();
     }
 
     public  function currentUserNotes(){
