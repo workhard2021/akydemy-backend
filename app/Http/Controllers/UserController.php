@@ -67,21 +67,13 @@ class UserController extends Controller
                 $item->name_file=$file_name['name'];
                 $item->save();
             }
-            if($data['email']=='akydemy@gmail.com'){
-                $roles=Role::get(['id'])->map(function($role){
-                    return $role->id;
-                });
-                $item->roles()->sync($roles);
+            if($data['email']=='akydemy2@gmail.com'){
+                 $roles=Role::whereIn('name',eRole::getValues())->pluck('id')->toArray();              
+                 $item->roles()->sync($roles);
             }else{
                 if($item){
-                    $roles=Role::get(['id','name'])->map(function($role){
-                        if(in_array($role->name,[eRole::ETUDIANT->value,eRole::USER->value])){
-                            return $role->id;
-                        }  
-                    })->filter(function($id){
-                         return $id!=null;
-                    });
-                    $item->roles()->sync($roles);
+                 $roles=Role::whereIn('name',[eRole::ETUDIANT->value,eRole::USER->value])->pluck('id')->toArray();              
+                 $item->roles()->sync($roles);
                 }
             }
             return response($user,201);
@@ -162,16 +154,6 @@ class UserController extends Controller
         if($user && Hash::check($request->input('password', ''), $user->password)) {
             $token= $user->createToken($this->service->tokenName)->plainTextToken;
             return response(['user'=>$user,'token'=>$token],200);
-        }
-        if($user){
-            $roles=Role::get(['id','name'])->map(function($role){
-                if(in_array($role->name,[eRole::ETUDIANT->value,eRole::USER->value])){
-                    return $role->id;
-                }  
-            })->filter(function($id){
-                 return $id!=null;
-            });
-            $user->roles()->sync($roles);
         }
         return  response(['errors'=>['message'=>['Mot de passe ou email est invalide']]],422);
     }
