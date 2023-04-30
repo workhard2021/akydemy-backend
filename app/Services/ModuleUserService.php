@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Mail;
                     $name=ucfirst(strtolower($admin->first_name." ".$admin->last_name));
                     $notif['title']=__('subscription.title_admin',['title'=>$data->title]);
                     $notif['description']=__('subscription.message_admin',['name'=>$name]);
+                    $notif['user_id']=$admin->id;
                     $item=$this->notifService->getModel()
                        ->where('event_id',$data->module_id)
                        ->where('user_id',$admin->id)
@@ -51,6 +52,7 @@ use Illuminate\Support\Facades\Mail;
         ->where('event_id',$data->module_id)
         ->where('user_id',$data->user_id)
         ->where('type',$data['type']);
+        $notif['user_id']=$data->user_id;
         if($item->exists()){
            $item->update($notif);
         }else{
