@@ -17,7 +17,9 @@ class CategorieRepository extends RepositoryBase{
         return $this->model->select('id','name')->orderBy('updated_at','asc')->get();
     }
     public function listNotPaginatePublic(){
-        return $this->model->whereHas("modules")->orderBy('updated_at','desc')->get(['id','name','title','url_file','name_file']);
+        return $this->model->whereHas("modules",function($q){
+            $q->where('is_active',true);
+        })->orderBy('updated_at','desc')->get(['id','name','title','url_file','name_file']);
     }
     
     public function find($id){
