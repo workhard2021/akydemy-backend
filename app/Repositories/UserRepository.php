@@ -8,7 +8,7 @@ class UserRepository extends RepositoryBase{
     {}
     public function  currentUser(){
         $user=request()->user();
-        $roles=$user->roles->makeHidden(['pivot','created_at','updated_at']);;
+        $roles=$user->roles->makeHidden(['pivot','created_at','updated_at']);
         $user->roles=$roles;
         return $user;
     }

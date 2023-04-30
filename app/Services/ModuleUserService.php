@@ -127,7 +127,7 @@ use Illuminate\Support\Facades\Mail;
             $module->somme=$module->promo_price?$module->promo_price:$module->price;
             $module->title=$module->title;
             $item->save();
-            $this->userService->updateUserRole($data['user_id']);
+            //$this->userService->updateUserRole($data['user_id']);
             $this->createNotication($module);
         }
         return $item;  
@@ -139,7 +139,7 @@ use Illuminate\Support\Facades\Mail;
         $data["title"]=$module->title;
         $item=$this->repos->model->create($data);
         // NOTIFICATION
-        $this->userService->updateUserRole($data['user_id']);
+       //s $this->userService->updateUserRole($data['user_id']);
         $item->user_id=$data['user_id'];
         $this->createNotication($item);
     }

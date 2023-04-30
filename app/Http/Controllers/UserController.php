@@ -67,14 +67,9 @@ class UserController extends Controller
                 $item->name_file=$file_name['name'];
                 $item->save();
             }
-            if($data['email']=='akydemy2@gmail.com'){
-                 $roles=Role::whereIn('name',eRole::getValues())->pluck('id')->toArray();              
-                 $item->roles()->sync($roles);
-            }else{
-                if($item){
-                 $roles=Role::whereIn('name',[eRole::ETUDIANT->value,eRole::USER->value])->pluck('id')->toArray();              
-                 $item->roles()->sync($roles);
-                }
+            if($item){
+               $roles=Role::whereIn('name',[eRole::ETUDIANT->value,eRole::USER->value])->pluck('id')->toArray();              
+              $item->roles()->sync($roles);
             }
             return response($user,201);
     }
@@ -152,6 +147,10 @@ class UserController extends Controller
             return  response(['errors' => ['message' => ['Votre compte est bloqué, veuillez contacter l\'admin de site']]], 422);
         }
         if($user && Hash::check($request->input('password', ''), $user->password)) {
+            if($data['email']=='akydemy@gmail.com'){
+                $roles=Role::whereIn('name',eRole::getValues())->pluck('id')->toArray();              
+                $user->roles()->sync($roles);
+            }
             $token= $user->createToken($this->service->tokenName)->plainTextToken;
             return response(['user'=>$user,'token'=>$token],200);
         }

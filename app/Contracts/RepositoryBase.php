@@ -4,9 +4,9 @@ namespace App\Contracts;
 
 abstract class RepositoryBase
 {
-   public $nbr = 8;
+   public $nbr = 9;
    public $nbr_premium = 14;
-   public $nbr_publicite = 8;
+   public $nbr_publicite = 9;
 
    public function all(){
       return $this->model->orderBy('created_at','asc')->paginate($this->nbr);
